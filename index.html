@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nizar Yousef Alqerem - Computer Engineer & Frontend Developer | Portfolio showcasing projects and experience">
+    <meta name="keywords" content="Computer Engineer, Frontend Developer, React, Web Development">
+    <meta name="author" content="Nizar Yousef Alqerem">
+    <meta property="og:title" content="Nizar Yousef Alqerem - Computer Engineer">
+    <meta property="og:description" content="Portfolio of Nizar Yousef Alqerem - Frontend Developer & Computer Engineer">
+    <meta property="og:type" content="website">
+    
+    <title>Nizar Yousef Alqerem - Computer Engineer & Frontend Developer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='%2300d4ff'>N</text></svg>">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <div class="logo">NIZAR ALQEREM</div>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1>Computer Engineer <span class="highlight">Frontend Developer</span></h1>
+            <p>Crafting innovative solutions with code. Passionate about problem-solving, technology, and community engagement.</p>
+            <div class="cta-buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>I'm a highly motivated computer engineering student at the Islamic University of Gaza with a strong foundation in programming, algorithms, and data structures. My journey combines technical expertise with a genuine passion for solving real-world problems through technology.</p>
+
+                <h3>Core Strengths</h3>
+                <p>Frontend development capabilities, machine learning applications, system design, and excellent communication skills. I thrive in collaborative environments and bring discipline and precision to every project.</p>
+
+            </div>
+
+            <div>
+                <h3 style="color: var(--accent); margin-bottom: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Technical Skills</h3>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <strong>Languages</strong>
+                        Python, Java, C, JavaScript
+                    </div>
+                    <div class="skill-item">
+                        <strong>Frontend</strong>
+                        HTML/CSS, React.js, Next.js
+                    </div>
+                    <div class="skill-item">
+                        <strong>Backend & Tools</strong>
+                        Linux/UNIX, Git/GitHub, REST APIs
+                    </div>
+                    <div class="skill-item">
+                        <strong>Data & ML</strong>
+                        Machine Learning, Data Preprocessing, PyCaret
+                    </div>
+                    <div class="skill-item">
+                        <strong>Soft Skills</strong>
+                        Communication, Teamwork, Problem-Solving
+                    </div>
+                    <div class="skill-item">
+                        <strong>Office Suite</strong>
+                        Word, Excel, PowerPoint, Digital Tools
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-title">Smart Restaurant Management</div>
+                <p class="project-desc">A comprehensive digital ordering system with role-based access for customers, chefs, waiters, and administrators. Features real-time order tracking and kitchen display system.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">Frontend</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">React.js</span>
+                    </div>
+                    <button class="project-images" title="View Project Images" onclick="openProjectModal('restaurant')" aria-label="View restaurant project images">
+                        <i class="fas fa-images"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-title">Expense Tracker App</div>
+                <p class="project-desc">A simple expense tracking application that helps users record, categorize, and monitor their daily spending. The app provides a clear overview of expenses, making it easier to manage personal finances.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">Frontend</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">React.js</span>
+                    </div>
+                    <button class="project-images" title="View Project Images" onclick="openProjectModal('expenses')" aria-label="View expenses project images">
+                        <i class="fas fa-images"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-title">Task Management App</div>
+                <p class="project-desc">A simple task management application that allows users to create, organize, and track their daily tasks. The app helps improve productivity by providing an easy way to manage and complete tasks.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">Frontend</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">React.js</span>
+                    </div>
+                    <button class="project-images" title="View Project Images" onclick="openProjectModal('tasks')" aria-label="View tasks project images">
+                        <i class="fas fa-images"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-title">🎓 Student Performance Prediction</div>
+                <p class="project-desc">Machine learning pipeline for predicting student behavior and academic performance. Includes data preprocessing, model training, evaluation, and inference capabilities.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">PyCaret</span>
+                        <span class="tag">ML</span>
+                    </div>
+                    <button class="project-images" title="Coming Soon" onclick="openProjectModal('grade')" aria-label="View grade prediction project">
+                        <i class="fas fa-tools"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-title">Custom Unix Shell</div>
+                <p class="project-desc">Built a functional Linux shell from scratch supporting internal commands, I/O redirection, batch files, and background processes. Implemented environment variables and error handling.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">C</span>
+                        <span class="tag">Linux/UNIX</span>
+                        <span class="tag">OS</span>
+                    </div>
+                    <a href="https://github.com/nezarYousef/shell.git" class="project-github" title="View on GitHub" target="_blank" rel="noopener noreferrer" aria-label="Custom Unix Shell GitHub repository">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-title">School Management System</div>
+                <p class="project-desc">A comprehensive school management system developed to organize and manage school-related data including students, classes, and administrative records with an intuitive interface.</p>
+                <div class="project-footer">
+                    <div class="project-tags">
+                        <span class="tag">Java</span>
+                        <span class="tag">JavaFX</span>
+                        <span class="tag">OOP</span>
+                    </div>
+                    <a href="https://github.com/nezarYousef/school.git" class="project-github" title="View on GitHub" target="_blank" rel="noopener noreferrer" aria-label="School Management System GitHub repository">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="experience">
+        <h2 class="section-title">Education & Experience</h2>
+        <div class="timeline">
+            <div class="timeline-item fade-in">
+                <div class="timeline-title">Frontend Development Internship</div>
+                <div class="timeline-company">Masar Institute</div>
+                <div class="timeline-date">2026</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Built responsive web interfaces using HTML, CSS, JavaScript, React.js, and Next.js</li>
+                        <li>Applied modern UI/UX design principles to improve user experience</li>
+                        <li>Developed practical projects focusing on clean and maintainable code</li>
+                        <li>Collaborated with mentors and peers to follow best practices in frontend development</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-title">Bachelor's Degree in Computer Engineering</div>
+                <div class="timeline-company">Islamic University of Gaza</div>
+                <div class="timeline-date">2021 – 2026</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Studied core computer engineering subjects including programming, algorithms, and data structures</li>
+                        <li>Gained knowledge in operating systems, databases, and software development</li>
+                        <li>Worked on academic projects in web development, machine learning, and system programming</li>
+                        <li>Developed strong analytical, technical, and problem-solving skills</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-title">Skill Stack Paths Program</div>
+                <div class="timeline-company">Gaza Sky Geeks</div>
+                <div class="timeline-date">May 2023 – Aug 2025</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Programming Fundamentals</li>
+                        <li>Data Structures & Algorithms</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-title">High School Diploma - Scientific Stream</div>
+                <div class="timeline-company">Palestine School - Secondary Boys School</div>
+                <div class="timeline-date">2020 – 2021</div>
+                <div class="timeline-desc">
+                    <ul>
+                        <li>Graduated with honors, achieving a GPA of 96%</li>
+                        <li>Excelled in mathematics, physics, and computer science</li>
+                        <li>Demonstrated leadership and discipline in academic projects</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2 class="section-title">Let's Connect</h2>
+        <div class="contact-content">
+            <p>I'm interested in opportunities that challenge me to grow as a developer and engineer. Feel free to reach out to discuss collaborations, projects, or just to say hello!</p>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <a href="mailto:nizaryousef01@gmail.com" aria-label="Send email" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                        Email Me
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <a href="tel:+972597781945" aria-label="Call phone number">
+                        <i class="fas fa-phone"></i>
+                        Call Me
+                    </a>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="https://github.com/nezarYousef" class="social-link" title="GitHub" target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub profile">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/nizar-alqerem-33829a3a1" class="social-link" title="LinkedIn" target="_blank" rel="noopener noreferrer" aria-label="Visit LinkedIn profile">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://wa.me/972597781945" class="social-link" title="WhatsApp" target="_blank" rel="noopener noreferrer" aria-label="Send WhatsApp message">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://www.instagram.com/eng.nizar_/" class="social-link" title="Instagram" target="_blank" rel="noopener noreferrer" aria-label="Visit Instagram profile">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Nizar Yousef Alqerem. All rights reserved. | Computer Engineer & Frontend Developer</p>
+    </footer>
+
+    <!-- Modals for Project Images -->
+    <!-- Restaurant Project Modal -->
+    <div id="restaurantModal" class="modal" role="dialog" aria-labelledby="restaurant-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="restaurant-modal-title">🍽️ Smart Restaurant Management</h2>
+                <button class="modal-close" onclick="closeProjectModal('restaurant')" aria-label="Close restaurant project modal">×</button>
+            </div>
+            <div class="gallery-container">
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/1.png" alt="Restaurant system screenshot 1">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/2.png" alt="Restaurant system screenshot 2">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/3.png" alt="Restaurant system screenshot 3">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/4.png" alt="Restaurant system screenshot 4">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/5.png" alt="Restaurant system screenshot 5">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/6.png" alt="Restaurant system screenshot 6">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/7.png" alt="Restaurant system screenshot 7">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/8.png" alt="Restaurant system screenshot 8">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/9.png" alt="Restaurant system screenshot 9">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/10.png" alt="Restaurant system screenshot 10">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/11.png" alt="Restaurant system screenshot 11">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/12.png" alt="Restaurant system screenshot 12">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/13.png" alt="Restaurant system screenshot 13">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/14.png" alt="Restaurant system screenshot 14">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/15.png" alt="Restaurant system screenshot 15">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/16.png" alt="Restaurant system screenshot 16">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/17.png" alt="Restaurant system screenshot 17">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/18.png" alt="Restaurant system screenshot 18">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/restaurant/19.png" alt="Restaurant system screenshot 19">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Modal -->
+    <div id="expensesModal" class="modal" role="dialog" aria-labelledby="expenses-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="expenses-modal-title">💰 Expense Tracker App</h2>
+                <button class="modal-close" onclick="closeProjectModal('expenses')" aria-label="Close expenses project modal">×</button>
+            </div>
+            <div class="gallery-container">
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/expenses/1.png" alt="Expense tracker screenshot 1">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/expenses/2.png" alt="Expense tracker screenshot 2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Modal -->
+    <div id="tasksModal" class="modal" role="dialog" aria-labelledby="tasks-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="tasks-modal-title">📋 Task Management App</h2>
+                <button class="modal-close" onclick="closeProjectModal('tasks')" aria-label="Close tasks project modal">×</button>
+            </div>
+            <div class="gallery-container">
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/tasks/1.png" alt="Tasks app screenshot 1">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/tasks/2.png" alt="Tasks app screenshot 2">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/tasks/3.png" alt="Tasks app screenshot 3">
+                    </div>
+                </div>
+                <div class="gallery-image-wrapper">
+                    <div class="project-image-placeholder">
+                        <img src="images/tasks/4.png" alt="Tasks app screenshot 4">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Prediction Modal -->
+    <div id="gradeModal" class="modal" role="dialog" aria-labelledby="grade-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="grade-modal-title"> Student Performance Prediction</h2>
+                <button class="modal-close" onclick="closeProjectModal('grade')" aria-label="Close grade prediction modal">×</button>
+            </div>
+            <div class="gallery-container">
+                <div class="coming-soon">
+                    <i class="fas fa-tools"></i>
+                    <h4>Coming Soon</h4>
+                    <p>Project details and documentation coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Project Modal Functions
+        function openProjectModal(projectId) {
+            const modalMap = {
+                'restaurant': 'restaurantModal',
+                'grade': 'gradeModal',
+                'expenses': 'expensesModal',
+                'tasks': 'tasksModal',
+                'shell': 'shellModal'
+            };
+            const modalId = modalMap[projectId];
+            if (modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        }
+
+        function closeProjectModal(projectId) {
+            const modalMap = {
+                'restaurant': 'restaurantModal',
+                'grade': 'gradeModal',
+                'expenses': 'expensesModal',
+                'tasks': 'tasksModal',
+                'shell': 'shellModal'
+            };
+            const modalId = modalMap[projectId];
+            if (modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        // Close modal when clicking outside content
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function (event) {
+                if (event.target === this) {
+                    const projectIds = ['restaurant', 'grade', 'expenses', 'tasks'];
+                    for (let id of projectIds) {
+                        closeProjectModal(id);
+                    }
+                }
+            });
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal.show').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.animation = 'fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                }
+            });
+        });
+
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.style.opacity = '0';
+            observer.observe(item);
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                link.style.textDecoration = 'none';
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.style.color = 'var(--accent)';
+                }
+            });
+        });
+
+        // Prevent loading external scripts or tracking
+        document.addEventListener('DOMContentLoaded', function() {
+            // Performance optimization
+            console.log('Portfolio loaded successfully');
+        });
+    </script>
+</body>
+
+</html>
