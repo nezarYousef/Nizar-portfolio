@@ -32,6 +32,8 @@ const edufusionGallery = [
   }
 ];
 
+const advancedTasksGallery = gallery("advanced-tasks", 4);
+
 const projectMeta = {
   restaurant: {
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
@@ -70,7 +72,8 @@ const projectMeta = {
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
-    gallery: []
+    previewImage: "/images/advanced-tasks/ba.png",
+    gallery: advancedTasksGallery
   }
 };
 
