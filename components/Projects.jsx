@@ -13,6 +13,12 @@ const TAG_COLORS = {
   "Computer Vision": { bg: "rgba(84,143,69,0.12)", color: "#548f45", border: "rgba(84,143,69,0.3)" }
 };
 
+const DEFAULT_TAG_COLORS = {
+  bg: "var(--surface-soft)",
+  color: "var(--text)",
+  border: "var(--line)"
+};
+
 function ProjectPreview({ project }) {
   const firstImage = project.gallery?.[0];
   if (firstImage) {
@@ -80,6 +86,7 @@ export default function Projects({ copy, onOpenProject }) {
         .project-tag-colored {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           min-height: 28px;
           padding: 4px 9px;
           border-radius: var(--radius-sm);
@@ -87,6 +94,7 @@ export default function Projects({ copy, onOpenProject }) {
           font-size: 0.73rem;
           font-weight: 780;
           line-height: 1.15;
+          text-align: center;
           transition: transform 150ms ease;
         }
         .project-tag-colored:hover { transform: translateY(-2px); }
@@ -121,23 +129,20 @@ export default function Projects({ copy, onOpenProject }) {
 
                 <div className="project-tags">
                   {project.tags.map((tag) => {
-                    const colors = TAG_COLORS[tag];
-                    if (colors) {
-                      return (
-                        <span
-                          key={tag}
-                          className="project-tag-colored"
-                          style={{
-                            background: colors.bg,
-                            color: colors.color,
-                            border: `1px solid ${colors.border}`
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      );
-                    }
-                    return <span key={tag} className="project-tags">{tag}</span>;
+                    const colors = TAG_COLORS[tag] ?? DEFAULT_TAG_COLORS;
+                    return (
+                      <span
+                        key={tag}
+                        className="project-tag-colored"
+                        style={{
+                          background: colors.bg,
+                          color: colors.color,
+                          border: `1px solid ${colors.border}`
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    );
                   })}
                 </div>
 

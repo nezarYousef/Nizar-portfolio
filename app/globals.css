@@ -968,13 +968,15 @@ html[data-theme="dark"] .lab-panel {
 .about-panel { overflow: hidden; }
 .about-image-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 5;
+  width: min(100%, 300px);
+  aspect-ratio: 1 / 1;
+  margin: 18px auto 0;
   overflow: hidden;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) - 2px);
   background: var(--surface-soft);
 }
-.about-image { object-fit: cover; object-position: center 20%; }
+.about-image { object-fit: cover; object-position: center 4%; }
 .about-panel-content { padding: 24px; }
 .about-panel-content h3, .skill-card h3, .project-body h3, .timeline-content h3, .empty-gallery h3 {
   margin: 0;
@@ -1042,6 +1044,10 @@ html[data-theme="dark"] .lab-panel {
   font-weight: 780;
   line-height: 1.15;
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+.project-tags span {
+  justify-content: center;
+  text-align: center;
 }
 .skill-tags span:hover {
   background: var(--accent-soft);

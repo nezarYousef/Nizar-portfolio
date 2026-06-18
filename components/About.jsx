@@ -83,8 +83,9 @@ function TiltImage({ alt }) {
           src={profileImage}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 88vw, 360px"
+          sizes="(max-width: 768px) 72vw, 300px"
           className="about-image"
+          unoptimized
           priority
         />
         {hovered && (
