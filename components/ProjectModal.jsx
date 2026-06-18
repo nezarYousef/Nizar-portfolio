@@ -61,19 +61,32 @@ export default function ProjectModal({ labels, modalCopy, onClose, project }) {
         </div>
 
         {hasGallery ? (
-          <div className="gallery-grid">
-            {project.gallery.map((image, index) => (
-              <figure className="gallery-frame" key={image.src}>
-                <Image
-                  src={image.src}
-                  alt={`${project.title} screenshot ${index + 1}`}
-                  fill
-                  sizes="(max-width: 768px) 92vw, 820px"
-                  className="gallery-image"
-                />
-              </figure>
-            ))}
-          </div>
+          <>
+            <div className="modal-project-summary">
+              <p>{project.description}</p>
+              {project.highlights?.length > 0 ? (
+                <ul className="modal-project-highlights">
+                  {project.highlights.map((highlight) => (
+                    <li key={highlight}>{highlight}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+
+            <div className="gallery-grid">
+              {project.gallery.map((image, index) => (
+                <figure className="gallery-frame" key={image.src}>
+                  <Image
+                    src={image.src}
+                    alt={image.alt ?? `${project.title} screenshot ${index + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 92vw, 820px"
+                    className="gallery-image"
+                  />
+                </figure>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="empty-gallery">
             <Wrench size={34} />

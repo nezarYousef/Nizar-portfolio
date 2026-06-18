@@ -24,6 +24,14 @@ const gallery = (folder, count) =>
     alt: `${folder} project screenshot ${index + 1}`
   }));
 
+const edufusionGallery = [
+  ...gallery("edufusion", 10),
+  {
+    src: "/images/edufusion/11.jpeg",
+    alt: "EduFusion AI LectureScribe screenshot"
+  }
+];
+
 const projectMeta = {
   restaurant: {
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
@@ -38,8 +46,9 @@ const projectMeta = {
     gallery: gallery("tasks", 5)
   },
   grade: {
-    tags: ["Python", "Machine Learning", "PyCaret", "AI"],
-    gallery: []
+    tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
+    previewImage: "/images/edufusion/ba.png",
+    gallery: edufusionGallery
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
@@ -192,9 +201,16 @@ export const portfolioCopy = {
         },
         {
           id: "grade",
-          title: "Student Performance Prediction",
+          title: "EduFusion AI",
           description:
-            "A Python machine learning pipeline for predicting student behavior and academic performance using preprocessing, model training, PyCaret, evaluation, and inference."
+            "A production-ready AI academic platform with authentication, dashboard, and chatbot integration.",
+          highlights: [
+            "Project Overview: EduPredict was developed as a graduation project focused on student success analytics. The project started with supervised, unsupervised, segmentation, semi-supervised, and hybrid machine learning experiments, then evolved into a practical temporal prediction system with a FastAPI backend.",
+            "The final deliverable focuses on real-time style prediction: given a student's current course day, demographic information, VLE activity, and assessment submissions so far, the system returns a risk probability, risk level, recommended action, explanation, model confidence, and data completeness summary.",
+            "LectureScribe AI converts YouTube lectures into readable text. It downloads the lecture audio, transcribes it with Faster-Whisper, optionally formats the transcript with Groq or Ollama, and keeps the text output for future cache hits.",
+            "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
+            "Smart chatbot for academic support, course guidance, and student questions."
+          ]
         },
         {
           id: "shell",
@@ -405,9 +421,16 @@ export const portfolioCopy = {
         },
         {
           id: "grade",
-          title: "التنبؤ بأداء الطلاب",
+          title: "EduFusion AI",
           description:
-            "مسار تعلم آلة باستخدام Python للتنبؤ بسلوك الطلاب وأدائهم الأكاديمي عبر تجهيز البيانات وتدريب النماذج واستخدام PyCaret والتقييم والاستدلال."
+            "A production-ready AI academic platform with authentication, dashboard, and chatbot integration.",
+          highlights: [
+            "Project Overview: EduPredict was developed as a graduation project focused on student success analytics. The project started with supervised, unsupervised, segmentation, semi-supervised, and hybrid machine learning experiments, then evolved into a practical temporal prediction system with a FastAPI backend.",
+            "The final deliverable focuses on real-time style prediction: given a student's current course day, demographic information, VLE activity, and assessment submissions so far, the system returns a risk probability, risk level, recommended action, explanation, model confidence, and data completeness summary.",
+            "LectureScribe AI converts YouTube lectures into readable text. It downloads the lecture audio, transcribes it with Faster-Whisper, optionally formats the transcript with Groq or Ollama, and keeps the text output for future cache hits.",
+            "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
+            "Smart chatbot for academic support, course guidance, and student questions."
+          ]
         },
         {
           id: "shell",

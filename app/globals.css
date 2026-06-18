@@ -1082,6 +1082,7 @@ html[data-theme="dark"] .lab-panel {
   background: var(--surface-soft);
 }
 .project-preview-image { object-fit: cover; object-position: top center; transition: transform 360ms ease; }
+.project-preview-image-contain { object-fit: contain; padding: 10px; }
 .project-card:hover .project-preview-image { transform: scale(1.04); }
 .project-preview-empty { display: grid; place-items: center; color: var(--accent); }
 .project-body { padding: 20px 20px 0; }
@@ -1210,6 +1211,29 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
 }
 .modal-header h2 { margin: 0; color: var(--heading); font-size: 1.55rem; line-height: 1.2; }
 .modal-header .section-kicker { margin-bottom: 8px; }
+
+.modal-project-summary {
+  display: grid;
+  gap: 14px;
+  padding: 0 22px 22px;
+  color: var(--text-muted);
+}
+.modal-project-summary p {
+  max-width: 900px;
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.modal-project-highlights {
+  display: grid;
+  gap: 10px;
+  max-width: 1000px;
+  padding-inline-start: 20px;
+  margin: 0;
+  line-height: 1.62;
+}
+.modal-project-highlights li::marker { color: var(--accent); }
 
 .gallery-grid { display: grid; gap: 18px; padding: 22px; }
 .gallery-frame {

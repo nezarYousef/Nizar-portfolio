@@ -21,19 +21,26 @@ const DEFAULT_TAG_COLORS = {
 
 function ProjectPreview({ project }) {
   const firstImage = project.gallery?.[0];
-  if (firstImage) {
+  const previewImage = project.previewImage ?? firstImage?.src;
+  const previewAlt = project.previewImage
+    ? `${project.title} project preview`
+    : firstImage?.alt;
+
+  if (previewImage) {
     return (
       <div className="project-preview">
         <Image
-          src={firstImage.src}
-          alt={firstImage.alt}
+          src={previewImage}
+          alt={previewAlt}
           fill
           sizes="(max-width: 768px) 90vw, 360px"
-          className="project-preview-image"
+          className={`project-preview-image${
+            project.previewFit === "contain" ? " project-preview-image-contain" : ""
+          }`}
         />
         <div className="project-preview-overlay">
           <Images size={22} />
-          <span>{project.gallery.length} screenshots</span>
+          <span>{project.gallery?.length ?? 0} screenshots</span>
         </div>
       </div>
     );
