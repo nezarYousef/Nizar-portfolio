@@ -5,6 +5,7 @@ import About from "@/components/About";
 import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import Navigation from "@/components/Navigation";
+import OtherExperience from "@/components/OtherExperience";
 import ProjectModal from "@/components/ProjectModal";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
@@ -157,6 +158,7 @@ export default function PortfolioApp() {
           iconType="experience"
           id="experience"
         />
+        <OtherExperience copy={copy.otherExperience} />
         <TimelineSection
           copy={copy.education}
           iconType="education"

@@ -102,6 +102,7 @@ export const portfolioCopy = {
       { id: "skills", label: "Skills" },
       { id: "projects", label: "Projects" },
       { id: "experience", label: "Experience" },
+      { id: "other-experience", label: "Other Experience" },
       { id: "education", label: "Education" },
       { id: "contact", label: "Contact" }
     ],
@@ -261,6 +262,80 @@ export const portfolioCopy = {
             "Developed practical projects with clean, maintainable, and component-based code",
             "Strengthened API integration, teamwork, and professional development workflow"
           ]
+        },
+        {
+          title: "Skill Stack Paths Program",
+          company: "Gaza Sky Geeks",
+          date: "May 2023 - Aug 2025",
+          points: ["Programming Fundamentals", "Data Structures & Algorithms"]
+        },
+        {
+          title: "Skill Stack Paths Program",
+          company: "Gaza Sky Geeks",
+          date: "March 2026 - July 2026",
+          points: [
+            "Computer Vision and Neural Networks",
+            "Learned image formation fundamentals and core visual data concepts",
+            "Practiced preprocessing, feature detection, and feature matching techniques",
+            "Explored image registration, stereo vision, and multi-view reconstruction",
+            "Studied image classification, object detection, and segmentation workflows",
+            "Covered motion estimation, object tracking, and action recognition"
+          ]
+        }
+      ]
+    },
+    otherExperience: {
+      eyebrow: "Other Experience",
+      title: "Field, interview, and coordination work shaped by responsibility and accuracy.",
+      items: [
+        {
+          title: "Student Interviewer & Evaluator",
+          company: "Masarat Initiative - Cohort 2",
+          date: "2026",
+          image: "/images/other-experience/masar.jpeg",
+          imageAlt: "Nizar conducting student evaluation work for Masarat Initiative",
+          points: [
+            "Conducted structured interviews to assess applicants for the second cohort of the Masarat Initiative",
+            "Evaluated students based on motivation, technical aptitude, and potential for growth",
+            "Contributed to the selection of qualified candidates for the program"
+          ]
+        },
+        {
+          title: "Data Collection & Entry",
+          company: "Reach Education Fund",
+          date: "Feb 2024 - May 2024",
+          image: "/images/other-experience/reach-1.png",
+          imageAlt: "Reach Education Fund data collection and entry work",
+          points: [
+            "Collected field data on displaced families during the 2023-2024 conflict",
+            "Entered large volumes of data efficiently with a high degree of accuracy",
+            "Maintained data confidentiality and met all deadlines"
+          ]
+        },
+        {
+          title: "Scholarship Interview Coordinator Assistant",
+          company: "Reach Education Fund",
+          date: "2026",
+          image: "/images/other-experience/coordinator.jpeg",
+          imagePosition: "center 25%",
+          imageAlt: "Reach Education Fund scholarship interview coordination work",
+          points: [
+            "Coordinated and managed the interview process for students eligible for the 2026 scholarship cycle",
+            "Arranged candidate schedules and facilitated the interview environment",
+            "Supported panel members with documentation and records"
+          ]
+        },
+        {
+          title: "Relief Work",
+          company: "Reach Education Fund",
+          date: "May 2024 - May 2025",
+          image: "/images/other-experience/reach-2.jpeg",
+          imageAlt: "Reach Education Fund relief work in the field",
+          points: [
+            "Conducted field investigations to identify urgent needs among displaced families",
+            "Participated in the distribution of humanitarian aid during the 2023 conflict",
+            "Ensured accurate documentation and reporting of aid activities"
+          ]
         }
       ]
     },
@@ -278,12 +353,6 @@ export const portfolioCopy = {
             "Worked on academic and practical projects in web development, machine learning, JavaFX, and system programming",
             "Developed analytical thinking, OOP design habits, and technical problem-solving skills"
           ]
-        },
-        {
-          title: "Skill Stack Paths Program",
-          company: "Gaza Sky Geeks",
-          date: "May 2023 - Aug 2025",
-          points: ["Programming Fundamentals", "Data Structures & Algorithms"]
         },
         {
           title: "High School Diploma - Scientific Stream",
@@ -322,6 +391,7 @@ export const portfolioCopy = {
       { id: "skills", label: "المهارات" },
       { id: "projects", label: "المشاريع" },
       { id: "experience", label: "الخبرة" },
+      { id: "other-experience", label: "خبرات أخرى" },
       { id: "education", label: "التعليم" },
       { id: "contact", label: "التواصل" }
     ],
@@ -481,6 +551,80 @@ export const portfolioCopy = {
             "تطوير مشاريع عملية بكود نظيف وقابل للصيانة ومعتمد على المكونات",
             "تعزيز مهارات ربط API والعمل الجماعي وسير العمل الاحترافي"
           ]
+        },
+        {
+          title: "برنامج Skill Stack Paths",
+          company: "Gaza Sky Geeks",
+          date: "مايو 2023 - أغسطس 2025",
+          points: ["أساسيات البرمجة", "هياكل البيانات والخوارزميات"]
+        },
+        {
+          title: "برنامج Skill Stack Paths",
+          company: "Gaza Sky Geeks",
+          date: "مارس 2026 - يوليو 2026",
+          points: [
+            "الرؤية الحاسوبية والشبكات العصبية",
+            "دراسة أساسيات تكوين الصور ومفاهيم البيانات البصرية",
+            "تطبيق المعالجة المسبقة واكتشاف السمات ومطابقتها",
+            "استكشاف تسجيل الصور والرؤية المجسمة وإعادة البناء متعددة المشاهد",
+            "دراسة تصنيف الصور واكتشاف الأجسام وتقسيم الصور",
+            "تغطية تقدير الحركة والتتبع والتعرف على الأفعال"
+          ]
+        }
+      ]
+    },
+    otherExperience: {
+      eyebrow: "خبرات أخرى",
+      title: "خبرات ميدانية وتنظيمية ومقابلات مبنية على المسؤولية والدقة.",
+      items: [
+        {
+          title: "مقابل ومقيم طلاب",
+          company: "مبادرة مسارات - الفوج الثاني",
+          date: "2026",
+          image: "/images/other-experience/masar.jpeg",
+          imageAlt: "نزار أثناء عمل تقييم ومقابلات طلابية لمبادرة مسارات",
+          points: [
+            "إجراء مقابلات منظمة لتقييم المتقدمين للفوج الثاني من مبادرة مسارات",
+            "تقييم الطلاب بناءً على الدافعية والقدرة التقنية وقابلية التطور",
+            "المساهمة في اختيار المرشحين المؤهلين للبرنامج"
+          ]
+        },
+        {
+          title: "جمع وإدخال بيانات",
+          company: "Reach Education Fund",
+          date: "فبراير 2024 - مايو 2024",
+          image: "/images/other-experience/reach-1.png",
+          imageAlt: "عمل جمع وإدخال بيانات مع Reach Education Fund",
+          points: [
+            "جمع بيانات ميدانية عن العائلات النازحة خلال حرب 2023-2024",
+            "إدخال كميات كبيرة من البيانات بكفاءة ودقة عالية",
+            "الحفاظ على سرية البيانات والالتزام بجميع المواعيد النهائية"
+          ]
+        },
+        {
+          title: "مساعد منسق مقابلات منح",
+          company: "Reach Education Fund",
+          date: "2026",
+          image: "/images/other-experience/coordinator.jpeg",
+          imagePosition: "center 25%",
+          imageAlt: "تنسيق مقابلات المنح مع Reach Education Fund",
+          points: [
+            "تنسيق وإدارة مقابلات الطلاب المؤهلين لدورة منح 2026",
+            "ترتيب جداول المرشحين وتجهيز بيئة المقابلات",
+            "دعم أعضاء اللجنة بالوثائق والسجلات"
+          ]
+        },
+        {
+          title: "عمل إغاثي",
+          company: "Reach Education Fund",
+          date: "مايو 2024 - مايو 2025",
+          image: "/images/other-experience/reach-2.jpeg",
+          imageAlt: "عمل إغاثي ميداني مع Reach Education Fund",
+          points: [
+            "إجراء زيارات وتحريات ميدانية لتحديد الاحتياجات العاجلة للعائلات النازحة",
+            "المشاركة في توزيع المساعدات الإنسانية خلال حرب 2023",
+            "ضمان التوثيق الدقيق وإعداد تقارير أنشطة المساعدات"
+          ]
         }
       ]
     },
@@ -498,12 +642,6 @@ export const portfolioCopy = {
             "العمل على مشاريع أكاديمية وعملية في تطوير الويب وتعلم الآلة و JavaFX وبرمجة الأنظمة",
             "تطوير التفكير التحليلي وعادات تصميم OOP ومهارات حل المشكلات التقنية"
           ]
-        },
-        {
-          title: "برنامج Skill Stack Paths",
-          company: "Gaza Sky Geeks",
-          date: "مايو 2023 - أغسطس 2025",
-          points: ["أساسيات البرمجة", "هياكل البيانات والخوارزميات"]
         },
         {
           title: "الثانوية العامة - الفرع العلمي",
