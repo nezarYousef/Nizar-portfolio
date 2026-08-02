@@ -34,6 +34,37 @@ const edufusionGallery = [
 
 const advancedTasksGallery = gallery("advanced-tasks", 4);
 
+const aidSignGallery = [
+  {
+    src: "/images/aid-sign/1.PNG",
+    alt: "AidSign landing page with patient and doctor views"
+  },
+  {
+    src: "/images/aid-sign/2.PNG",
+    alt: "AidSign patient and doctor experience cards"
+  },
+  {
+    src: "/images/aid-sign/3.PNG",
+    alt: "AidSign patient view with phrasebook and sign recognition actions"
+  },
+  {
+    src: "/images/aid-sign/4.0.PNG",
+    alt: "AidSign doctor view with communication scope and safety guidance"
+  },
+  {
+    src: "/images/aid-sign/4.PNG",
+    alt: "AidSign doctor phrasebook with searchable sign cards"
+  },
+  {
+    src: "/images/aid-sign/5.PNG",
+    alt: "AidSign sign recognition interface"
+  },
+  {
+    src: "/images/aid-sign/6.PNG",
+    alt: "AidSign recognition controls and experimental result state"
+  }
+];
+
 const projectMeta = {
   restaurant: {
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
@@ -67,8 +98,10 @@ const projectMeta = {
     gallery: []
   },
   vision: {
-    tags: ["Computer Vision", "Python", "CNN", "AI"],
-    gallery: []
+    tags: ["Computer Vision", "Python", "AI", "OpenHands"],
+    previewImage: "/images/aid-sign/1.PNG",
+    previewFit: "contain",
+    gallery: aidSignGallery
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
@@ -236,9 +269,14 @@ export const portfolioCopy = {
         },
         {
           id: "vision",
-          title: "Computer Vision Project",
+          title: "AidSign - Computer Vision Project",
           description:
-            "A Python computer vision project focused on image processing and object detection concepts using AI, CNN, and deep learning workflows."
+            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
+          highlights: [
+            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
+            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
+            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
+          ]
         },
         {
           id: "advancedTasks",
@@ -525,9 +563,14 @@ export const portfolioCopy = {
         },
         {
           id: "vision",
-          title: "مشروع رؤية حاسوبية",
+          title: "AidSign - مشروع رؤية حاسوبية",
           description:
-            "مشروع رؤية حاسوبية باستخدام Python يركز على معالجة الصور ومفاهيم اكتشاف الأجسام بالاعتماد على AI و CNN وسير عمل التعلم العميق."
+            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
+          highlights: [
+            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
+            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
+            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
+          ]
         },
         {
           id: "advancedTasks",
