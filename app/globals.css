@@ -677,6 +677,8 @@ html[data-theme="dark"] .section:nth-of-type(even) { background: rgba(255, 255, 
   position: relative;
   min-width: 0;
   min-height: 600px;
+  align-self: start;
+  margin-top: clamp(-8px, -3vw, -16px);
 }
 
 .lab-panel-3d {
@@ -1441,7 +1443,11 @@ html[dir="rtl"] .contact-method { grid-template-columns: auto 1fr auto; }
 @media (max-width: 1120px) {
   .hero-grid { grid-template-columns: 1fr; }
   .hero-copy { max-width: 760px; }
-  .hero-visual { min-height: auto; }
+  .hero-visual {
+    min-height: auto;
+    align-self: auto;
+    margin-top: 0;
+  }
   .projects-grid, .skills-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
