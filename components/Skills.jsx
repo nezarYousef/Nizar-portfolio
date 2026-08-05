@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Code2, Globe, BrainCircuit, Eye, Layers, Wrench,
-  ChevronRight, Zap, Star
+  ChevronRight
 } from "lucide-react";
 
 const CATEGORY_ICONS = {
@@ -26,14 +26,16 @@ const CATEGORY_COLORS = [
 
 function SkillCard({ category, index }) {
   const [flipped, setFlipped] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const Icon = CATEGORY_ICONS[index] ?? Code2;
   const colors = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
 
-  const skillLevels = category.items.map((item, i) => ({
-    name: item,
-    level: 70 + Math.floor((index * 7 + i * 13) % 28)
-  }));
+  const skillLevels = category.items.map((item, i) => {
+    const name = typeof item === "string" ? item : item.name;
+    const level = typeof item === "string"
+      ? 70 + Math.floor((index * 7 + i * 13) % 28)
+      : item.level;
+    return { name, level };
+  });
 
   return (
     <div
@@ -42,8 +44,6 @@ function SkillCard({ category, index }) {
         perspective: "900px",
         animationDelay: `${index * 60}ms`
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); }}
     >
       <div
         className={`skill-card-3d-inner ${flipped ? "is-flipped" : ""}`}
@@ -52,7 +52,7 @@ function SkillCard({ category, index }) {
           transition: "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
           position: "relative",
-          height: "220px"
+          height: "260px"
         }}
       >
         {/* FRONT */}
@@ -83,7 +83,9 @@ function SkillCard({ category, index }) {
           <h3>{category.title}</h3>
           <div className="skill-tags">
             {category.items.map((item) => (
-              <span key={item}>{item}</span>
+              <span key={typeof item === "string" ? item : item.name}>
+                {typeof item === "string" ? item : item.name}
+              </span>
             ))}
           </div>
           <div className="skill-card-hint">
@@ -101,37 +103,22 @@ function SkillCard({ category, index }) {
             position: "absolute",
             inset: 0,
             transform: "rotateY(180deg)",
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: "20px"
+            cursor: "pointer"
           }}
           onClick={() => setFlipped(false)}
           role="button"
           tabIndex={flipped ? 0 : -1}
           aria-label="Back to skill list"
         >
-          <h3 style={{ marginBottom: "16px", fontSize: "0.95rem" }}>{category.title}</h3>
-          <div style={{ display: "grid", gap: "10px" }}>
+          <h3 className="skill-card-back-title">{category.title}</h3>
+          <div className="skill-level-list">
             {skillLevels.map(({ name, level }) => (
-              <div key={name} style={{ display: "grid", gap: "4px" }}>
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: "0.76rem",
-                  fontFamily: "var(--mono)",
-                  color: "var(--text-muted)"
-                }}>
+              <div className="skill-level-row" key={name}>
+                <div className="skill-level-label">
                   <span>{name}</span>
                   <span style={{ color: colors.accent }}>{level}%</span>
                 </div>
-                <div style={{
-                  height: "4px",
-                  borderRadius: "999px",
-                  background: "var(--surface-soft)",
-                  overflow: "hidden"
-                }}>
+                <div className="skill-level-track">
                   <div style={{
                     height: "100%",
                     width: `${level}%`,
@@ -176,11 +163,69 @@ export default function Skills({ copy }) {
         .skill-card-3d-wrap {
           display: flex;
           flex-direction: column;
+          min-width: 0;
+          height: 260px;
+        }
+        .skill-card-3d-inner {
+          width: 100%;
+        }
+        .skill-card-3d-inner > .skill-card {
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+        }
+        .skill-card-back {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 20px;
+        }
+        .skill-card-back-title {
+          margin: 0 0 16px;
+          font-size: 0.95rem;
+        }
+        .skill-level-list {
+          display: grid;
+          gap: 10px;
+          min-width: 0;
+        }
+        .skill-level-row {
+          display: grid;
+          gap: 5px;
+          min-width: 0;
+        }
+        .skill-level-label {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          min-width: 0;
+          color: var(--text-muted);
+          font-family: var(--mono);
+          font-size: 0.76rem;
+        }
+        .skill-level-label > span:first-child {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .skill-level-track {
+          height: 5px;
+          overflow: hidden;
+          border-radius: 999px;
+          background: var(--surface-soft);
+        }
+        .skill-level-track > div {
+          height: 100%;
+          border-radius: inherit;
+          transform-origin: left;
         }
         .skills-grid-3d {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 18px;
+          align-items: stretch;
         }
         @media (max-width: 1120px) {
           .skills-grid-3d { grid-template-columns: repeat(2, minmax(0, 1fr)); }

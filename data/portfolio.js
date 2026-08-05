@@ -12,7 +12,6 @@ const coreStack = [
   "AI",
   "CNN",
   "Computer Vision",
-  "JavaFX",
   "PyCaret",
   "API",
   "OOP"
@@ -89,7 +88,7 @@ const projectMeta = {
     github: "https://github.com/nezarYousef/shell.git"
   },
   school: {
-    tags: ["Java", "JavaFX", "OOP", "Desktop App"],
+    tags: ["Java", "OOP", "Desktop App"],
     gallery: [],
     github: "https://github.com/nezarYousef/school.git"
   },
@@ -152,7 +151,7 @@ export const portfolioCopy = {
       title: "Computer engineer building software, intelligent systems, and modern web experiences.",
       typedRole: "AI + Web Engineering",
       description:
-        "I combine computer engineering fundamentals with practical development across Python, Java, C, JavaScript, React, Next.js, Machine Learning, AI, CNN, Computer Vision, JavaFX, APIs, and OOP.",
+        "I combine computer engineering fundamentals with practical development across Python, Java, C, JavaScript, React, Next.js, Machine Learning, AI, CNN, Computer Vision, APIs, and OOP.",
       primaryAction: "View Projects",
       secondaryAction: "Get In Touch",
       status: "Available for software, web, and AI opportunities",
@@ -175,7 +174,7 @@ export const portfolioCopy = {
         "Programming foundation across Python, Java, C, and JavaScript",
         "Modern web development with HTML/CSS, React.js, Next.js, and API integration",
         "Applied AI skills in Machine Learning, PyCaret, CNN concepts, and Computer Vision",
-        "OOP and desktop application experience with JavaFX"
+        "OOP and desktop application experience"
       ],
       cardTitle: "Computer Engineering Profile",
       cardMeta: "Software Systems / AI / Web Engineering"
@@ -183,32 +182,62 @@ export const portfolioCopy = {
     skills: {
       eyebrow: "Technical Stack",
       title: "A stack that covers systems, web interfaces, AI, and applied software projects.",
-      categories: [
-        {
-          title: "Programming Languages",
-          items: ["Python", "Java", "C", "JavaScript"]
-        },
-        {
-          title: "Web Engineering",
-          items: ["HTML/CSS", "React.js", "Next.js", "Responsive UI", "API"]
-        },
-        {
-          title: "AI & Machine Learning",
-          items: ["Machine Learning", "AI", "PyCaret", "Data Preprocessing"]
-        },
-        {
-          title: "Computer Vision",
-          items: ["Computer Vision", "CNN", "Image Processing", "Deep Learning"]
-        },
-        {
-          title: "Software Engineering",
-          items: ["OOP", "JavaFX", "System Design", "Clean Code"]
-        },
-        {
-          title: "Tools & Workflow",
-          items: ["Git/GitHub", "Linux/UNIX", "REST APIs", "Digital Tools"]
-        }
-      ],
+       categories: [
+         {
+           title: "Programming Lang",
+           items: [
+             { name: "Python", level: 90 },
+             { name: "Java", level: 83 },
+             { name: "C", level: 96 },
+             { name: "JavaScript", level: 81 }
+           ]
+         },
+         {
+           title: "Web Engineering",
+           items: [
+             { name: "HTML/CSS", level: 77 },
+             { name: "React.js", level: 90 },
+             { name: "Next.js", level: 75 },
+             { name: "Responsive UI", level: 88 },
+             { name: "API", level: 73 }
+           ]
+         },
+         {
+           title: "AI & Machine Learning",
+           items: [
+             { name: "ML", level: 75 },
+             { name: "AI", level: 90 },
+             { name: "PyCaret", level: 82 },
+             { name: "Data Preprocessing", level: 90 }
+           ]
+         },
+         {
+           title: "Computer Vision",
+           items: [
+             { name: "Computer Vision", level: 80 },
+             { name: "CNN", level: 76 },
+             { name: "Image Processing", level: 70 },
+             { name: "Deep Learning", level: 74 }
+           ]
+         },
+         {
+           title: "Software Engineering",
+           items: [
+             { name: "OOP", level: 90 },
+             { name: "System Design", level: 96 },
+             { name: "Clean Code", level: 81 }
+           ]
+         },
+         {
+           title: "Tools & Workflow",
+           items: [
+             { name: "Git/GitHub", level: 77 },
+             { name: "Linux/UNIX", level: 80 },
+             { name: "REST API", level: 80 },
+             { name: "Digital Tools", level: 88 }
+           ]
+         }
+       ],
       coreStack
     },
     projects: {
@@ -259,7 +288,7 @@ export const portfolioCopy = {
           id: "school",
           title: "School Management System",
           description:
-            "A Java and JavaFX desktop system for managing students, classes, and administrative records using object-oriented design."
+            "A Java desktop system for managing students, classes, and administrative records using object-oriented design."
         },
         {
           id: "ai",
@@ -388,7 +417,7 @@ export const portfolioCopy = {
           points: [
             "Studied programming, algorithms, data structures, computer architecture, and software engineering fundamentals",
             "Built knowledge in operating systems, databases, APIs, and applied software development",
-            "Worked on academic and practical projects in web development, machine learning, JavaFX, and system programming",
+            "Worked on academic and practical projects in web development, machine learning, and system programming",
             "Developed analytical thinking, OOP design habits, and technical problem-solving skills"
           ]
         },
@@ -446,7 +475,7 @@ export const portfolioCopy = {
       title: "مهندس حاسوب يبني برمجيات وأنظمة ذكية وتجارب ويب حديثة.",
       typedRole: "هندسة ذكاء وويب",
       description:
-        "أجمع بين أساسيات هندسة الحاسوب والتطوير العملي باستخدام Python و Java و C و JavaScript و React و Next.js و Machine Learning و AI و CNN و Computer Vision و JavaFX و API و OOP.",
+        "أجمع بين أساسيات هندسة الحاسوب والتطوير العملي باستخدام Python و Java و C و JavaScript و React و Next.js و Machine Learning و AI و CNN و Computer Vision و API و OOP.",
       primaryAction: "عرض المشاريع",
       secondaryAction: "تواصل معي",
       status: "متاح لفرص البرمجيات والويب والذكاء الاصطناعي",
@@ -469,7 +498,7 @@ export const portfolioCopy = {
         "أساس برمجي في Python و Java و C و JavaScript",
         "تطوير ويب حديث باستخدام HTML/CSS و React.js و Next.js وربط API",
         "مهارات تطبيقية في Machine Learning و PyCaret و CNN و Computer Vision",
-        "خبرة في OOP وتطبيقات سطح المكتب باستخدام JavaFX"
+        "خبرة في OOP وتطبيقات سطح المكتب"
       ],
       cardTitle: "ملف هندسة الحاسوب",
       cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب"
@@ -480,27 +509,57 @@ export const portfolioCopy = {
       categories: [
         {
           title: "لغات البرمجة",
-          items: ["Python", "Java", "C", "JavaScript"]
+          items: [
+            { name: "Python", level: 90 },
+            { name: "Java", level: 83 },
+            { name: "C", level: 96 },
+            { name: "JavaScript", level: 81 }
+          ]
         },
         {
           title: "هندسة الويب",
-          items: ["HTML/CSS", "React.js", "Next.js", "واجهات متجاوبة", "API"]
+          items: [
+            { name: "HTML/CSS", level: 77 },
+            { name: "React.js", level: 90 },
+            { name: "Next.js", level: 75 },
+            { name: "واجهات متجاوبة", level: 88 },
+            { name: "API", level: 73 }
+          ]
         },
         {
           title: "الذكاء الاصطناعي وتعلم الآلة",
-          items: ["Machine Learning", "AI", "PyCaret", "Data Preprocessing"]
+          items: [
+            { name: "ML", level: 75 },
+            { name: "AI", level: 90 },
+            { name: "PyCaret", level: 82 },
+            { name: "Data Preprocessing", level: 90 }
+          ]
         },
         {
           title: "الرؤية الحاسوبية",
-          items: ["Computer Vision", "CNN", "Image Processing", "Deep Learning"]
+          items: [
+            { name: "Computer Vision", level: 80 },
+            { name: "CNN", level: 76 },
+            { name: "Image Processing", level: 70 },
+            { name: "Deep Learning", level: 74 }
+          ]
         },
         {
           title: "هندسة البرمجيات",
-          items: ["OOP", "JavaFX", "System Design", "Clean Code"]
+          items: [
+            { name: "OOP", level: 90 },
+            { name: "System Design", level: 96 },
+            { name: "Clean Code", level: 81 }
+          ]
         },
         {
           title: "الأدوات وسير العمل",
-          items: ["Git/GitHub", "Linux/UNIX", "REST APIs", "Digital Tools"]
+          items: [
+            { name: "Git/GitHub", level: 77 },
+            { name: "Linux/UNIX", level: 80 },
+            { name: "REST API", level: 80 },
+            { name: "Digital Tools", level: 88 }
+          ]
         }
       ],
       coreStack
@@ -553,7 +612,7 @@ export const portfolioCopy = {
           id: "school",
           title: "نظام إدارة مدرسة",
           description:
-            "نظام سطح مكتب باستخدام Java و JavaFX لإدارة الطلاب والصفوف والسجلات الإدارية اعتماداً على التصميم كائني التوجه OOP."
+            "نظام سطح مكتب باستخدام Java لإدارة الطلاب والصفوف والسجلات الإدارية اعتماداً على التصميم كائني التوجه OOP."
         },
         {
           id: "ai",
@@ -682,7 +741,7 @@ export const portfolioCopy = {
           points: [
             "دراسة البرمجة والخوارزميات وهياكل البيانات ومعمارية الحاسوب وأساسيات هندسة البرمجيات",
             "اكتساب معرفة في أنظمة التشغيل وقواعد البيانات وواجهات API وتطوير البرمجيات التطبيقية",
-            "العمل على مشاريع أكاديمية وعملية في تطوير الويب وتعلم الآلة و JavaFX وبرمجة الأنظمة",
+            "العمل على مشاريع أكاديمية وعملية في تطوير الويب وتعلم الآلة وبرمجة الأنظمة",
             "تطوير التفكير التحليلي وعادات تصميم OOP ومهارات حل المشكلات التقنية"
           ]
         },

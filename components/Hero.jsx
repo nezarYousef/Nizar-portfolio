@@ -28,8 +28,8 @@ const terminalRows = [
 
 const labCards = [
   { className: "lab-card-web", icon: Code2, label: "Interface Layer", value: "React / Next.js" },
-  { className: "lab-card-ai", icon: BrainCircuit, label: "Intelligence", value: "ML / CNN / PyCaret" },
-  { className: "lab-card-systems", icon: Server, label: "Systems Core", value: "C / Linux / OOP" },
+  { className: "lab-card-ai", icon: BrainCircuit, label: "Intelligence", value: "ML / Python / PyCaret" },
+  { className: "lab-card-systems", icon: Server, label: "Systems Core", value: "Java / OOP /Data Structures" },
   { className: "lab-card-data", icon: Database, label: "Data Flow", value: "APIs / Models" }
 ];
 
