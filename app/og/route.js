@@ -1,14 +1,18 @@
 import { ImageResponse } from "next/og";
 import { portfolioCopy } from "@/data/portfolio";
 
-export const alt = "Nizar Yousef Alqerem - Computer Engineer";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+/* A plain route rather than the opengraph-image file convention: the
+   convention hashes its URL and scopes it to one route group, so /ar could
+   not reference it. This lives at a stable /og for both locales.
 
-/* One shared card for both locales: the name and stack read the same in a
-   link preview, and generating Arabic here would mean shipping an extra
-   Arabic font binary purely for social cards. */
-export default function OpengraphImage() {
+   One shared card for both languages - generating Arabic here would mean
+   shipping an Arabic font binary purely for social previews. */
+
+export const runtime = "nodejs";
+
+const size = { width: 1200, height: 630 };
+
+export function GET() {
   const { hero, skills } = portfolioCopy.en;
 
   return new ImageResponse(
@@ -25,26 +29,18 @@ export default function OpengraphImage() {
           color: "#f1f5f3"
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 24,
-              letterSpacing: 4,
-              textTransform: "uppercase",
-              color: "#35d6c6"
-            }}
-          >
-            {hero.eyebrow}
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          <div style={{ display: "flex", fontSize: 23, letterSpacing: 3, color: "#35d6c6" }}>
+            {hero.eyebrow.toUpperCase()}
           </div>
-          <div style={{ display: "flex", fontSize: 82, lineHeight: 1.05 }}>
+          <div style={{ display: "flex", fontSize: 80, lineHeight: 1.05 }}>
             {hero.name}
           </div>
           <div
             style={{
               display: "flex",
-              maxWidth: 880,
-              fontSize: 30,
+              maxWidth: 900,
+              fontSize: 29,
               lineHeight: 1.4,
               color: "#c4cecb"
             }}
@@ -53,16 +49,16 @@ export default function OpengraphImage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           {skills.coreStack.slice(0, 8).map((item) => (
             <div
               key={item}
               style={{
                 display: "flex",
-                padding: "8px 18px",
+                padding: "7px 17px",
                 border: "1px solid #38423f",
                 borderRadius: 999,
-                fontSize: 22,
+                fontSize: 21,
                 color: "#93a09c"
               }}
             >

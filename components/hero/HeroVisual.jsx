@@ -54,8 +54,21 @@ export default function HeroVisual({ label }) {
   const hostRef = useRef(null);
   const [live, setLive] = useState(false);
   const [inView, setInView] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [colors, setColors] = useState(null);
+  /* The host is display:none below 768px, so rendering the poster there put
+     312 invisible SVG nodes in the DOM - and in the served HTML - for nothing.
+     It mounts only once we know the viewport is wide enough to show it. */
+  const [wideEnough, setWideEnough] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
+    const sync = () => setWideEnough(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     if (!canRunLiveVisual()) return undefined;
@@ -86,7 +99,10 @@ export default function HeroVisual({ label }) {
     if (!node || !live) return undefined;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+        if (entry.isIntersecting) setHasEntered(true);
+      },
       { threshold: 0.01 }
     );
     observer.observe(node);
@@ -100,25 +116,31 @@ export default function HeroVisual({ label }) {
     };
   }, [live]);
 
+  /* Once the canvas has been created it stays mounted and is paused with
+     frameloop instead of being torn down. Unmounting would destroy and
+     recreate the WebGL context on every scroll past the hero, which is far
+     more expensive than leaving an idle context in place. */
   const running = live && inView && pageVisible;
 
   return (
-    <div className={styles.host} ref={hostRef} aria-hidden="true" role="presentation" data-label={label}>
-      {live && colors ? (
-        <Suspense fallback={<LatticePoster />}>
-          {inView ? (
-            <ConvolutionField
-              colorLow={colors.colorLow}
-              colorHigh={colors.colorHigh}
-              frameloop={running ? "always" : "never"}
-            />
-          ) : (
-            <LatticePoster />
-          )}
+    <div
+      className={styles.host}
+      ref={hostRef}
+      aria-hidden="true"
+      role="presentation"
+      data-label={label}
+    >
+      {live && colors && hasEntered ? (
+        <Suspense fallback={wideEnough ? <LatticePoster /> : null}>
+          <ConvolutionField
+            colorLow={colors.colorLow}
+            colorHigh={colors.colorHigh}
+            frameloop={running ? "always" : "never"}
+          />
         </Suspense>
-      ) : (
-        <LatticePoster />
-      )}
+      ) : null}
+
+      {(!live || !hasEntered) && wideEnough ? <LatticePoster /> : null}
     </div>
   );
 }

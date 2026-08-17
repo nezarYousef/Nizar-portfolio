@@ -5,8 +5,10 @@ import styles from "./HeroVisual.module.css";
    inline SVG rather than a raster so it stays sharp, follows the theme
    tokens, and costs about a kilobyte instead of a network request. */
 
-const COLUMNS = 34;
-const ROWS = 18;
+/* 24 x 13 = 312 circles. The earlier 34 x 18 put 612 extra SVG nodes into
+   every page's HTML for a blurred decorative backdrop. */
+const COLUMNS = 24;
+const ROWS = 13;
 
 function cells() {
   const out = [];

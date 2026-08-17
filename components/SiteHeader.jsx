@@ -131,10 +131,12 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
         </ul>
 
         <div className={styles.controls}>
+          {/* The accessible name has to contain the visible text (WCAG 2.5.3),
+              so the "EN"/"AR" token is prefixed rather than replaced. */}
           <a
             className={styles.control}
             href={otherLangHref}
-            aria-label={copy.controls.languageLabel}
+            aria-label={`${copy.controls.language} - ${copy.controls.languageLabel}`}
             title={copy.controls.languageLabel}
             hrefLang={copy.controls.language.toLowerCase()}
           >

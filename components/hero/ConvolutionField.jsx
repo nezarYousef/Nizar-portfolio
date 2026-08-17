@@ -25,9 +25,12 @@ import {
    No allocation happens inside the render loop.
    ────────────────────────────────────────────────────────────────────────── */
 
-const COLUMNS = 112;
-const ROWS = 64;
-const SPACING = 0.055;
+/* 84 x 48 = 4,032 points. Halving the count from the first pass cost nothing
+   visible at the size the field is displayed, and bought back most of the
+   frame-rate gap measured under CPU throttling. */
+const COLUMNS = 84;
+const ROWS = 48;
+const SPACING = 0.072;
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -77,7 +80,7 @@ const vertexShader = /* glsl */ `
     vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     gl_PointSize =
-      (1.7 + abs(response) * 3.4 + focus * 2.0) * uPixelRatio *
+      (1.4 + abs(response) * 2.6 + focus * 1.6) * uPixelRatio *
       (10.0 / -mvPosition.z);
   }
 `;
@@ -209,7 +212,9 @@ export default function ConvolutionField({
   return (
     <Canvas
       frameloop={frameloop}
-      dpr={[1, 1.5]}
+      /* 1.25 rather than 1.5: this is an out-of-focus decorative field, and
+         the extra pixels were pure fill-rate cost. */
+      dpr={[1, 1.25]}
       gl={{
         antialias: false,
         alpha: true,

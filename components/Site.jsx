@@ -3,6 +3,7 @@ import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import OtherExperience from "@/components/OtherExperience";
 import Projects from "@/components/Projects";
+import RevealController from "@/components/RevealController";
 import SectionRail from "@/components/SectionRail";
 import SiteHeader from "@/components/SiteHeader";
 import Skills from "@/components/Skills";
@@ -33,6 +34,7 @@ export default function Site({ lang }) {
       />
 
       <SectionRail sections={copy.nav} />
+      <RevealController />
 
       <main id="main">
         <Hero copy={copy.hero} ui={copy.ui} />

@@ -1,50 +1,19 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import styles from "./Reveal.module.css";
-
-/* Staggered scroll reveal. Deliberately not Framer Motion: this runs on every
-   section of the page, and one IntersectionObserver plus a CSS transition on
-   transform/opacity costs nothing to ship and nothing to run. Reduced motion
-   is handled in the stylesheet, where the transition simply does not exist. */
+/* Server component. It only marks an element as revealable; a single
+   client-side controller (RevealController) arms and observes all of them.
+   Previously this was itself a client component, which meant 33 component
+   boundaries and 33 IntersectionObservers on the page - all of it hydration
+   work for a fade-in. */
 export default function Reveal({
   as: Tag = "div",
   children,
   delay = 0,
-  className = "",
+  className,
   ...rest
 }) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return undefined;
-
-    if (typeof IntersectionObserver === "undefined") {
-      node.dataset.revealed = "true";
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.dataset.revealed = "true";
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.1 }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <Tag
-      ref={ref}
-      className={`${styles.reveal} ${className}`.trim()}
+      data-reveal=""
+      className={className}
       style={delay ? { "--reveal-delay": `${delay}ms` } : undefined}
       {...rest}
     >

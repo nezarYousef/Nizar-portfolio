@@ -1,4 +1,4 @@
-import { fontClass } from "@/lib/fonts";
+import { fontClassFor } from "@/lib/fonts";
 import { LOCALES, SITE_URL } from "@/lib/site";
 import { portfolioCopy } from "@/data/portfolio";
 import "@/app/globals.css";
@@ -41,7 +41,7 @@ function StructuredData({ lang }) {
 
 export default function RootShell({ lang, children }) {
   return (
-    <html lang={lang} dir={LOCALES[lang].dir} className={fontClass}>
+    <html lang={lang} dir={LOCALES[lang].dir} className={fontClassFor(lang)}>
       <head>
         {/* eslint-disable-next-line @next/next/no-sync-scripts, react/no-danger */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />

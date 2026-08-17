@@ -285,7 +285,8 @@ body.is-modal-open {
 }
 
 /* ── Reduced motion ──────────────────────────────────────────────────────── */
-/* JS honours this too; see lib/useReducedMotion.js and the 3D canvas gate. */
+/* JS honours this too: HeroVisual refuses to start the canvas under reduced
+   motion, and ProjectModal drops its spring via useReducedMotion. */
 
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -301,5 +302,23 @@ body.is-modal-open {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────── */
+/* Marked by the Reveal server component, driven by one observer in
+   RevealController. Content is visible unless the controller has armed the
+   document, so no JS failure can leave the page blank. */
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-reveal-armed="true"] [data-reveal] {
+    transition:
+      opacity var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms),
+      transform var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms);
+  }
+
+  :root[data-reveal-armed="true"] [data-reveal]:not([data-revealed="true"]) {
+    opacity: 0;
+    transform: translateY(14px);
   }
 }
