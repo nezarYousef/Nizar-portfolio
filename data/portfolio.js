@@ -1,4 +1,4 @@
-export const profileImage = "/images/profile/nizar-profile-full.jpeg";
+export const profileImage = "/images/profile/nizar-profile-full.webp";
 
 const coreStack = [
   "Python",
@@ -19,14 +19,14 @@ const coreStack = [
 
 const gallery = (folder, count) =>
   Array.from({ length: count }, (_, index) => ({
-    src: `/images/${folder}/${index + 1}.png`,
+    src: `/images/${folder}/${index + 1}.webp`,
     alt: `${folder} project screenshot ${index + 1}`
   }));
 
 const edufusionGallery = [
   ...gallery("edufusion", 10),
   {
-    src: "/images/edufusion/11.jpeg",
+    src: "/images/edufusion/11.webp",
     alt: "EduFusion AI LectureScribe screenshot"
   }
 ];
@@ -35,31 +35,31 @@ const advancedTasksGallery = gallery("advanced-tasks", 4);
 
 const aidSignGallery = [
   {
-    src: "/images/aid-sign/1.PNG",
+    src: "/images/aid-sign/1.webp",
     alt: "AidSign landing page with patient and doctor views"
   },
   {
-    src: "/images/aid-sign/2.PNG",
+    src: "/images/aid-sign/2.webp",
     alt: "AidSign patient and doctor experience cards"
   },
   {
-    src: "/images/aid-sign/3.PNG",
+    src: "/images/aid-sign/3.webp",
     alt: "AidSign patient view with phrasebook and sign recognition actions"
   },
   {
-    src: "/images/aid-sign/4.0.PNG",
+    src: "/images/aid-sign/4.0.webp",
     alt: "AidSign doctor view with communication scope and safety guidance"
   },
   {
-    src: "/images/aid-sign/4.PNG",
+    src: "/images/aid-sign/4.webp",
     alt: "AidSign doctor phrasebook with searchable sign cards"
   },
   {
-    src: "/images/aid-sign/5.PNG",
+    src: "/images/aid-sign/5.webp",
     alt: "AidSign sign recognition interface"
   },
   {
-    src: "/images/aid-sign/6.PNG",
+    src: "/images/aid-sign/6.webp",
     alt: "AidSign recognition controls and experimental result state"
   }
 ];
@@ -79,7 +79,7 @@ const projectMeta = {
   },
   grade: {
     tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
-    previewImage: "/images/edufusion/ba.png",
+    previewImage: "/images/edufusion/ba.webp",
     gallery: edufusionGallery
   },
   shell: {
@@ -98,13 +98,13 @@ const projectMeta = {
   },
   vision: {
     tags: ["Computer Vision", "Python", "AI", "OpenHands"],
-    previewImage: "/images/aid-sign/1.PNG",
+    previewImage: "/images/aid-sign/1.webp",
     previewFit: "contain",
     gallery: aidSignGallery
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
-    previewImage: "/images/advanced-tasks/ba.png",
+    previewImage: "/images/advanced-tasks/ba.webp",
     gallery: advancedTasksGallery
   }
 };
@@ -446,7 +446,7 @@ export const portfolioCopy = {
           title: "Student Interviewer & Evaluator",
           company: "Masarat Initiative - Cohort 2",
           date: "2026",
-          image: "/images/other-experience/masar.jpeg",
+          image: "/images/other-experience/masar.webp",
           imageAlt: "Nizar conducting student evaluation work for Masarat Initiative",
           points: [
             "Conducted structured interviews to assess applicants for the second cohort of the Masarat Initiative",
@@ -458,7 +458,7 @@ export const portfolioCopy = {
           title: "Data Collection & Entry",
           company: "Reach Education Fund",
           date: "Feb 2024 - May 2024",
-          image: "/images/other-experience/reach-1.png",
+          image: "/images/other-experience/reach-1.webp",
           imageAlt: "Reach Education Fund data collection and entry work",
           points: [
             "Collected field data on displaced families during the 2023-2024 conflict",
@@ -470,7 +470,7 @@ export const portfolioCopy = {
           title: "Scholarship Interview Coordinator Assistant",
           company: "Reach Education Fund",
           date: "2026",
-          image: "/images/other-experience/coordinator.jpeg",
+          image: "/images/other-experience/coordinator.webp",
           imagePosition: "center 25%",
           imageAlt: "Reach Education Fund scholarship interview coordination work",
           points: [
@@ -483,7 +483,7 @@ export const portfolioCopy = {
           title: "Relief Work",
           company: "Reach Education Fund",
           date: "May 2024 - May 2025",
-          image: "/images/other-experience/reach-2.jpeg",
+          image: "/images/other-experience/reach-2.webp",
           imageAlt: "Reach Education Fund relief work in the field",
           points: [
             "Conducted field investigations to identify urgent needs among displaced families",
@@ -758,7 +758,7 @@ export const portfolioCopy = {
           title: "مقابل ومقيم طلاب",
           company: "مبادرة مسارات - الفوج الثاني",
           date: "2026",
-          image: "/images/other-experience/masar.jpeg",
+          image: "/images/other-experience/masar.webp",
           imageAlt: "نزار أثناء عمل تقييم ومقابلات طلابية لمبادرة مسارات",
           points: [
             "إجراء مقابلات منظمة لتقييم المتقدمين للفوج الثاني من مبادرة مسارات",
@@ -770,7 +770,7 @@ export const portfolioCopy = {
           title: "جمع وإدخال بيانات",
           company: "Reach Education Fund",
           date: "فبراير 2024 - مايو 2024",
-          image: "/images/other-experience/reach-1.png",
+          image: "/images/other-experience/reach-1.webp",
           imageAlt: "عمل جمع وإدخال بيانات مع Reach Education Fund",
           points: [
             "جمع بيانات ميدانية عن العائلات النازحة خلال حرب 2023-2024",
@@ -782,7 +782,7 @@ export const portfolioCopy = {
           title: "مساعد منسق مقابلات منح",
           company: "Reach Education Fund",
           date: "2026",
-          image: "/images/other-experience/coordinator.jpeg",
+          image: "/images/other-experience/coordinator.webp",
           imagePosition: "center 25%",
           imageAlt: "تنسيق مقابلات المنح مع Reach Education Fund",
           points: [
@@ -795,7 +795,7 @@ export const portfolioCopy = {
           title: "عمل إغاثي",
           company: "Reach Education Fund",
           date: "مايو 2024 - مايو 2025",
-          image: "/images/other-experience/reach-2.jpeg",
+          image: "/images/other-experience/reach-2.webp",
           imageAlt: "عمل إغاثي ميداني مع Reach Education Fund",
           points: [
             "إجراء زيارات وتحريات ميدانية لتحديد الاحتياجات العاجلة للعائلات النازحة",
