@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
+import CustomCursor from "@/components/CustomCursor";
 import Hero from "@/components/Hero";
 import Navigation from "@/components/Navigation";
 import OtherExperience from "@/components/OtherExperience";
@@ -130,6 +131,7 @@ export default function PortfolioApp() {
 
   return (
     <div className="site-shell">
+      <CustomCursor />
       <div className="ambient-background" aria-hidden="true">
         <span className="ambient-band ambient-band-one" />
         <span className="ambient-band ambient-band-two" />
@@ -151,6 +153,7 @@ export default function PortfolioApp() {
         <Skills copy={copy.skills} />
         <Projects
           copy={copy.projects}
+          language={language}
           onOpenProject={(projectId) => setActiveProjectId(projectId)}
         />
         <TimelineSection

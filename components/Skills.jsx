@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Code2, Globe, BrainCircuit, Eye, Layers, Wrench,
   ChevronRight
@@ -36,6 +36,10 @@ function SkillCard({ category, index }) {
       : item.level;
     return { name, level };
   });
+
+  const avgLevel = Math.round(
+    skillLevels.reduce((sum, item) => sum + item.level, 0) / skillLevels.length
+  );
 
   return (
     <div
@@ -88,6 +92,20 @@ function SkillCard({ category, index }) {
               </span>
             ))}
           </div>
+          <div className="skill-avg-meter" aria-hidden="true">
+            <span className="skill-avg-track">
+              <span
+                className="skill-avg-fill"
+                style={{
+                  "--avg": `${avgLevel}%`,
+                  background: `linear-gradient(90deg, ${colors.accent}, ${colors.dark})`
+                }}
+              />
+            </span>
+            <span className="skill-avg-label" style={{ color: colors.accent }}>
+              {avgLevel}%
+            </span>
+          </div>
           <div className="skill-card-hint">
             <ChevronRight size={14} />
             <span>View levels</span>
@@ -138,12 +156,77 @@ function SkillCard({ category, index }) {
 }
 
 export default function Skills({ copy }) {
+  const [activeTab, setActiveTab] = useState("all");
+
+  const indexedCategories = copy.categories.map((category, index) => ({ category, index }));
+  const visibleCategories =
+    activeTab === "all"
+      ? indexedCategories
+      : indexedCategories.filter(({ index }) => index === activeTab);
+
+  // Cards re-mount on every tab switch, so each switch needs its own
+  // observer — the page-level one only ever sees the nodes present at load.
+  useEffect(() => {
+    const nodes = document.querySelectorAll(".skills-grid-3d [data-animate]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [activeTab]);
+
   return (
     <section className="section skills-section" id="skills">
       <style>{`
         @keyframes skillBarGrow {
           from { transform: scaleX(0); }
           to { transform: scaleX(1); }
+        }
+        @keyframes skillsGridIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .skills-tabs {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin: 0 0 28px;
+        }
+        .skills-tabs button {
+          display: inline-flex;
+          align-items: center;
+          min-height: 36px;
+          padding: 7px 14px;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: var(--surface);
+          color: var(--text-muted);
+          font-family: var(--mono);
+          font-size: 0.78rem;
+          font-weight: 800;
+          cursor: pointer;
+          transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+        }
+        .skills-tabs button:hover {
+          color: var(--heading);
+          border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+          transform: translateY(-2px);
+        }
+        .skills-tabs button.is-active {
+          border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+          background: var(--accent);
+          color: #071413;
+        }
+        .skills-grid-3d {
+          animation: skillsGridIn 380ms ease both;
         }
         .skill-card-back::before {
           background: linear-gradient(90deg, var(--accent), var(--blue), var(--violet)) !important;
@@ -240,8 +323,32 @@ export default function Skills({ copy }) {
           <h2 className="section-title">{copy.title}</h2>
         </div>
 
-        <div className="skills-grid-3d">
+        <div className="skills-tabs" role="tablist" aria-label="Filter skill categories">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "all"}
+            className={activeTab === "all" ? "is-active" : ""}
+            onClick={() => setActiveTab("all")}
+          >
+            All
+          </button>
           {copy.categories.map((category, index) => (
+            <button
+              type="button"
+              role="tab"
+              key={category.title}
+              aria-selected={activeTab === index}
+              className={activeTab === index ? "is-active" : ""}
+              onClick={() => setActiveTab(index)}
+            >
+              {category.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="skills-grid-3d" key={activeTab}>
+          {visibleCategories.map(({ category, index }) => (
             <div key={category.title} data-animate style={{ "--delay": `${index * 60}ms` }}>
               <SkillCard category={category} index={index} />
             </div>
