@@ -1,0 +1,11 @@
+.footer {
+  border-block-start: var(--border);
+}
+
+.footerInner {
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding: var(--space-l) var(--gutter);
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+}

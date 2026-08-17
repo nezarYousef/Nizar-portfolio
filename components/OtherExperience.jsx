@@ -1,63 +1,68 @@
+import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
-import BlurImage from "@/components/BlurImage";
+import Reveal from "@/components/Reveal";
+import Section from "@/components/Section";
+import styles from "./OtherExperience.module.css";
 
-export default function OtherExperience({ copy }) {
+/* The track is rendered twice on purpose: the duplicate is what makes the
+   marquee loop seamlessly, and it carries aria-hidden so assistive tech only
+   ever encounters each entry once. */
+export default function OtherExperience({ copy, index }) {
   return (
-    <section className="section other-experience-section" id="other-experience">
-      <div className="section-inner">
-        <div className="section-heading" data-animate>
-          <p className="section-kicker">{copy.eyebrow}</p>
-          <h2 className="section-title">{copy.title}</h2>
-        </div>
+    <Section
+      id="other-experience"
+      index={index}
+      kicker={copy.eyebrow}
+      title={copy.title}
+    >
+      <Reveal className={styles.viewport}>
+        <div className={styles.track}>
+          {[0, 1].map((group) => (
+            <div
+              className={styles.group}
+              key={group}
+              aria-hidden={group === 1 ? "true" : undefined}
+            >
+              {copy.items.map((item) => (
+                <article className={styles.card} key={`${item.title}-${group}`}>
+                  <div className={styles.imageFrame}>
+                    <Image
+                      className={styles.image}
+                      src={item.image}
+                      alt={group === 1 ? "" : item.imageAlt}
+                      width={520}
+                      height={320}
+                      sizes="(max-width: 679px) 280px, 340px"
+                      style={{ objectPosition: item.imagePosition ?? "center" }}
+                    />
+                  </div>
 
-        <div className="other-experience-viewport" data-animate>
-          <div className="other-experience-track">
-            {[0, 1].map((groupIndex) => (
-              <div
-                className="other-experience-group"
-                key={groupIndex}
-                aria-hidden={groupIndex === 1}
-              >
-                {copy.items.map((item) => (
-                  <article className="other-experience-card" key={`${item.title}-${groupIndex}`}>
-                    <div className="other-experience-image-wrap">
-                      <BlurImage
-                        src={item.image}
-                        alt={item.imageAlt}
-                        fill
-                        sizes="(max-width: 680px) 280px, 340px"
-                        className="other-experience-image"
-                        style={{ objectPosition: item.imagePosition ?? "center" }}
-                      />
-                    </div>
-
-                    <div className="other-experience-body">
-                      <div className="other-experience-topline">
-                        <h3>{item.title}</h3>
-                        <span>
-                          <CalendarDays size={14} />
-                          {item.date}
-                        </span>
-                      </div>
-
-                      <p className="other-experience-company">
-                        <MapPin size={14} />
-                        {item.company}
+                  <div className={styles.body}>
+                    <header className={styles.head}>
+                      <h3 className={styles.title}>{item.title}</h3>
+                      <p className={`${styles.date} u-mono`}>
+                        <CalendarDays size={13} aria-hidden="true" />
+                        {item.date}
                       </p>
+                    </header>
 
-                      <ul>
-                        {item.points.map((point) => (
-                          <li key={point}>{point}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ))}
-          </div>
+                    <p className={styles.company}>
+                      <MapPin size={13} aria-hidden="true" />
+                      {item.company}
+                    </p>
+
+                    <ul className={styles.points}>
+                      {item.points.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ))}
         </div>
-      </div>
-    </section>
+      </Reveal>
+    </Section>
   );
 }

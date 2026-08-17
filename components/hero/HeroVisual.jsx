@@ -1,0 +1,124 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { Suspense, useEffect, useRef, useState } from "react";
+import LatticePoster from "./LatticePoster";
+import styles from "./HeroVisual.module.css";
+
+/* The r3f bundle is fetched only once every gate below has passed and the
+   hero is actually on screen, so a phone that will fall back to the poster
+   never downloads three.js at all. */
+const ConvolutionField = dynamic(() => import("./ConvolutionField"), {
+  ssr: false,
+  loading: () => <LatticePoster />
+});
+
+const MIN_WIDTH = 768;
+
+function canRunLiveVisual() {
+  if (typeof window === "undefined") return false;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return false;
+  }
+  if (window.innerWidth < MIN_WIDTH) return false;
+
+  const connection =
+    navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
+  if (connection?.saveData) return false;
+  if (typeof navigator.deviceMemory === "number" && navigator.deviceMemory < 4) {
+    return false;
+  }
+
+  try {
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl2") ??
+      canvas.getContext("webgl") ??
+      canvas.getContext("experimental-webgl");
+    return Boolean(gl);
+  } catch {
+    return false;
+  }
+}
+
+function readThemeColors() {
+  const style = getComputedStyle(document.documentElement);
+  return {
+    colorLow: style.getPropertyValue("--accent-bright").trim() || "#0ea5a4",
+    colorHigh: style.getPropertyValue("--signal").trim() || "#8a5600"
+  };
+}
+
+export default function HeroVisual({ label }) {
+  const hostRef = useRef(null);
+  const [live, setLive] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+  const [colors, setColors] = useState(null);
+
+  useEffect(() => {
+    if (!canRunLiveVisual()) return undefined;
+
+    setLive(true);
+    setColors(readThemeColors());
+
+    // Re-read the palette when the theme toggle flips `data-theme`.
+    const themeObserver = new MutationObserver(() => setColors(readThemeColors()));
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"]
+    });
+
+    // A visitor who turns reduced motion on mid-session gets the poster back.
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onMotionChange = (event) => setLive(!event.matches);
+    motionQuery.addEventListener("change", onMotionChange);
+
+    return () => {
+      themeObserver.disconnect();
+      motionQuery.removeEventListener("change", onMotionChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const node = hostRef.current;
+    if (!node || !live) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.01 }
+    );
+    observer.observe(node);
+
+    const onVisibility = () => setPageVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [live]);
+
+  const running = live && inView && pageVisible;
+
+  return (
+    <div className={styles.host} ref={hostRef} aria-hidden="true" role="presentation" data-label={label}>
+      {live && colors ? (
+        <Suspense fallback={<LatticePoster />}>
+          {inView ? (
+            <ConvolutionField
+              colorLow={colors.colorLow}
+              colorHigh={colors.colorHigh}
+              frameloop={running ? "always" : "never"}
+            />
+          ) : (
+            <LatticePoster />
+          )}
+        </Suspense>
+      ) : (
+        <LatticePoster />
+      )}
+    </div>
+  );
+}

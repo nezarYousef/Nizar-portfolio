@@ -1,0 +1,58 @@
+.rail {
+  display: none;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: var(--space-2xs);
+  align-items: center;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  opacity: 0.5;
+  transition:
+    opacity var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
+}
+
+.item[data-active="true"] {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.index {
+  font-size: var(--text-2xs);
+}
+
+.mark {
+  width: var(--space-s);
+  height: 1px;
+  background: currentColor;
+  transition: width var(--dur) var(--ease-out);
+}
+
+.item[data-active="true"] .mark {
+  width: var(--space-l);
+}
+
+.label {
+  white-space: nowrap;
+}
+
+/* Only appears when there is genuinely room beside the content column. */
+@media (min-width: 1280px) {
+  .rail {
+    position: fixed;
+    inset-block-start: 50%;
+    inset-inline-start: var(--space-m);
+    z-index: 20;
+    display: block;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+}

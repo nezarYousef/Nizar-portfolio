@@ -1,0 +1,109 @@
+.rail {
+  position: relative;
+  display: grid;
+  gap: var(--space-l);
+}
+
+/* The rail itself - a hairline the markers sit on. Uses a logical inset so it
+   flips to the right-hand side in Arabic without a second rule. */
+.rail::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.75rem 0;
+  inset-inline-start: 11px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--accent-line),
+    var(--line) 60%,
+    transparent
+  );
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-s);
+  align-items: start;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--accent);
+}
+
+.card {
+  min-width: 0;
+  padding-block-end: var(--space-s);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+}
+
+.title {
+  font-size: var(--text-l);
+}
+
+.date {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.company {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  margin-block-start: var(--space-3xs);
+  color: var(--accent);
+  font-size: var(--text-s);
+}
+
+.company svg {
+  flex-shrink: 0;
+}
+
+.points {
+  display: grid;
+  gap: var(--space-3xs);
+  max-width: var(--measure);
+  margin-block-start: var(--space-s);
+}
+
+.points li {
+  position: relative;
+  padding-inline-start: var(--space-s);
+  color: var(--ink-muted);
+  font-size: var(--text-s);
+}
+
+.points li::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0.65em;
+  inset-inline-start: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+@media (min-width: 768px) {
+  .entry {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-m);
+  }
+}

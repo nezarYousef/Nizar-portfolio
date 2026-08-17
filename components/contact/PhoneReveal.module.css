@@ -1,0 +1,44 @@
+.trigger,
+.link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-2xs);
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-2xs) var(--space-s);
+  border: 1px solid var(--line-interactive);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: var(--text-s);
+  font-weight: 560;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.trigger:hover,
+.link:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.trigger svg,
+.link svg {
+  color: var(--accent);
+}
+
+.hint,
+.number {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 400;
+  text-align: end;
+}
+
+.number {
+  color: var(--accent);
+  font-size: var(--text-xs);
+}

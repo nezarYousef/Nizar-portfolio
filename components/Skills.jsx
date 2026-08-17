@@ -1,360 +1,106 @@
-"use client";
+import FilterGroup from "@/components/FilterGroup";
+import Reveal from "@/components/Reveal";
+import Section from "@/components/Section";
+import styles from "./Skills.module.css";
 
-import { useEffect, useState } from "react";
-import {
-  Code2, Globe, BrainCircuit, Eye, Layers, Wrench,
-  ChevronRight
-} from "lucide-react";
+/* Every skill states what proves it. `projects` and `programs` are ids that
+   resolve against content already on the page, so a claim and its evidence
+   can never drift apart. Skills with neither render as a plain name rather
+   than borrowing credibility they do not have. */
+function Evidence({ item, labels, projectTitles, programLabels }) {
+  const projects = item.projects.map((id) => projectTitles[id]).filter(Boolean);
+  const programs = item.programs.map((key) => programLabels[key]).filter(Boolean);
 
-const CATEGORY_ICONS = {
-  0: Code2,
-  1: Globe,
-  2: BrainCircuit,
-  3: Eye,
-  4: Layers,
-  5: Wrench
-};
-
-const CATEGORY_COLORS = [
-  { accent: "#0ea5a4", soft: "rgba(14,165,164,0.12)", dark: "#28d7c4" },
-  { accent: "#3d73d9", soft: "rgba(61,115,217,0.12)", dark: "#75a7ff" },
-  { accent: "#9a5bbd", soft: "rgba(154,91,189,0.12)", dark: "#d98bd4" },
-  { accent: "#548f45", soft: "rgba(84,143,69,0.12)", dark: "#b4d455" },
-  { accent: "#c8556a", soft: "rgba(200,85,106,0.12)", dark: "#ff8aa1" },
-  { accent: "#12977f", soft: "rgba(18,151,127,0.12)", dark: "#34d399" }
-];
-
-function SkillCard({ category, index }) {
-  const [flipped, setFlipped] = useState(false);
-  const Icon = CATEGORY_ICONS[index] ?? Code2;
-  const colors = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
-
-  const skillLevels = category.items.map((item, i) => {
-    const name = typeof item === "string" ? item : item.name;
-    const level = typeof item === "string"
-      ? 70 + Math.floor((index * 7 + i * 13) % 28)
-      : item.level;
-    return { name, level };
-  });
-
-  const avgLevel = Math.round(
-    skillLevels.reduce((sum, item) => sum + item.level, 0) / skillLevels.length
-  );
+  if (!projects.length && !programs.length) return null;
 
   return (
-    <div
-      className="skill-card-3d-wrap"
-      style={{
-        perspective: "900px",
-        animationDelay: `${index * 60}ms`
-      }}
-    >
-      <div
-        className={`skill-card-3d-inner ${flipped ? "is-flipped" : ""}`}
-        style={{
-          transformStyle: "preserve-3d",
-          transition: "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          position: "relative",
-          height: "260px"
-        }}
-      >
-        {/* FRONT */}
-        <div
-          className="skill-card tilt-card"
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            position: "absolute",
-            inset: 0,
-            cursor: "pointer"
-          }}
-          onClick={() => setFlipped(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && setFlipped(true)}
-          aria-label={`${category.title} — click for skill levels`}
-        >
-          <div
-            className="skill-card-icon"
-            style={{
-              background: colors.soft,
-              borderColor: `color-mix(in srgb, ${colors.accent} 52%, var(--line))`
-            }}
-          >
-            <Icon size={20} style={{ color: colors.accent }} />
-          </div>
-          <h3>{category.title}</h3>
-          <div className="skill-tags">
-            {category.items.map((item) => (
-              <span key={typeof item === "string" ? item : item.name}>
-                {typeof item === "string" ? item : item.name}
+    <dl className={styles.evidence}>
+      {projects.length ? (
+        <div className={styles.evidenceRow}>
+          <dt className={`${styles.evidenceLabel} u-mono`}>{labels.usedIn}</dt>
+          <dd className={styles.evidenceValue}>
+            {projects.map((title) => (
+              <a className={styles.evidenceLink} href="#projects" key={title}>
+                {title}
+              </a>
+            ))}
+          </dd>
+        </div>
+      ) : null}
+
+      {programs.length ? (
+        <div className={styles.evidenceRow}>
+          <dt className={`${styles.evidenceLabel} u-mono`}>{labels.studiedIn}</dt>
+          <dd className={styles.evidenceValue}>
+            {programs.map((title) => (
+              <span className={styles.evidenceProgram} key={title}>
+                {title}
               </span>
             ))}
-          </div>
-          <div className="skill-avg-meter" aria-hidden="true">
-            <span className="skill-avg-track">
-              <span
-                className="skill-avg-fill"
-                style={{
-                  "--avg": `${avgLevel}%`,
-                  background: `linear-gradient(90deg, ${colors.accent}, ${colors.dark})`
-                }}
-              />
-            </span>
-            <span className="skill-avg-label" style={{ color: colors.accent }}>
-              {avgLevel}%
-            </span>
-          </div>
-          <div className="skill-card-hint">
-            <ChevronRight size={14} />
-            <span>View levels</span>
-          </div>
+          </dd>
         </div>
-
-        {/* BACK */}
-        <div
-          className="skill-card skill-card-back"
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            position: "absolute",
-            inset: 0,
-            transform: "rotateY(180deg)",
-            cursor: "pointer"
-          }}
-          onClick={() => setFlipped(false)}
-          role="button"
-          tabIndex={flipped ? 0 : -1}
-          aria-label="Back to skill list"
-        >
-          <h3 className="skill-card-back-title">{category.title}</h3>
-          <div className="skill-level-list">
-            {skillLevels.map(({ name, level }) => (
-              <div className="skill-level-row" key={name}>
-                <div className="skill-level-label">
-                  <span>{name}</span>
-                  <span style={{ color: colors.accent }}>{level}%</span>
-                </div>
-                <div className="skill-level-track">
-                  <div style={{
-                    height: "100%",
-                    width: `${level}%`,
-                    borderRadius: "999px",
-                    background: `linear-gradient(90deg, ${colors.accent}, ${colors.dark})`,
-                    animation: flipped ? "skillBarGrow 0.8s ease forwards" : "none",
-                    transformOrigin: "left"
-                  }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+      ) : null}
+    </dl>
   );
 }
 
-export default function Skills({ copy }) {
-  const [activeTab, setActiveTab] = useState("all");
+export default function Skills({ copy, projects, index }) {
+  const projectTitles = Object.fromEntries(
+    projects.map((project) => [project.id, project.title])
+  );
 
-  const indexedCategories = copy.categories.map((category, index) => ({ category, index }));
-  const visibleCategories =
-    activeTab === "all"
-      ? indexedCategories
-      : indexedCategories.filter(({ index }) => index === activeTab);
-
-  // Cards re-mount on every tab switch, so each switch needs its own
-  // observer — the page-level one only ever sees the nodes present at load.
-  useEffect(() => {
-    const nodes = document.querySelectorAll(".skills-grid-3d [data-animate]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
-  }, [activeTab]);
+  const options = [
+    { value: "all", label: copy.evidence.filterAll },
+    ...copy.categories.map((category, position) => ({
+      value: `cat-${position}`,
+      label: category.title
+    }))
+  ];
 
   return (
-    <section className="section skills-section" id="skills">
-      <style>{`
-        @keyframes skillBarGrow {
-          from { transform: scaleX(0); }
-          to { transform: scaleX(1); }
-        }
-        @keyframes skillsGridIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .skills-tabs {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 0 0 28px;
-        }
-        .skills-tabs button {
-          display: inline-flex;
-          align-items: center;
-          min-height: 36px;
-          padding: 7px 14px;
-          border: 1px solid var(--line);
-          border-radius: 999px;
-          background: var(--surface);
-          color: var(--text-muted);
-          font-family: var(--mono);
-          font-size: 0.78rem;
-          font-weight: 800;
-          cursor: pointer;
-          transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
-        }
-        .skills-tabs button:hover {
-          color: var(--heading);
-          border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
-          transform: translateY(-2px);
-        }
-        .skills-tabs button.is-active {
-          border-color: color-mix(in srgb, var(--accent) 70%, transparent);
-          background: var(--accent);
-          color: #071413;
-        }
-        .skills-grid-3d {
-          animation: skillsGridIn 380ms ease both;
-        }
-        .skill-card-back::before {
-          background: linear-gradient(90deg, var(--accent), var(--blue), var(--violet)) !important;
-        }
-        .skill-card-hint {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          margin-top: auto;
-          padding-top: 14px;
-          color: var(--accent);
-          font-family: var(--mono);
-          font-size: 0.72rem;
-          font-weight: 850;
-          opacity: 0.7;
-        }
-        .skill-card-3d-wrap {
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
-          height: 260px;
-        }
-        .skill-card-3d-inner {
-          width: 100%;
-        }
-        .skill-card-3d-inner > .skill-card {
-          width: 100%;
-          min-width: 0;
-          box-sizing: border-box;
-        }
-        .skill-card-back {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 20px;
-        }
-        .skill-card-back-title {
-          margin: 0 0 16px;
-          font-size: 0.95rem;
-        }
-        .skill-level-list {
-          display: grid;
-          gap: 10px;
-          min-width: 0;
-        }
-        .skill-level-row {
-          display: grid;
-          gap: 5px;
-          min-width: 0;
-        }
-        .skill-level-label {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          min-width: 0;
-          color: var(--text-muted);
-          font-family: var(--mono);
-          font-size: 0.76rem;
-        }
-        .skill-level-label > span:first-child {
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .skill-level-track {
-          height: 5px;
-          overflow: hidden;
-          border-radius: 999px;
-          background: var(--surface-soft);
-        }
-        .skill-level-track > div {
-          height: 100%;
-          border-radius: inherit;
-          transform-origin: left;
-        }
-        .skills-grid-3d {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 18px;
-          align-items: stretch;
-        }
-        @media (max-width: 1120px) {
-          .skills-grid-3d { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (max-width: 680px) {
-          .skills-grid-3d { grid-template-columns: 1fr; }
-        }
-      `}</style>
-      <div className="section-inner">
-        <div className="section-heading" data-animate>
-          <p className="section-kicker">{copy.eyebrow}</p>
-          <h2 className="section-title">{copy.title}</h2>
-        </div>
-
-        <div className="skills-tabs" role="tablist" aria-label="Filter skill categories">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "all"}
-            className={activeTab === "all" ? "is-active" : ""}
-            onClick={() => setActiveTab("all")}
-          >
-            All
-          </button>
-          {copy.categories.map((category, index) => (
-            <button
-              type="button"
-              role="tab"
+    <Section id="skills" index={index} kicker={copy.eyebrow} title={copy.title}>
+      <FilterGroup options={options} label={copy.evidence.filterLabel}>
+        <ul className={styles.grid}>
+          {copy.categories.map((category, categoryIndex) => (
+            <Reveal
+              as="li"
+              className={styles.card}
               key={category.title}
-              aria-selected={activeTab === index}
-              className={activeTab === index ? "is-active" : ""}
-              onClick={() => setActiveTab(index)}
+              delay={categoryIndex * 60}
+              data-category={`cat-${categoryIndex}`}
             >
-              {category.title}
-            </button>
-          ))}
-        </div>
+              <h3 className={styles.cardTitle}>{category.title}</h3>
 
-        <div className="skills-grid-3d" key={activeTab}>
-          {visibleCategories.map(({ category, index }) => (
-            <div key={category.title} data-animate style={{ "--delay": `${index * 60}ms` }}>
-              <SkillCard category={category} index={index} />
-            </div>
+              <ul className={styles.skillList}>
+                {category.items.map((item) => (
+                  <li className={styles.skill} key={item.key}>
+                    <p className={styles.skillName}>{item.name}</p>
+                    <Evidence
+                      item={item}
+                      labels={copy.evidence}
+                      projectTitles={projectTitles}
+                      programLabels={copy.programs}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
           ))}
-        </div>
-      </div>
-    </section>
+        </ul>
+      </FilterGroup>
+
+      <Reveal className={styles.coreStack}>
+        <h3 className={`${styles.coreStackTitle} u-mono`}>
+          {copy.evidence.coreStackTitle}
+        </h3>
+        <ul className={styles.coreStackList}>
+          {copy.coreStack.map((entry) => (
+            <li className={`${styles.coreStackItem} u-mono`} key={entry}>
+              {entry}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+    </Section>
   );
 }

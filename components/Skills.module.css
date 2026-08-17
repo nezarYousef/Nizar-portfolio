@@ -1,0 +1,161 @@
+.grid {
+  display: grid;
+  gap: var(--space-s);
+}
+
+.card {
+  padding: var(--space-m);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+/* Filtering is CSS-only: the markup for every category is always present, so
+   the list survives with JavaScript disabled and stays fully indexable.
+   Categories are keyed by position, not by their translated title. */
+[data-filter]:not([data-filter="all"]) .card {
+  display: none;
+}
+
+[data-filter="cat-0"] .card[data-category="cat-0"],
+[data-filter="cat-1"] .card[data-category="cat-1"],
+[data-filter="cat-2"] .card[data-category="cat-2"],
+[data-filter="cat-3"] .card[data-category="cat-3"],
+[data-filter="cat-4"] .card[data-category="cat-4"],
+[data-filter="cat-5"] .card[data-category="cat-5"] {
+  display: block;
+}
+
+.cardTitle {
+  padding-block-end: var(--space-2xs);
+  border-block-end: var(--border);
+  color: var(--accent);
+  font-size: var(--text-s);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.skillList {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-s);
+}
+
+.skill {
+  display: grid;
+  gap: var(--space-3xs);
+  padding-block-end: var(--space-2xs);
+  border-block-end: 1px solid var(--line);
+}
+
+.skill:last-child {
+  padding-block-end: 0;
+  border-block-end: none;
+}
+
+.skillName {
+  color: var(--ink);
+  font-size: var(--text-s);
+  font-weight: 560;
+}
+
+.evidence {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.evidenceRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2xs);
+  align-items: baseline;
+}
+
+.evidenceLabel {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.evidenceValue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  margin: 0;
+}
+
+.evidenceLink,
+.evidenceProgram {
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+}
+
+.evidenceLink {
+  color: var(--ink-body);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 2px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.evidenceLink:hover {
+  color: var(--accent);
+}
+
+.evidenceLink:not(:last-child)::after,
+.evidenceProgram:not(:last-child)::after {
+  content: " ·";
+  color: var(--ink-muted);
+}
+
+.evidenceProgram {
+  color: var(--ink-muted);
+}
+
+/* ── Core stack ──────────────────────────────────────────────────────────── */
+
+.coreStack {
+  margin-block-start: var(--space-xl);
+  padding-block-start: var(--space-m);
+  border-block-start: var(--border);
+}
+
+.coreStackTitle {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.coreStackList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  margin-block-start: var(--space-2xs);
+}
+
+.coreStackItem {
+  padding: var(--space-3xs) var(--space-2xs);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-sunken);
+  color: var(--ink-body);
+  font-size: var(--text-2xs);
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+}

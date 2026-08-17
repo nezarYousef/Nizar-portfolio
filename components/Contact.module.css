@@ -1,0 +1,107 @@
+.grid {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.intro {
+  max-width: var(--measure);
+}
+
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-3xs) var(--space-2xs);
+  border: 1px solid var(--signal-line);
+  border-radius: var(--radius-pill);
+  background: var(--signal-wash);
+  color: var(--signal);
+  font-size: var(--text-2xs);
+}
+
+.availabilityDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.description {
+  margin-block-start: var(--space-s);
+  color: var(--ink-muted);
+  font-size: var(--text-l);
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-2xs);
+  align-self: start;
+  padding: var(--space-s);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+.method {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2xs);
+  align-items: center;
+  min-height: 56px;
+  padding: var(--space-2xs) var(--space-s);
+  border: 1px solid var(--line-interactive);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: var(--text-s);
+  font-weight: 560;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.method:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.method svg {
+  color: var(--accent);
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-2xs);
+  padding-block-start: var(--space-s);
+  border-block-start: var(--border);
+}
+
+.social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-interactive);
+  border-radius: var(--radius);
+  color: var(--ink);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.social:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+}
