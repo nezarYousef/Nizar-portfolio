@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
+import BlurImage from "@/components/BlurImage";
 
 export default function OtherExperience({ copy }) {
   return (
@@ -21,7 +21,7 @@ export default function OtherExperience({ copy }) {
                 {copy.items.map((item) => (
                   <article className="other-experience-card" key={`${item.title}-${groupIndex}`}>
                     <div className="other-experience-image-wrap">
-                      <Image
+                      <BlurImage
                         src={item.image}
                         alt={item.imageAlt}
                         fill

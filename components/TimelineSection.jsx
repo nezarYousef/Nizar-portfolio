@@ -3,6 +3,10 @@
 import { BriefcaseBusiness, GraduationCap, MapPin, ExternalLink } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+/* Note: the reveal-on-scroll transform (data-animate) lives on the outer
+   wrapper, not on .timeline-item itself, so it never fights with the card's
+   own :hover transform - the two need to be able to apply independently. */
+
 function AnimatedTimelineLine() {
   const lineRef = useRef(null);
   const [progress, setProgress] = useState(0);
@@ -40,15 +44,7 @@ function AnimatedTimelineLine() {
   return (
     <div
       ref={lineRef}
-      style={{
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        insetInlineStart: "20px",
-        width: "2px",
-        background: "var(--line)",
-        overflow: "hidden"
-      }}
+      className="timeline-track-line"
       aria-hidden="true"
     >
       <div
@@ -68,55 +64,37 @@ function AnimatedTimelineLine() {
 }
 
 function TimelineCard({ item, index, Icon }) {
-  const [hovered, setHovered] = useState(false);
+  const side = index % 2 === 0 ? "left" : "right";
 
   return (
-    <article
-      className="timeline-item"
+    <div
+      className="timeline-item-wrap"
       data-animate
-      style={{
-        "--delay": `${index * 80}ms`,
-        transition: "transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease",
-        transform: hovered ? "translateY(-4px) translateX(4px)" : "translateY(0) translateX(0)",
-        boxShadow: hovered ? "var(--shadow-3d)" : "var(--shadow-soft)",
-        borderColor: hovered
-          ? "color-mix(in srgb, var(--accent) 52%, var(--line))"
-          : "var(--line)"
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      data-side={side}
+      style={{ "--delay": `${index * 80}ms` }}
     >
-      <div
-        className="timeline-icon"
-        style={{
-          background: hovered
-            ? "linear-gradient(135deg, var(--accent-soft), var(--surface-strong))"
-            : "var(--surface-strong)",
-          transition: "background 250ms ease, color 250ms ease, border-color 250ms ease",
-          borderColor: hovered
-            ? "color-mix(in srgb, var(--accent) 70%, var(--line))"
-            : "color-mix(in srgb, var(--accent) 52%, var(--line))"
-        }}
-      >
-        <Icon size={20} />
-      </div>
-
-      <div className="timeline-content">
-        <div className="timeline-topline">
-          <h3>{item.title}</h3>
-          <span>{item.date}</span>
+      <article className="timeline-item timeline-item-hoverable">
+        <div className="timeline-icon">
+          <Icon size={20} />
         </div>
-        <p className="timeline-company" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <MapPin size={13} style={{ color: "var(--accent)", flexShrink: 0 }} />
-          {item.company}
-        </p>
-        <ul>
-          {item.points.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
-      </div>
-    </article>
+
+        <div className="timeline-content">
+          <div className="timeline-topline">
+            <h3>{item.title}</h3>
+            <span>{item.date}</span>
+          </div>
+          <p className="timeline-company" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <MapPin size={13} style={{ color: "var(--accent)", flexShrink: 0 }} />
+            {item.company}
+          </p>
+          <ul>
+            {item.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    </div>
   );
 }
 
@@ -131,7 +109,7 @@ export default function TimelineSection({ copy, iconType, id }) {
           <h2 className="section-title">{copy.title}</h2>
         </div>
 
-        <div className="timeline" style={{ position: "relative" }}>
+        <div className="timeline timeline--alternating" style={{ position: "relative" }}>
           <AnimatedTimelineLine />
           {copy.items.map((item, index) => (
             <TimelineCard key={`${item.title}-${item.date}`} item={item} index={index} Icon={Icon} />

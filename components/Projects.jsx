@@ -1,5 +1,8 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 import { ExternalLink, Github, Images, Wrench, Code2, Cpu } from "lucide-react";
+import BlurImage from "@/components/BlurImage";
 
 const TAG_COLORS = {
   "React.js": { bg: "rgba(97,218,251,0.12)", color: "#1a9dc8", border: "rgba(97,218,251,0.3)" },
@@ -29,7 +32,7 @@ function ProjectPreview({ project }) {
   if (previewImage) {
     return (
       <div className="project-preview">
-        <Image
+        <BlurImage
           src={previewImage}
           alt={previewAlt}
           fill
@@ -55,10 +58,89 @@ function ProjectPreview({ project }) {
   );
 }
 
-export default function Projects({ copy, onOpenProject }) {
+const FILTER_KEYWORDS = {
+  ai: ["AI", "Machine Learning", "Computer Vision", "LLM", "Chatbot", "CNN"],
+  web: [
+    "React.js", "Next.js", "JavaScript", "HTML/CSS", "API", "FastAPI",
+    "UI Systems", "UI Engineering", "State Management", "Productivity"
+  ],
+  systems: ["C", "Java", "OOP", "Linux/UNIX", "OS", "Systems", "Desktop App"]
+};
+
+const FILTER_LABELS = {
+  en: { all: "All", web: "Web", ai: "AI", systems: "Systems" },
+  ar: { all: "الكل", web: "ويب", ai: "ذكاء اصطناعي", systems: "أنظمة" }
+};
+
+function matchesFilter(tags, filter) {
+  if (filter === "all") return true;
+  const keywords = FILTER_KEYWORDS[filter] ?? [];
+  return tags.some((tag) => keywords.includes(tag));
+}
+
+export default function Projects({ copy, language = "en", onOpenProject }) {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const labels = FILTER_LABELS[language] ?? FILTER_LABELS.en;
+  const visibleProjects = copy.list.filter((project) => matchesFilter(project.tags, activeFilter));
+
+  // Filtered cards re-mount on every switch, so each switch needs its own
+  // observer — the page-level one only ever sees the nodes present at load.
+  useEffect(() => {
+    const nodes = document.querySelectorAll(".projects-grid [data-animate]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [activeFilter]);
+
   return (
     <section className="section projects-section" id="projects">
       <style>{`
+        .projects-filter-tabs {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin: 0 0 28px;
+        }
+        .projects-filter-tabs button {
+          display: inline-flex;
+          align-items: center;
+          min-height: 36px;
+          padding: 7px 14px;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: var(--surface);
+          color: var(--text-muted);
+          font-family: var(--mono);
+          font-size: 0.78rem;
+          font-weight: 800;
+          cursor: pointer;
+          transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+        }
+        .projects-filter-tabs button:hover {
+          color: var(--heading);
+          border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+          transform: translateY(-2px);
+        }
+        .projects-filter-tabs button.is-active {
+          border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+          background: var(--accent);
+          color: #071413;
+        }
+        @keyframes projectsGridIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .projects-grid { animation: projectsGridIn 380ms ease both; }
         .project-preview-overlay {
           position: absolute;
           inset: 0;
@@ -118,8 +200,23 @@ export default function Projects({ copy, onOpenProject }) {
           <h2 className="section-title">{copy.title}</h2>
         </div>
 
-        <div className="projects-grid">
-          {copy.list.map((project, index) => (
+        <div className="projects-filter-tabs" role="tablist" aria-label="Filter projects by category">
+          {["all", "web", "ai", "systems"].map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              role="tab"
+              aria-selected={activeFilter === filter}
+              className={activeFilter === filter ? "is-active" : ""}
+              onClick={() => setActiveFilter(filter)}
+            >
+              {labels[filter]}
+            </button>
+          ))}
+        </div>
+
+        <div className="projects-grid" key={activeFilter}>
+          {visibleProjects.map((project, index) => (
             <div
               key={project.id}
               className="project-card-3d-wrap"

@@ -164,9 +164,34 @@ function ThreeDLabPanel({ copy }) {
   const panelRef = useRef(null);
   const [rotation, setRotation] = useState({ x: -4, y: 6 });
   const [isHovered, setIsHovered] = useState(false);
+  const [parallaxY, setParallaxY] = useState(0);
   const animFrameRef = useRef(null);
   const targetRef = useRef({ x: -4, y: 6 });
   const currentRef = useRef({ x: -4, y: 6 });
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return undefined;
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const heroEl = document.getElementById("hero");
+        if (heroEl) {
+          const rect = heroEl.getBoundingClientRect();
+          const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
+          setParallaxY(progress * 46);
+        }
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -221,7 +246,7 @@ function ThreeDLabPanel({ copy }) {
       <div
         className="lab-panel-3d"
         style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) translateZ(0)`,
+          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) translateY(${parallaxY}px) translateZ(0)`,
           transition: isHovered ? "none" : "transform 1.2s ease",
           transformStyle: "preserve-3d",
           willChange: "transform"

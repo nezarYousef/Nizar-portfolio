@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { CheckCircle2, Sparkles } from "lucide-react";
 import { profileImage } from "@/data/portfolio";
 import { useEffect, useRef, useState } from "react";
+import BlurImage from "@/components/BlurImage";
 
 function TiltImage({ alt }) {
   const wrapRef = useRef(null);
@@ -79,7 +79,7 @@ function TiltImage({ alt }) {
             : "var(--shadow-soft)"
         }}
       >
-        <Image
+        <BlurImage
           src={profileImage}
           alt={alt}
           fill

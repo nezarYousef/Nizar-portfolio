@@ -575,6 +575,68 @@ html[data-theme="dark"] .section:nth-of-type(even) { background: rgba(255, 255, 
   backdrop-filter: blur(18px);
 }
 .button:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+.button-primary:hover {
+  box-shadow:
+    0 20px 46px color-mix(in srgb, var(--accent) 48%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+/* ─── CUSTOM CURSOR ─────────────────────────────── */
+.custom-cursor-dot, .custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  will-change: transform;
+}
+.custom-cursor-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.custom-cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 50%;
+  transition:
+    opacity 200ms ease,
+    width 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+.custom-cursor-ring.is-active {
+  width: 52px;
+  height: 52px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+}
+html.has-custom-cursor,
+html.has-custom-cursor a,
+html.has-custom-cursor button,
+html.has-custom-cursor [role="button"] {
+  cursor: none;
+}
+
+/* ─── BLUR-UP IMAGE LOADING ─────────────────────── */
+/* Transition lives on each consumer class (below) rather than here, since
+   the `transition` shorthand isn't additive across same-specificity rules -
+   whichever class is declared last in the file would otherwise silently
+   win and drop the other's transition. */
+.blur-load-image {
+  filter: blur(18px);
+  opacity: 0;
+}
+.blur-load-image.is-loaded {
+  filter: blur(0);
+  opacity: 1;
+}
 
 /* ─── HERO STATS ───────────────────────────────── */
 .hero-stats {
@@ -978,7 +1040,7 @@ html[data-theme="dark"] .lab-panel {
   border-radius: calc(var(--radius) - 2px);
   background: var(--surface-soft);
 }
-.about-image { object-fit: cover; object-position: center 4%; }
+.about-image { object-fit: cover; object-position: center 4%; transition: filter 600ms ease, opacity 600ms ease; }
 .about-panel-content { padding: 24px; }
 .about-panel-content h3, .skill-card h3, .project-body h3, .timeline-content h3, .empty-gallery h3 {
   margin: 0;
@@ -1089,7 +1151,7 @@ html[data-theme="dark"] .lab-panel {
   border-bottom: 1px solid var(--line);
   background: var(--surface-soft);
 }
-.project-preview-image { object-fit: cover; object-position: top center; transition: transform 360ms ease; }
+.project-preview-image { object-fit: cover; object-position: top center; transition: transform 360ms ease, filter 600ms ease, opacity 600ms ease; }
 .project-preview-image-contain { object-fit: contain; padding: 10px; }
 .project-card:hover .project-preview-image { transform: scale(1.04); }
 .project-preview-empty { display: grid; place-items: center; color: var(--accent); }
@@ -1139,7 +1201,7 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
 .other-experience-image {
   object-fit: cover;
   object-position: center;
-  transition: transform 360ms ease;
+  transition: transform 360ms ease, filter 600ms ease, opacity 600ms ease;
 }
 .other-experience-card:hover .other-experience-image { transform: scale(1.04); }
 .other-experience-body {
@@ -1216,6 +1278,17 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
   padding: 22px;
   overflow: hidden;
 }
+.timeline-item-hoverable {
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+}
+.timeline-item-hoverable:hover {
+  transform: translateY(-4px) translateX(4px);
+  box-shadow: var(--shadow-3d);
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+}
+html[dir="rtl"] .timeline-item-hoverable:hover {
+  transform: translateY(-4px) translateX(-4px);
+}
 .timeline-icon {
   z-index: 1;
   display: grid;
@@ -1225,6 +1298,11 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
   border-radius: var(--radius);
   background: var(--surface-strong);
   color: var(--accent);
+  transition: background 250ms ease, color 250ms ease, border-color 250ms ease;
+}
+.timeline-item-hoverable:hover .timeline-icon {
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface-strong));
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
 }
 .timeline-topline {
   display: flex;
@@ -1245,6 +1323,65 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
 }
 .timeline-company { margin: 8px 0 12px; color: var(--text); font-weight: 800; }
 .timeline-content ul { display: grid; gap: 8px; padding-inline-start: 20px; margin: 0; color: var(--text-muted); }
+
+.timeline-track-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 20px;
+  width: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+/* Alternating left/right layout - desktop only. Mobile/tablet keep the
+   proven single-column rail below, untouched. */
+@media (min-width: 901px) {
+  .timeline.timeline--alternating::before {
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline--alternating .timeline-track-line {
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline--alternating .timeline-item-wrap {
+    width: calc(50% - 48px);
+  }
+  .timeline--alternating .timeline-item-wrap[data-side="left"] {
+    margin-inline-end: auto;
+  }
+  .timeline--alternating .timeline-item-wrap[data-side="right"] {
+    margin-inline-start: auto;
+  }
+  .timeline--alternating .timeline-item {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  .timeline--alternating .timeline-item::before {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+  }
+  .timeline--alternating .timeline-icon {
+    position: absolute;
+    top: 22px;
+  }
+  .timeline--alternating .timeline-item-wrap[data-side="left"] .timeline-icon {
+    inset-inline-end: -63px;
+  }
+  .timeline--alternating .timeline-item-wrap[data-side="right"] .timeline-icon {
+    inset-inline-start: -63px;
+  }
+  .timeline--alternating [data-animate][data-side="left"] {
+    transform: translateX(-32px);
+  }
+  .timeline--alternating [data-animate][data-side="right"] {
+    transform: translateX(32px);
+  }
+  .timeline--alternating [data-animate].is-visible {
+    transform: translateX(0);
+  }
+}
 
 /* ─── CONTACT ──────────────────────────────────── */
 .contact-grid {
@@ -1433,6 +1570,10 @@ html[dir="rtl"] .external-indicator { right: auto; left: 5px; }
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
 }
+@keyframes navLinkIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ─── RTL ──────────────────────────────────────── */
 html[dir="rtl"] .section-kicker::after { transform: scaleX(-1); }
@@ -1459,16 +1600,37 @@ html[dir="rtl"] .contact-method { grid-template-columns: auto 1fr auto; }
   .nav-links {
     position: absolute;
     top: calc(var(--header-height) + 10px); right: 20px; left: 20px;
-    display: none; flex-direction: column; grid-column: 1 / -1; gap: 4px;
+    display: flex; flex-direction: column; grid-column: 1 / -1; gap: 4px;
     padding: 10px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--surface-strong);
     box-shadow: var(--shadow);
     backdrop-filter: blur(18px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-10px) scale(0.98);
+    transform-origin: top center;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms;
   }
-  .nav-links.is-open { display: flex; }
+  .nav-links.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
   .nav-links a { justify-content: flex-start; padding: 11px 12px; }
+  .nav-links.is-open a {
+    animation: navLinkIn 320ms ease both;
+  }
+  .nav-links a:nth-child(1) { animation-delay: 30ms; }
+  .nav-links a:nth-child(2) { animation-delay: 65ms; }
+  .nav-links a:nth-child(3) { animation-delay: 100ms; }
+  .nav-links a:nth-child(4) { animation-delay: 135ms; }
+  .nav-links a:nth-child(5) { animation-delay: 170ms; }
+  .nav-links a:nth-child(6) { animation-delay: 205ms; }
+  .nav-links a:nth-child(7) { animation-delay: 240ms; }
   .nav-controls { order: 2; flex: 0 0 auto; margin-inline-start: auto; }
   .about-grid, .contact-grid { grid-template-columns: 1fr; }
   .hero-section { min-height: auto; padding-top: 98px; }
