@@ -115,14 +115,116 @@ const withMeta = (projects) =>
     ...project
   }));
 
+/* The phone number is stored in parts and joined at runtime, so neither the
+   digits nor a `tel:` / `wa.me` href ever appear in the served HTML. Resolves
+   to the same destinations as before: tel:+972597781945 and
+   https://wa.me/972597781945 */
+export const phoneParts = ["+972", "59", "778", "1945"];
+
+export const joinPhone = () => phoneParts.join("");
+export const phoneHref = () => `tel:${joinPhone()}`;
+export const whatsappHref = () => `https://wa.me/${joinPhone().replace("+", "")}`;
+
 const contactLinks = {
   email: "mailto:nizaryousef01@gmail.com",
-  phone: "tel:+972597781945",
   github: "https://github.com/nezarYousef",
   linkedin: "https://linkedin.com/in/nizar-alqerem-33829a3a1",
-  whatsapp: "https://wa.me/972597781945",
   instagram: "https://www.instagram.com/eng.nizar_/"
 };
+
+/* ── Skill evidence ─────────────────────────────────────────────────────────
+   Replaces the old self-assigned `level` percentages. Every entry below is
+   sourced from content that already exists elsewhere in this file: `projects`
+   lists the ids of projects whose own `tags` contain the skill, and `programs`
+   points at a program listed under `experience` or `education`.
+   Nothing here is an assessment - it is a join over the existing data.
+   Skills with neither key have no linked proof yet and render as a plain name.
+   ────────────────────────────────────────────────────────────────────────── */
+const SKILL_EVIDENCE = {
+  JavaScript: { projects: ["expenses", "tasks"] },
+  Python: { projects: ["grade", "ai", "vision"] },
+  Java: { projects: ["school"] },
+  C: { projects: ["shell"] },
+
+  "React.js": { projects: ["restaurant", "expenses", "tasks", "advancedTasks"] },
+  "HTML/CSS": { projects: ["restaurant", "expenses", "tasks", "advancedTasks"] },
+  API: { projects: ["restaurant", "ai"] },
+  "Next.js": { projects: ["advancedTasks"] },
+  "Responsive UI": { programs: ["masar"] },
+
+  AI: { projects: ["grade", "ai", "vision"] },
+  ML: { projects: ["grade"] },
+  "Data Preprocessing": { programs: ["gsgVision"] },
+  PyCaret: {},
+
+  "Computer Vision": { projects: ["vision"], programs: ["gsgVision"] },
+  CNN: { programs: ["gsgVision"] },
+  "Deep Learning": { programs: ["gsgVision"] },
+  "Image Processing": { programs: ["gsgVision"] },
+
+  OOP: { projects: ["school"], programs: ["iug"] },
+  "System Design": { programs: ["iug"] },
+  "Clean Code": { programs: ["masar"] },
+
+  "Git/GitHub": { projects: ["shell", "school"] },
+  "REST API": { projects: ["restaurant", "ai"] },
+  "Linux/UNIX": { projects: ["shell"] },
+  "Digital Tools": {}
+};
+
+/* Program labels are composed from the title + company of entries that already
+   exist under `experience` and `education` in each language. */
+const PROGRAM_LABELS = {
+  en: {
+    masar: "Masar Institute - Frontend Development Internship",
+    gsgFoundations: "Gaza Sky Geeks - Programming Fundamentals & Algorithms",
+    gsgVision: "Gaza Sky Geeks - Computer Vision and Neural Networks",
+    iug: "Islamic University of Gaza - Computer Engineering"
+  },
+  ar: {
+    masar: "معهد مسار - تدريب تطوير واجهات أمامية",
+    gsgFoundations: "Gaza Sky Geeks - أساسيات البرمجة والخوارزميات",
+    gsgVision: "Gaza Sky Geeks - الرؤية الحاسوبية والشبكات العصبية",
+    iug: "الجامعة الإسلامية بغزة - هندسة حاسوب"
+  }
+};
+
+const EVIDENCE_LABELS = {
+  en: {
+    usedIn: "Used in",
+    studiedIn: "Studied in",
+    filterAll: "All",
+    filterLabel: "Filter skill categories",
+    coreStackTitle: "Core stack"
+  },
+  ar: {
+    usedIn: "مستخدمة في",
+    studiedIn: "مدروسة في",
+    filterAll: "الكل",
+    filterLabel: "تصفية فئات المهارات",
+    coreStackTitle: "الحزمة الأساسية"
+  }
+};
+
+/* Only one skill name was ever translated; the rest stay as written. */
+const SKILL_NAMES = {
+  en: {},
+  ar: { "Responsive UI": "واجهات متجاوبة" }
+};
+
+const buildSkillCategories = (lang, spec) =>
+  spec.map((category) => ({
+    title: category.title,
+    items: category.items.map((key) => {
+      const evidence = SKILL_EVIDENCE[key] ?? {};
+      return {
+        key,
+        name: SKILL_NAMES[lang][key] ?? key,
+        projects: evidence.projects ?? [],
+        programs: evidence.programs ?? []
+      };
+    })
+  }));
 
 export const portfolioCopy = {
   en: {
@@ -145,9 +247,17 @@ export const portfolioCopy = {
       menuLabel: "Open navigation menu",
       closeMenuLabel: "Close navigation menu"
     },
+    ui: {
+      skipToContent: "Skip to content",
+      sectionRailLabel: "Section navigation",
+      mainNavLabel: "Main navigation",
+      readingProgress: "Reading progress",
+      decorativeVisual: "Decorative visualization"
+    },
     hero: {
       eyebrow: "Computer Engineer / Software, AI & Web",
       name: "Nizar Yousef Alqerem",
+      identity: "Computer Engineer - Palestine 🇵🇸",
       title: "Computer engineer building software, intelligent systems, and modern web experiences.",
       typedRole: "AI + Web Engineering",
       description:
@@ -177,67 +287,40 @@ export const portfolioCopy = {
         "OOP and desktop application experience"
       ],
       cardTitle: "Computer Engineering Profile",
-      cardMeta: "Software Systems / AI / Web Engineering"
+      cardMeta: "Software Systems / AI / Web Engineering",
+      availability: "Available for hire"
     },
     skills: {
       eyebrow: "Technical Stack",
       title: "A stack that covers systems, web interfaces, AI, and applied software projects.",
-       categories: [
-         {
-           title: "Programming Lang",
-           items: [
-             { name: "Python", level: 90 },
-             { name: "Java", level: 83 },
-             { name: "C", level: 96 },
-             { name: "JavaScript", level: 81 }
-           ]
-         },
-         {
-           title: "Web Engineering",
-           items: [
-             { name: "HTML/CSS", level: 77 },
-             { name: "React.js", level: 90 },
-             { name: "Next.js", level: 75 },
-             { name: "Responsive UI", level: 88 },
-             { name: "API", level: 73 }
-           ]
-         },
-         {
-           title: "AI & Machine Learning",
-           items: [
-             { name: "ML", level: 75 },
-             { name: "AI", level: 90 },
-             { name: "PyCaret", level: 82 },
-             { name: "Data Preprocessing", level: 90 }
-           ]
-         },
-         {
-           title: "Computer Vision",
-           items: [
-             { name: "Computer Vision", level: 80 },
-             { name: "CNN", level: 76 },
-             { name: "Image Processing", level: 70 },
-             { name: "Deep Learning", level: 74 }
-           ]
-         },
-         {
-           title: "Software Engineering",
-           items: [
-             { name: "OOP", level: 90 },
-             { name: "System Design", level: 96 },
-             { name: "Clean Code", level: 81 }
-           ]
-         },
-         {
-           title: "Tools & Workflow",
-           items: [
-             { name: "Git/GitHub", level: 77 },
-             { name: "Linux/UNIX", level: 80 },
-             { name: "REST API", level: 80 },
-             { name: "Digital Tools", level: 88 }
-           ]
-         }
-       ],
+      evidence: EVIDENCE_LABELS.en,
+      programs: PROGRAM_LABELS.en,
+      categories: buildSkillCategories("en", [
+        {
+          title: "Programming Lang",
+          items: ["JavaScript", "Python", "Java", "C"]
+        },
+        {
+          title: "Web Engineering",
+          items: ["React.js", "HTML/CSS", "API", "Next.js", "Responsive UI"]
+        },
+        {
+          title: "AI & Machine Learning",
+          items: ["AI", "ML", "Data Preprocessing", "PyCaret"]
+        },
+        {
+          title: "Computer Vision",
+          items: ["Computer Vision", "CNN", "Deep Learning", "Image Processing"]
+        },
+        {
+          title: "Software Engineering",
+          items: ["OOP", "System Design", "Clean Code"]
+        },
+        {
+          title: "Tools & Workflow",
+          items: ["Git/GitHub", "REST API", "Linux/UNIX", "Digital Tools"]
+        }
+      ]),
       coreStack
     },
     projects: {
@@ -246,6 +329,10 @@ export const portfolioCopy = {
       viewGallery: "View project gallery",
       viewGithub: "View on GitHub",
       comingSoon: "Details coming soon",
+      screenshots: "screenshots",
+      inDevelopment: "In Development",
+      filterLabel: "Filter projects by category",
+      filters: { all: "All", web: "Web", ai: "AI", systems: "Systems" },
       list: withMeta([
         {
           id: "restaurant",
@@ -440,6 +527,9 @@ export const portfolioCopy = {
         "I'm interested in software engineering, frontend development, AI, machine learning, and computer vision opportunities. Feel free to reach out for collaborations, projects, or technical discussions.",
       emailLabel: "Email Me",
       phoneLabel: "Call Me",
+      availability: "Available for new opportunities",
+      showPhone: "Show phone number",
+      phoneRevealHint: "Revealed on request to keep it away from scrapers",
       links: contactLinks
     },
     modal: {
@@ -469,9 +559,17 @@ export const portfolioCopy = {
       menuLabel: "فتح قائمة التنقل",
       closeMenuLabel: "إغلاق قائمة التنقل"
     },
+    ui: {
+      skipToContent: "تخطي إلى المحتوى",
+      sectionRailLabel: "التنقل بين الأقسام",
+      mainNavLabel: "التنقل الرئيسي",
+      readingProgress: "تقدم القراءة",
+      decorativeVisual: "رسم توضيحي زخرفي"
+    },
     hero: {
       eyebrow: "مهندس حاسوب / برمجيات وذكاء اصطناعي وويب",
       name: "نزار يوسف القرَم",
+      identity: "مهندس حاسوب - فلسطين 🇵🇸",
       title: "مهندس حاسوب يبني برمجيات وأنظمة ذكية وتجارب ويب حديثة.",
       typedRole: "هندسة ذكاء وويب",
       description:
@@ -501,67 +599,40 @@ export const portfolioCopy = {
         "خبرة في OOP وتطبيقات سطح المكتب"
       ],
       cardTitle: "ملف هندسة الحاسوب",
-      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب"
+      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب",
+      availability: "متاح للعمل"
     },
     skills: {
       eyebrow: "المهارات التقنية",
       title: "حزمة تقنية تغطي الأنظمة والويب والذكاء الاصطناعي والمشاريع البرمجية التطبيقية.",
-      categories: [
+      evidence: EVIDENCE_LABELS.ar,
+      programs: PROGRAM_LABELS.ar,
+      categories: buildSkillCategories("ar", [
         {
           title: "لغات البرمجة",
-          items: [
-            { name: "Python", level: 90 },
-            { name: "Java", level: 83 },
-            { name: "C", level: 96 },
-            { name: "JavaScript", level: 81 }
-          ]
+          items: ["JavaScript", "Python", "Java", "C"]
         },
         {
           title: "هندسة الويب",
-          items: [
-            { name: "HTML/CSS", level: 77 },
-            { name: "React.js", level: 90 },
-            { name: "Next.js", level: 75 },
-            { name: "واجهات متجاوبة", level: 88 },
-            { name: "API", level: 73 }
-          ]
+          items: ["React.js", "HTML/CSS", "API", "Next.js", "Responsive UI"]
         },
         {
           title: "الذكاء الاصطناعي وتعلم الآلة",
-          items: [
-            { name: "ML", level: 75 },
-            { name: "AI", level: 90 },
-            { name: "PyCaret", level: 82 },
-            { name: "Data Preprocessing", level: 90 }
-          ]
+          items: ["AI", "ML", "Data Preprocessing", "PyCaret"]
         },
         {
           title: "الرؤية الحاسوبية",
-          items: [
-            { name: "Computer Vision", level: 80 },
-            { name: "CNN", level: 76 },
-            { name: "Image Processing", level: 70 },
-            { name: "Deep Learning", level: 74 }
-          ]
+          items: ["Computer Vision", "CNN", "Deep Learning", "Image Processing"]
         },
         {
           title: "هندسة البرمجيات",
-          items: [
-            { name: "OOP", level: 90 },
-            { name: "System Design", level: 96 },
-            { name: "Clean Code", level: 81 }
-          ]
+          items: ["OOP", "System Design", "Clean Code"]
         },
         {
           title: "الأدوات وسير العمل",
-          items: [
-            { name: "Git/GitHub", level: 77 },
-            { name: "Linux/UNIX", level: 80 },
-            { name: "REST API", level: 80 },
-            { name: "Digital Tools", level: 88 }
-          ]
+          items: ["Git/GitHub", "REST API", "Linux/UNIX", "Digital Tools"]
         }
-      ],
+      ]),
       coreStack
     },
     projects: {
@@ -570,6 +641,10 @@ export const portfolioCopy = {
       viewGallery: "عرض صور المشروع",
       viewGithub: "عرض على GitHub",
       comingSoon: "التفاصيل قريباً",
+      screenshots: "صورة",
+      inDevelopment: "قيد التطوير",
+      filterLabel: "تصفية المشاريع حسب الفئة",
+      filters: { all: "الكل", web: "ويب", ai: "ذكاء اصطناعي", systems: "أنظمة" },
       list: withMeta([
         {
           id: "restaurant",
@@ -764,6 +839,9 @@ export const portfolioCopy = {
         "أهتم بفرص هندسة البرمجيات وتطوير الواجهات والذكاء الاصطناعي وتعلم الآلة والرؤية الحاسوبية. يسعدني تواصلك للتعاون أو المشاريع أو النقاشات التقنية.",
       emailLabel: "راسلني",
       phoneLabel: "اتصل بي",
+      availability: "متاح لفرص جديدة",
+      showPhone: "إظهار رقم الهاتف",
+      phoneRevealHint: "يظهر عند الطلب لحمايته من برامج جمع البيانات",
       links: contactLinks
     },
     modal: {
