@@ -73,10 +73,10 @@ function TiltImage({ alt }) {
           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
           transition: hovered ? "none" : "transform 0.8s ease",
           transformStyle: "preserve-3d",
-          borderRadius: "inherit",
+          borderRadius: "12px",
           boxShadow: hovered
-            ? "0 32px 80px rgba(14,165,164,0.24), 0 8px 24px rgba(0,0,0,0.18)"
-            : "var(--shadow-soft)"
+            ? "0 0 28px rgba(14,165,164,0.32), 0 8px 24px rgba(0,0,0,0.18)"
+            : "0 0 20px rgba(14,165,164,0.2)"
         }}
       >
         <BlurImage
@@ -158,6 +158,11 @@ export default function About({ copy }) {
           font-size: 0.72rem;
           font-weight: 850;
           margin-bottom: 10px;
+          animation: aboutBadgePulse 2.4s ease-in-out infinite;
+        }
+        @keyframes aboutBadgePulse {
+          0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); }
+          50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent); }
         }
       `}</style>
 
