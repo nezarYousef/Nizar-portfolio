@@ -1,10 +1,17 @@
-import { fontClassFor } from "@/lib/fonts";
 import { LOCALES, SITE_URL } from "@/lib/site";
 import { portfolioCopy } from "@/data/portfolio";
 import "@/app/globals.css";
 
 /* Runs before first paint, so a dark-mode visitor never sees a light flash.
-   Kept deliberately tiny and dependency-free - it is inlined into every page. */
+   Kept deliberately tiny and dependency-free - it is inlined into every page.
+
+   It sits as the first child of <body>, not inside a hand-written <head>.
+   Rendering our own <head> element suppressed Next's managed head injection,
+   and with it every next/font <link rel="preload">, so the faces were only
+   discovered when the CSS asked for a glyph - which is what made them land
+   late enough to reflow the page. A blocking inline script at the top of
+   <body> still executes before any body content is painted, so the theme is
+   set just as early. */
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}})();`;
 
 function StructuredData({ lang }) {
@@ -39,14 +46,12 @@ function StructuredData({ lang }) {
   );
 }
 
-export default function RootShell({ lang, children }) {
+export default function RootShell({ lang, fontClass, children }) {
   return (
-    <html lang={lang} dir={LOCALES[lang].dir} className={fontClassFor(lang)}>
-      <head>
+    <html lang={lang} dir={LOCALES[lang].dir} className={fontClass}>
+      <body>
         {/* eslint-disable-next-line @next/next/no-sync-scripts, react/no-danger */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
-      <body>
         <StructuredData lang={lang} />
         {children}
       </body>
