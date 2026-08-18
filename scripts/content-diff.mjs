@@ -66,19 +66,45 @@ function collectStrings(node, out = [], key = null) {
   return out;
 }
 
+const NBSP = new RegExp(String.fromCharCode(160), "g");
+
 const normalise = (text) =>
   text
-    .replace(/ /g, " ")
+    .replace(NBSP, " ")
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .toLowerCase();
 
 const browser = await chromium.launch({ channel: "chrome" });
 
 const harvest = async (path) => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+
+  let collectedNarrow = "";
+  /* Some labels only exist in a state that only exists on a narrow viewport -
+     the mobile menu's open/close names. Visit 375 and open the drawer so they
+     are counted too. */
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.waitForTimeout(200);
+  const menuButton = page.locator("header button").first();
+  if (await menuButton.count()) {
+    await menuButton.click({ timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(250);
+    collectedNarrow = await page.evaluate(() =>
+      [...document.querySelectorAll("[aria-label],[title]")]
+        .map(
+          (el) =>
+            `${el.getAttribute("aria-label") ?? ""} ${el.getAttribute("title") ?? ""}`
+        )
+        .join(" • ")
+    );
+    await menuButton.click({ timeout: 3000 }).catch(() => {});
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(200);
 
   const snapshot = () =>
     page.evaluate(() => {
@@ -95,7 +121,7 @@ const harvest = async (path) => {
       return `${text} • ${alt} • ${names}`;
     });
 
-  let collected = "";
+  let collected = collectedNarrow;
 
   // Reveal the phone so its label and number are in the DOM.
   const phoneButton = page.locator("#contact button").first();

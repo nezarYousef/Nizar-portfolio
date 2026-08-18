@@ -103,6 +103,7 @@
   margin-block-start: var(--space-m);
 }
 
+.role,
 .identityItem,
 .status {
   display: inline-flex;
@@ -113,6 +114,14 @@
   border-radius: var(--radius-pill);
   color: var(--ink-muted);
   font-size: var(--text-xs);
+}
+
+/* hero.typedRole - the old design animated this on a loop; here it is simply
+   stated, as the first thing in the identity row. */
+.role {
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+  color: var(--accent);
 }
 
 .status {

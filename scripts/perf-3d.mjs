@@ -84,24 +84,36 @@ const sampleFps = async (page, seconds = 4) =>
     seconds
   );
 
-console.log("\n── Frame rate: 3D hero vs. the same page with the canvas gated off ──");
+/* Measured strictly one page at a time. Sampling both pages while both were
+   open made them compete for the same throttled CPU, which flattened both
+   numbers and hid the difference entirely. */
+const withCanvasFps = {};
 for (const rate of THROTTLES) {
   await cdpLarge.send("Emulation.setCPUThrottlingRate", { rate });
-  await cdpSmall.send("Emulation.setCPUThrottlingRate", { rate });
   await large.page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-  await large.page.waitForTimeout(700);
-
-  const withCanvas = await sampleFps(large.page);
-  const withoutCanvas = await sampleFps(smallAgain.page);
-  console.log(
-    `  ${String(rate).padStart(2)}x throttle:  with 3D ${withCanvas
-      .toFixed(1)
-      .padStart(5)} fps   |   no 3D ${withoutCanvas.toFixed(1).padStart(5)} fps`
-  );
+  await large.page.waitForTimeout(900);
+  withCanvasFps[rate] = await sampleFps(large.page);
 }
+await cdpLarge.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+await large.page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
 
+const withoutCanvasFps = {};
+for (const rate of THROTTLES) {
+  await cdpSmall.send("Emulation.setCPUThrottlingRate", { rate });
+  await smallAgain.page.waitForTimeout(900);
+  withoutCanvasFps[rate] = await sampleFps(smallAgain.page);
+}
 await cdpSmall.send("Emulation.setCPUThrottlingRate", { rate: 1 });
 await smallAgain.context.close();
+
+console.log("\n── Frame rate: 3D hero vs. the same page with the canvas gated off ──");
+for (const rate of THROTTLES) {
+  console.log(
+    `  ${String(rate).padStart(2)}x throttle:  with 3D ${withCanvasFps[rate]
+      .toFixed(1)
+      .padStart(5)} fps   |   no 3D ${withoutCanvasFps[rate].toFixed(1).padStart(5)} fps`
+  );
+}
 
 /* ── Is the loop genuinely paused when off-screen / hidden? ─────────────── */
 await cdpLarge.send("Emulation.setCPUThrottlingRate", { rate: 1 });

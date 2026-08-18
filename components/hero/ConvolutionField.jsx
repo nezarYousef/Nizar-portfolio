@@ -101,10 +101,10 @@ const fragmentShader = /* glsl */ `
     if (dist > 0.25) discard;
 
     float edgeFade = smoothstep(0.25, 0.02, dist);
-    float energy = clamp(abs(vResponse) * 1.6, 0.0, 1.0);
+    float energy = clamp(abs(vResponse) * 2.3, 0.0, 1.0);
     vec3 color = mix(uColorLow, uColorHigh, energy);
 
-    gl_FragColor = vec4(color, edgeFade * uOpacity * (0.32 + energy * 0.68));
+    gl_FragColor = vec4(color, edgeFade * uOpacity * (0.22 + energy * 0.88));
   }
 `;
 
@@ -183,7 +183,7 @@ function Lattice({ colorLow, colorHigh, opacity }) {
     // Kernel drifts blur -> edge -> blur, so the plane keeps resolving into
     // a feature map and dissolving back.
     uniforms.uKernel.value = 0.5 + 0.5 * Math.sin(uniforms.uTime.value * 0.22);
-    uniforms.uPixelRatio.value = Math.min(state.viewport.dpr ?? 1, 1.5);
+    uniforms.uPixelRatio.value = Math.min(state.viewport.dpr ?? 1, 1.25);
   });
 
   // Keep the lattice filling the frame on any aspect ratio.

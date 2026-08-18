@@ -23,6 +23,7 @@ export default function Hero({ copy, ui }) {
           <p className={styles.lead}>{copy.title}</p>
 
           <ul className={styles.identity}>
+            <li className={`${styles.role} u-mono`}>{copy.typedRole}</li>
             <li className={`${styles.identityItem} u-mono`}>{copy.identity}</li>
             <li className={`${styles.status} u-mono`}>
               <span className={styles.statusDot} aria-hidden="true" />

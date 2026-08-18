@@ -8,13 +8,10 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  opacity: 0.72;
-  /* Confines the field to the far side of the hero and fades it out before it
-     reaches the text column, so no dot ever lands on a word. The direction
-     flips in RTL, where the copy sits on the right. */
+  opacity: 0.88;
   /* Fades out across the inner edge of the host, which is the only part that
-     comes near the text column. Flipped in RTL, where the copy is on the
-     right and the field sits on the left. */
+     comes near the text column, so no dot ever lands on a word. Flipped in
+     RTL, where the copy is on the right and the field sits on the left. */
   mask-image: linear-gradient(
     to left,
     rgba(0, 0, 0, 1) 0%,
