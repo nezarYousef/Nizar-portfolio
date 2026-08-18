@@ -15,9 +15,12 @@ import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "playwright";
+import { assertProductionBuild } from "./assert-prod-build.mjs";
 
 const BASELINE = process.env.BASELINE_REF ?? "83d21a0";
 const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+
+await assertProductionBuild(BASE);
 
 const NON_CONTENT_KEYS = new Set([
   "id",

@@ -3,8 +3,11 @@
    reported. Medians, not best-of - best-of would flatter the result. */
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
+import { assertProductionBuild } from "./assert-prod-build.mjs";
 
 const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+
+await assertProductionBuild(BASE);
 const RUNS = Number(process.env.LH_RUNS ?? 3);
 
 const COMBOS = [

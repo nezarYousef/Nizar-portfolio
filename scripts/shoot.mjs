@@ -4,8 +4,11 @@
    fold photographs at opacity 0. */
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
+import { assertProductionBuild } from "./assert-prod-build.mjs";
 
 const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+
+await assertProductionBuild(BASE);
 const OUT = process.env.SHOOT_OUT ?? "screenshots";
 
 const VIEWPORTS = [

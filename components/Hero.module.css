@@ -47,6 +47,16 @@
   font-weight: 660;
 }
 
+/* Same reservation problem, same measured answer. The English name wraps to
+   two lines below 480px and again at 1280px and up, but sits on one line in
+   between; the Arabic name is one line at every width. 2lh reserves exactly
+   two line boxes at whatever the fluid type scale currently resolves to. */
+@media (max-width: 480px), (min-width: 1280px) {
+  :global([dir="ltr"]) .name {
+    min-block-size: 2lh;
+  }
+}
+
 .typeOnce {
   display: inline-block;
 }
@@ -99,8 +109,35 @@
 .identity {
   display: flex;
   flex-wrap: wrap;
+  align-content: start;
   gap: var(--space-2xs);
   margin-block-start: var(--space-m);
+}
+
+/* Reserve the number of rows the chips actually settle into, so a late font
+   swap cannot change this row's height and push the rest of the page down.
+   Chip is 30px, gap 8px, so n rows = 38n - 8: 1 -> 30, 2 -> 68, 4 -> 144.
+   The counts differ per locale and per breakpoint because Arabic and English
+   chip text are different lengths - which is precisely why this approach is
+   fragile, and why it is measured rather than guessed. */
+.identity {
+  min-block-size: 144px; /* en, < 768px: 4 rows */
+}
+
+@media (min-width: 768px) {
+  .identity {
+    min-block-size: 68px; /* en, >= 768px: 2 rows */
+  }
+}
+
+:global([dir="rtl"]) .identity {
+  min-block-size: 68px; /* ar: 2 rows at every width except one */
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :global([dir="rtl"]) .identity {
+    min-block-size: 30px; /* ar, tablet only: 1 row */
+  }
 }
 
 .role,

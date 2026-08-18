@@ -10,8 +10,11 @@
 */
 import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
+import { assertProductionBuild } from "./assert-prod-build.mjs";
 
 const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+
+await assertProductionBuild(BASE);
 const THROTTLES = (process.env.CPU_THROTTLES ?? "1,4,6").split(",").map(Number);
 
 const browser = await chromium.launch({ channel: "chrome" });
