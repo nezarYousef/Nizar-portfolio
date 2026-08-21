@@ -212,26 +212,39 @@ body {
    it came out 0.8% wide, which is why English CLS sits at 0.0004. For Arabic
    it was 9.9% NARROW, because the generator corrects vertical metrics and
    leaves horizontal advance alone. Ten percent is more than enough to change
-   where lines break, so the hero description rendered two lines in the
-   fallback and three mid-swap before settling back to two - 0.1267 CLS on /ar
-   at 768px, reproducible 5 runs out of 5.
+   where a line breaks, so the hero description rendered a different number of
+   lines before and after the swap, and because the hero is vertically centred
+   that moved the whole block. It measured 0.1267 CLS on /ar at 768px.
 
-   size-adjust is the descriptor that fixes exactly this. next/font's generated
-   value was 101.17%; dividing by the measured 0.9010 width ratio gives
-   112.29%, which lines the fallback's advance width up with the real face so
-   line counts stop changing. The vertical overrides are next/font's own,
-   carried over unchanged - they are percentages of the used font size, so they
-   pin the line box independently of size-adjust.
+   size-adjust is the descriptor that fixes this, but not perfectly, and the
+   limit is worth stating because it is easy to assume otherwise. Line breaking
+   is a step function of width, and Arabic-with-embedded-Latin does not scale
+   uniformly against Arial, so the value that keeps line counts matching is a
+   BAND per breakpoint rather than a single number. Measured with
+   scripts/font-metrics-band.mjs, those bands are:
 
-   The numbers are measured, not guessed, and they are re-measured after any
-   change to the Arabic face: scripts/cls-sweep.mjs is what catches it. */
+     375  109-118%      900  96-109%      1280  96-118%
+     480  105-118%     1023  96-107%      1440  96-118%
+     768   96-110%     1024  96-118%
+
+   They do not intersect: 375 needs at least 109, 1023 needs at most 107. So no
+   single value is correct everywhere, and the choice is which breakpoint to
+   leave exposed. 109% satisfies seven of the eight and misses only 1023px;
+   107% also scores seven but misses 375px, which is mobile and carries most of
+   the traffic. Hence 109%, and 1023 is in the cls-sweep width list so the
+   residual is measured rather than forgotten.
+
+   The vertical overrides are next/font's own, carried over unchanged - they
+   are percentages of the used font size, so they pin the line box
+   independently of size-adjust. Re-derive all of this after any change to the
+   Arabic face, its weights or its subsets. */
 @font-face {
   font-family: "IBM Plex Arabic Metric Fallback";
   src: local("Arial");
   ascent-override: 107.25%;
   descent-override: 41.02%;
   line-gap-override: 0%;
-  size-adjust: 112.29%;
+  size-adjust: 109%;
 }
 
 :root[dir="rtl"] body {

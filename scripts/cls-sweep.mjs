@@ -37,7 +37,10 @@ const LOCALES = [
   ["en", "/", "Inter"],
   ["ar", "/ar", "IBM Plex Sans Arabic"]
 ];
-const WIDTHS = [375, 768, 1024, 1440];
+/* 480 and 1023 are here because they are where the Arabic fallback's line
+   counts diverge from the real face - see the band table in globals.css.
+   A sweep that skipped them would report clean while the weak point moved. */
+const WIDTHS = [375, 480, 768, 1023, 1024, 1440];
 
 const browser = await chromium.launch({ channel: "chrome" });
 const rows = [];
