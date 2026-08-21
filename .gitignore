@@ -7,3 +7,6 @@ out/
 screenshots/
 reports/
 .claude/
+
+# ad-hoc measurement drivers
+*.sh

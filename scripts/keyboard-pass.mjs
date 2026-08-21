@@ -10,8 +10,8 @@
    Space and Escape. */
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS } from "./_target.mjs";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 
 await assertProductionBuild(BASE);
 const LOCALES = [
@@ -61,6 +61,7 @@ const focused = (page) =>
 for (const [lang, path] of LOCALES) {
   console.log(`\n════ ${lang.toUpperCase()} (${path}) ════`);
   const context = await browser.newContext({
+    extraHTTPHeaders: HEADERS,
     viewport: { width: 1440, height: 900 }
   });
   const page = await context.newPage();

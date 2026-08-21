@@ -16,9 +16,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS } from "./_target.mjs";
 
 const BASELINE = process.env.BASELINE_REF ?? "83d21a0";
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 
 await assertProductionBuild(BASE);
 
@@ -83,7 +83,10 @@ const normalise = (text) =>
 const browser = await chromium.launch({ channel: "chrome" });
 
 const harvest = async (path) => {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const page = await browser.newPage({
+    viewport: { width: 1440, height: 900 },
+    extraHTTPHeaders: HEADERS
+  });
   await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
 
   let collectedNarrow = "";
