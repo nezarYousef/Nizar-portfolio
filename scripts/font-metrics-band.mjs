@@ -20,17 +20,24 @@ import { chromium } from "playwright";
 import { BASE, HEADERS } from "./_target.mjs";
 
 const browser = await chromium.launch({ channel: "chrome" });
+const LANG = process.argv[2] ?? "ar";
+const PATH = LANG === "ar" ? "/ar" : "/";
+/* next/font's own generated values for the face being replaced, so the probe
+   differs from production in exactly one descriptor. */
+const VERTICAL = LANG === "ar"
+  ? { ascentOverride: "107.25%", descentOverride: "41.02%", lineGapOverride: "0%" }
+  : { ascentOverride: "90.44%", descentOverride: "22.52%", lineGapOverride: "0%" };
 const WIDTHS = [375, 480, 768, 900, 1023, 1024, 1280, 1440];
 const bands = [];
 
 for (const width of WIDTHS) {
   const context = await browser.newContext({ extraHTTPHeaders: HEADERS, viewport: { width, height: 900 } });
   const page = await context.newPage();
-  await page.goto(`${BASE}/ar`, { waitUntil: "load", timeout: 60000 });
+  await page.goto(`${BASE}${PATH}`, { waitUntil: "load", timeout: 60000 });
   await page.waitForTimeout(2000);
   await page.evaluate(() => document.fonts.ready);
 
-  const r = await page.evaluate(async () => {
+  const r = await page.evaluate(async (vertical) => {
     const box = [...document.querySelectorAll("div")].find((n) =>
       String(n.className || "").includes("Hero_copy")
     );
@@ -41,12 +48,7 @@ for (const width of WIDTHS) {
     const ok = [];
     for (let sa = 96; sa <= 118; sa += 1) {
       const fam = `P${sa}`;
-      const ff = new FontFace(fam, 'local("Arial")', {
-        sizeAdjust: `${sa}%`,
-        ascentOverride: "107.25%",
-        descentOverride: "41.02%",
-        lineGapOverride: "0%"
-      });
+      const ff = new FontFace(fam, 'local("Arial")', { sizeAdjust: `${sa}%`, ...vertical });
       await ff.load();
       document.fonts.add(ff);
       // Set on body so it cascades exactly like the real stack does, leaving
@@ -57,12 +59,12 @@ for (const width of WIDTHS) {
     }
     body.style.fontFamily = prev;
     return { real, ok };
-  });
+  }, VERTICAL);
   await context.close();
   if (!r) { console.log(`${width}: hero copy not found`); continue; }
   bands.push(r.ok);
   const span = r.ok.length ? `${Math.min(...r.ok)}-${Math.max(...r.ok)}%` : "(none)";
-  console.log(`  @${String(width).padEnd(5)} real ${String(r.real).padStart(4)}px   safe band ${span}  (${r.ok.length} values)`);
+  console.log(`  ${LANG} @${String(width).padEnd(5)} real ${String(r.real).padStart(4)}px   safe band ${span}  (${r.ok.length} values)`);
 }
 
 const intersection = bands.reduce((a, b) => a.filter((v) => b.includes(v)));

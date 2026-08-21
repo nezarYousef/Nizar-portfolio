@@ -205,6 +205,34 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Monospace fallback, from a monospace source.
+
+   next/font derives every fallback from local("Arial") and scales it, which
+   works well for a proportional face - Inter's fallback measured 0.8% off -
+   and cannot work for a monospace one. Arial's per-character widths vary and
+   JetBrains Mono's do not, so the size-adjust needed to match depends on which
+   characters the string contains. Measured over the mono strings on this page,
+   that requirement spans 34.3% with Arial. It is not a value that was chosen
+   badly; there is no value.
+
+   Courier New is monospace and shares JetBrains Mono's advance ratio, so it
+   needs size-adjust 99.99% - call it 100% - with 0% spread across every string
+   measured. Consolas would need 109.13% at 1.1% spread, so Courier New leads
+   the stack: it is the one that needs no correction, and it ships on Windows
+   and macOS alike, with metric-compatible substitutes common on Linux.
+
+   The vertical overrides are next/font's own, unchanged - they are percentages
+   of the used font size, so they pin the line box whichever source resolves.
+   Re-derive with scripts/font-metrics-band.mjs if the mono face changes. */
+@font-face {
+  font-family: "JetBrains Mono Metric Fallback";
+  src: local("Courier New"), local("Consolas"), local("DejaVu Sans Mono");
+  ascent-override: 75.79%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
 /* Arabic fallback, corrected for advance width.
 
    next/font generates a metric-adjusted fallback automatically, and for Inter
@@ -286,7 +314,8 @@ p {
 /* ── Shared primitives ───────────────────────────────────────────────────── */
 
 .u-mono {
-  font-family: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--font-mono), "JetBrains Mono Metric Fallback", ui-monospace,
+    monospace;
   font-variant-ligatures: none;
 }
 
