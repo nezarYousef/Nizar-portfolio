@@ -42,6 +42,37 @@ const median = (values) => {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
+/* Lighthouse spawns its own Chrome and does not reliably reap it on Windows.
+   Left alone, a nine-run sequence poisons itself: each leftover keeps
+   competing for CPU, so later runs score progressively worse and the spread
+   gets read as measurement noise. One sequence degraded 100 -> 76 with TBT
+   going 2ms -> 357ms, and another died outright with NO_FCP because nothing
+   could paint in time.
+
+   Only --headless instances are killed. The user's own Chrome windows are
+   never touched - an earlier cleanup here was not that careful, and closed
+   them. */
+const reapHeadlessChrome = () => {
+  try {
+    execFileSync(
+      "powershell",
+      [
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" | ` +
+          `Where-Object { $_.CommandLine -match '--headless' } | ` +
+          `ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`
+      ],
+      { stdio: "ignore" }
+    );
+  } catch {
+    /* nothing to reap, or no process listing - not fatal */
+  }
+};
+
+const fmt = (v) => (typeof v === "number" ? Math.round(v) : "-");
+
 const rows = [];
 
 for (const combo of COMBOS) {
@@ -76,8 +107,10 @@ for (const combo of COMBOS) {
         `${combo.label} run ${i + 1} failed:`,
         stderr || "(no stderr captured)"
       );
+      reapHeadlessChrome();
       throw error;
     }
+    reapHeadlessChrome();
     const report = JSON.parse(readFileSync(out, "utf8"));
 
     // LH_CATEGORIES may exclude a category; asking it for a score then crashes.
@@ -89,10 +122,13 @@ for (const combo of COMBOS) {
       a11y: score("accessibility"),
       bp: score("best-practices"),
       seo: score("seo"),
-      fcp: report.audits["first-contentful-paint"].numericValue,
-      lcp: report.audits["largest-contentful-paint"].numericValue,
-      tbt: report.audits["total-blocking-time"].numericValue,
-      cls: report.audits["cumulative-layout-shift"].numericValue
+      // A category-limited run does not produce the performance audits at all.
+      ...(([a]) => ({
+        fcp: a("first-contentful-paint"),
+        lcp: a("largest-contentful-paint"),
+        tbt: a("total-blocking-time"),
+        cls: a("cumulative-layout-shift")
+      }))([(id) => report.audits[id]?.numericValue ?? null])
     });
     rmSync(out, { force: true });
   }
@@ -104,10 +140,10 @@ for (const combo of COMBOS) {
     a11y: median(runs.map((r) => r.a11y)),
     bp: median(runs.map((r) => r.bp)),
     seo: median(runs.map((r) => r.seo)),
-    "FCP ms": Math.round(median(runs.map((r) => r.fcp))),
-    "LCP ms": Math.round(median(runs.map((r) => r.lcp))),
-    "TBT ms": Math.round(median(runs.map((r) => r.tbt))),
-    CLS: median(runs.map((r) => r.cls)).toFixed(3),
+    "FCP ms": fmt(median(runs.map((r) => r.fcp))),
+    "LCP ms": fmt(median(runs.map((r) => r.lcp))),
+    "TBT ms": fmt(median(runs.map((r) => r.tbt))),
+    CLS: typeof median(runs.map((r) => r.cls)) === "number" ? median(runs.map((r) => r.cls)).toFixed(3) : "-",
     // A median alone hid a 94/58/61 spread. Show the range it came from.
     "perf min": Math.min(...runs.map((r) => r.perf)),
     "perf max": Math.max(...runs.map((r) => r.perf)),

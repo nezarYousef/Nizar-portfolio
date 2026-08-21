@@ -73,6 +73,42 @@ export async function assertProductionBuild(base = "http://localhost:4321", path
     }
   }
 
+  /* 2b. Leaked headless Chrome from earlier runs. Lighthouse and Playwright
+     both spawn their own browser and do not always reap it on Windows, and the
+     orphans keep competing for CPU. That does not look like a failure - it
+     looks like a site that got slower. One run degraded monotonically from 100
+     to 76 across nine iterations with TBT going from 2ms to 357ms, purely
+     because 22 of these had accumulated.
+
+     Only --headless instances are counted: those are ours. The user's own
+     Chrome windows are not, and must never be killed to make a measurement
+     convenient. */
+  try {
+    const stray = execFileSync(
+      "powershell",
+      [
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `(Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" | ` +
+          `Where-Object { $_.CommandLine -match '--headless' } | ` +
+          `Measure-Object).Count`
+      ],
+      { encoding: "utf8" }
+    ).trim();
+    if (Number(stray) > 2) {
+      problems.push(
+        `${stray} leaked headless Chrome processes are running - they will ` +
+          `skew every timing.
+      Close them with: Get-CimInstance Win32_Process ` +
+          `-Filter "Name='chrome.exe'" | Where-Object { $_.CommandLine -match '--headless' } | ` +
+          `ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`
+      );
+    }
+  } catch {
+    /* process listing unavailable - not fatal */
+  }
+
   // 3. The decisive check, and the only one that is meaningful for a remote
   //    host: what is actually being served right now.
   let sawFontVariable = false;
