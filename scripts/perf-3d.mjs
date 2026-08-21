@@ -53,7 +53,7 @@ const large = await loadAndWeigh(1440);
 const extraFiles = [...large.seen.entries()].filter(([url]) => !small.seen.has(url));
 const extraBytes = extraFiles.reduce((sum, [, bytes]) => sum + bytes, 0);
 
-console.log("── JS shipped, gzipped ──");
+console.log(`── JS shipped, gzipped · ${HOST_LABEL} ──`);
 console.log(`  375px (canvas gated off, canvas present: ${small.hasCanvas}): ${(small.total / 1024).toFixed(1)} KB`);
 console.log(`  1440px (canvas live,     canvas present: ${large.hasCanvas}): ${(large.total / 1024).toFixed(1)} KB`);
 console.log(`  delta attributable to the 3D hero: ${(extraBytes / 1024).toFixed(1)} KB gzipped`);

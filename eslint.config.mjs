@@ -10,7 +10,7 @@ const compat = new FlatCompat({
 
 const config = [
   {
-    ignores: [".next/**", "node_modules/**", "out/**", "scripts/**/*.cjs"]
+    ignores: [".next/**", "node_modules/**", "out/**", "scripts/**/*.cjs", ".claude/**"]
   },
   js.configs.recommended,
   ...compat.extends("next/core-web-vitals"),

@@ -60,7 +60,7 @@ export async function assertProductionBuild(base = "http://localhost:4321", path
           "-NonInteractive",
           "-Command",
           `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | ` +
-            `Where-Object { $_.CommandLine -match 'next(\.js)?.{0,20}dev|run dev' } | ` +
+            `Where-Object { $_.CommandLine -match 'next([.]js)?.{0,20}dev|run dev' } | ` +
             `ForEach-Object { "$($_.ProcessId) $($_.CommandLine)" }`
         ],
         { encoding: "utf8" }
