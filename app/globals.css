@@ -205,9 +205,38 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Arabic fallback, corrected for advance width.
+
+   next/font generates a metric-adjusted fallback automatically, and for Inter
+   it is excellent - measured against the real face on this page's own strings
+   it came out 0.8% wide, which is why English CLS sits at 0.0004. For Arabic
+   it was 9.9% NARROW, because the generator corrects vertical metrics and
+   leaves horizontal advance alone. Ten percent is more than enough to change
+   where lines break, so the hero description rendered two lines in the
+   fallback and three mid-swap before settling back to two - 0.1267 CLS on /ar
+   at 768px, reproducible 5 runs out of 5.
+
+   size-adjust is the descriptor that fixes exactly this. next/font's generated
+   value was 101.17%; dividing by the measured 0.9010 width ratio gives
+   112.29%, which lines the fallback's advance width up with the real face so
+   line counts stop changing. The vertical overrides are next/font's own,
+   carried over unchanged - they are percentages of the used font size, so they
+   pin the line box independently of size-adjust.
+
+   The numbers are measured, not guessed, and they are re-measured after any
+   change to the Arabic face: scripts/cls-sweep.mjs is what catches it. */
+@font-face {
+  font-family: "IBM Plex Arabic Metric Fallback";
+  src: local("Arial");
+  ascent-override: 107.25%;
+  descent-override: 41.02%;
+  line-gap-override: 0%;
+  size-adjust: 112.29%;
+}
+
 :root[dir="rtl"] body {
-  font-family: var(--font-arabic), var(--font-sans), ui-sans-serif, system-ui,
-    sans-serif;
+  font-family: var(--font-arabic), "IBM Plex Arabic Metric Fallback",
+    var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 h1,
