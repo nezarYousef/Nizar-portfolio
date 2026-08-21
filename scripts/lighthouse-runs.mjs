@@ -9,6 +9,10 @@ import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
 await assertProductionBuild(BASE);
 const RUNS = Number(process.env.LH_RUNS ?? 3);
+/* Performance is the only noisy category, so it is the only one worth paying
+   for extra iterations. a11y/best-practices/seo are deterministic on a given
+   build - three runs of those returned identical scores every time. */
+const CATEGORIES = process.env.LH_CATEGORIES ?? "performance,accessibility,best-practices,seo";
 
 const COMBOS = [
   { label: "en mobile", path: "/", desktop: false },
@@ -30,7 +34,10 @@ if (Object.keys(HEADERS).length) {
 }
 
 const median = (values) => {
-  const sorted = [...values].sort((a, b) => a - b);
+  // A category that was never requested should read as absent, not as zero.
+  const present = values.filter((v) => v !== null && v !== undefined);
+  if (!present.length) return "-";
+  const sorted = present.sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
@@ -45,7 +52,7 @@ for (const combo of COMBOS) {
     const args = [
       "lighthouse",
       `${BASE}${combo.path}`,
-      "--only-categories=performance,accessibility,best-practices,seo",
+      `--only-categories=${CATEGORIES}`,
       "--output=json",
       `--output-path=${out}`,
       '--chrome-flags=--headless=new --no-sandbox',
@@ -73,11 +80,15 @@ for (const combo of COMBOS) {
     }
     const report = JSON.parse(readFileSync(out, "utf8"));
 
+    // LH_CATEGORIES may exclude a category; asking it for a score then crashes.
+    const score = (name) =>
+      report.categories[name] ? Math.round(report.categories[name].score * 100) : null;
+
     runs.push({
-      perf: Math.round(report.categories.performance.score * 100),
-      a11y: Math.round(report.categories.accessibility.score * 100),
-      bp: Math.round(report.categories["best-practices"].score * 100),
-      seo: Math.round(report.categories.seo.score * 100),
+      perf: score("performance"),
+      a11y: score("accessibility"),
+      bp: score("best-practices"),
+      seo: score("seo"),
       fcp: report.audits["first-contentful-paint"].numericValue,
       lcp: report.audits["largest-contentful-paint"].numericValue,
       tbt: report.audits["total-blocking-time"].numericValue,
@@ -97,6 +108,9 @@ for (const combo of COMBOS) {
     "LCP ms": Math.round(median(runs.map((r) => r.lcp))),
     "TBT ms": Math.round(median(runs.map((r) => r.tbt))),
     CLS: median(runs.map((r) => r.cls)).toFixed(3),
+    // A median alone hid a 94/58/61 spread. Show the range it came from.
+    "perf min": Math.min(...runs.map((r) => r.perf)),
+    "perf max": Math.max(...runs.map((r) => r.perf)),
     perfRuns: runs.map((r) => r.perf).join("/")
   });
 
