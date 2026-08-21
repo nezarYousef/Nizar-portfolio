@@ -2,7 +2,7 @@
    browser, so every combination is run several times and the median is
    reported. Medians, not best-of - best-of would flatter the result. */
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
 import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
@@ -18,6 +18,16 @@ const COMBOS = [
 ];
 
 mkdirSync("reports", { recursive: true });
+
+/* The bypass header goes to Lighthouse as a FILE, not as inline JSON on the
+   command line. Two reasons, both learned the hard way: cmd.exe mangles the
+   quotes and braces of inline JSON, so the flag arrived malformed and every
+   run failed; and an argv-borne secret gets echoed verbatim into any
+   execFileSync error dump. reports/ is gitignored. */
+const HEADERS_FILE = "reports/lh-headers.json";
+if (Object.keys(HEADERS).length) {
+  writeFileSync(HEADERS_FILE, JSON.stringify(HEADERS));
+}
 
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b);
@@ -44,12 +54,23 @@ for (const combo of COMBOS) {
     /* Without this a protected preview redirects to the Vercel SSO page and
        Lighthouse cheerfully audits the login screen. */
     if (Object.keys(HEADERS).length) {
-      args.push(`--extra-headers=${JSON.stringify(HEADERS)}`);
+      args.push(`--extra-headers=${HEADERS_FILE}`);
     }
     if (combo.desktop) args.push("--preset=desktop");
     else args.push("--form-factor=mobile", "--screenEmulation.mobile");
 
-    execFileSync("npx", args, { stdio: "ignore", shell: true });
+    try {
+      execFileSync("npx", args, { stdio: ["ignore", "ignore", "pipe"], shell: true });
+    } catch (error) {
+      // stdio:"ignore" threw away the reason on every previous failure. Keep
+      // stderr so a broken run says what broke instead of just exiting 1.
+      const stderr = error.stderr?.toString().trim().slice(-800);
+      console.error(
+        `${combo.label} run ${i + 1} failed:`,
+        stderr || "(no stderr captured)"
+      );
+      throw error;
+    }
     const report = JSON.parse(readFileSync(out, "utf8"));
 
     runs.push({
