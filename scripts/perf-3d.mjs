@@ -11,8 +11,8 @@
 import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 
 await assertProductionBuild(BASE);
 const THROTTLES = (process.env.CPU_THROTTLES ?? "1,4,6").split(",").map(Number);
@@ -21,6 +21,7 @@ const browser = await chromium.launch({ channel: "chrome" });
 
 async function loadAndWeigh(width) {
   const context = await browser.newContext({
+      extraHTTPHeaders: HEADERS,
     viewport: { width, height: width < 500 ? 812 : 900 }
   });
   const page = await context.newPage();

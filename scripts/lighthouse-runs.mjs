@@ -4,8 +4,8 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 
 await assertProductionBuild(BASE);
 const RUNS = Number(process.env.LH_RUNS ?? 3);
@@ -41,6 +41,11 @@ for (const combo of COMBOS) {
       '--chrome-flags=--headless=new --no-sandbox',
       "--quiet"
     ];
+    /* Without this a protected preview redirects to the Vercel SSO page and
+       Lighthouse cheerfully audits the login screen. */
+    if (Object.keys(HEADERS).length) {
+      args.push(`--extra-headers=${JSON.stringify(HEADERS)}`);
+    }
     if (combo.desktop) args.push("--preset=desktop");
     else args.push("--form-factor=mobile", "--screenEmulation.mobile");
 
@@ -61,6 +66,7 @@ for (const combo of COMBOS) {
   }
 
   rows.push({
+    host: HOST_LABEL,
     combo: combo.label,
     perf: median(runs.map((r) => r.perf)),
     a11y: median(runs.map((r) => r.a11y)),

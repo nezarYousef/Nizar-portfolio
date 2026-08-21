@@ -19,9 +19,9 @@
 */
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
-const LABEL = process.argv[2] ?? (BASE.includes("localhost") ? "local" : "preview");
+const LABEL = process.argv[2] ?? HOST_LABEL;
 
 await assertProductionBuild(BASE);
 
@@ -45,7 +45,10 @@ const rows = [];
 for (const [lang, path, family] of LOCALES) {
   for (const width of WIDTHS) {
     // A fresh context is a cold cache - nothing carries over between runs.
-    const context = await browser.newContext({ viewport: { width, height: 900 } });
+    const context = await browser.newContext({
+      extraHTTPHeaders: HEADERS,
+      viewport: { width, height: 900 }
+    });
     const page = await context.newPage();
 
     const cdp = await context.newCDPSession(page);

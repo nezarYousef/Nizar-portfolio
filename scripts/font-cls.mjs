@@ -18,11 +18,11 @@
 */
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
+import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 
 await assertProductionBuild(BASE);
-const LABEL = process.argv[2] ?? "current";
+const LABEL = process.argv[2] ?? HOST_LABEL;
 const RUNS = Number(process.env.FONT_RUNS ?? 3);
 
 /* Chrome DevTools "Fast 3G". */
@@ -53,6 +53,7 @@ for (const [lang, path, family] of TARGETS) {
   for (let run = 0; run < RUNS; run += 1) {
     // A fresh context is a cold cache - nothing is carried over between runs.
     const context = await browser.newContext({
+      extraHTTPHeaders: HEADERS,
       viewport: { width: 1350, height: 900 }
     });
     const page = await context.newPage();

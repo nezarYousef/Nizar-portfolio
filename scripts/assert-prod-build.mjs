@@ -34,6 +34,7 @@
 */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { HEADERS } from "./_target.mjs";
 
 const PROD_CSS = /^\/_next\/static\/css\/[0-9a-f]{8,}\.css$/;
 
@@ -79,7 +80,7 @@ export async function assertProductionBuild(base = "http://localhost:4321", path
   for (const path of paths) {
     let html;
     try {
-      const res = await fetch(`${base}${path}`);
+      const res = await fetch(`${base}${path}`, { headers: HEADERS });
       if (!res.ok) {
         // A protected Vercel preview answers 401 with an SSO page rather than
         // the site, which would otherwise look like a mysterious empty result.
@@ -110,7 +111,7 @@ export async function assertProductionBuild(base = "http://localhost:4321", path
     // would silently invalidate every font and CLS measurement. Every path is
     // checked, not just the first - /ar loads a face that / does not.
     for (const href of hrefs.filter((h) => PROD_CSS.test(h))) {
-      const css = await (await fetch(`${base}${href}`)).text();
+      const css = await (await fetch(`${base}${href}`, { headers: HEADERS })).text();
       if (css.includes("--font-sans")) {
         sawFontVariable = true;
         break;
