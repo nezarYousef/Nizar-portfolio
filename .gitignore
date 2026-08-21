@@ -6,3 +6,4 @@ out/
 .env*.local
 screenshots/
 reports/
+.claude/
