@@ -137,6 +137,37 @@ const harvest = async (path) => {
     await page.waitForTimeout(150);
   }
 
+/* Waits for the dialog's image count to stop changing rather than pausing a
+   fixed 250ms, which is enough on localhost and not against a remote host.
+
+   Be careful with this script's remote numbers. Run against two previews it
+   reported 0, 19, 49 and 55 missing strings on builds whose served HTML is
+   byte-identical - so its misses are its own, and this settle helper reduced
+   the noise without removing it. Opening nine dialogs in two locales over a
+   real network has more moving parts than the question deserves.
+
+   For "was anything lost", use scripts/content-html-diff.mjs instead: both
+   pages are prerendered, so the served HTML answers it deterministically with
+   no browser in the loop. Keep this script for what only a browser can check
+   - that each gallery actually opens and mounts the images it claims. */
+async function settleDialog(page, { quietFor = 2, capMs = 6000 } = {}) {
+  const started = Date.now();
+  let last = -1;
+  let stable = 0;
+
+  while (Date.now() - started < capMs) {
+    const count = await page
+      .locator('[role="dialog"] img')
+      .count()
+      .catch(() => -1);
+    stable = count === last && count > 0 ? stable + 1 : 0;
+    if (stable >= quietFor) return count;
+    last = count;
+    await page.waitForTimeout(150);
+  }
+  return last;
+}
+
   // Open each gallery. Filter buttons live in a role=group and are skipped -
   // clicking one hides rows and would make the whole harvest lie.
   const triggers = await page
@@ -148,7 +179,7 @@ const harvest = async (path) => {
       await trigger.scrollIntoViewIfNeeded();
       await trigger.click({ timeout: 2500 });
       await page.waitForSelector('[role="dialog"]', { timeout: 2500 });
-      await page.waitForTimeout(250);
+      await settleDialog(page);
       collected += " " + (await snapshot());
       await page.keyboard.press("Escape");
       await page.waitForTimeout(200);

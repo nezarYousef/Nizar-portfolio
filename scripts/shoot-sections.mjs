@@ -3,7 +3,10 @@
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+/* _target.mjs carries the deployment-protection bypass header. Without it a
+   preview answers every navigation with the Vercel SSO page, and this script
+   photographs the login screen while reporting success. */
+import { BASE, HEADERS } from "./_target.mjs";
 const OUT = "screenshots/sections";
 
 const TARGETS = (process.env.SHOOT_TARGETS ?? "hero,skills,projects,contact").split(",");
@@ -20,6 +23,7 @@ const browser = await chromium.launch({ channel: "chrome" });
 
 for (const { locale, theme, width } of COMBOS) {
   const context = await browser.newContext({
+    extraHTTPHeaders: HEADERS,
     viewport: { width, height: width < 500 ? 812 : 900 },
     deviceScaleFactor: 1
   });
@@ -28,6 +32,7 @@ for (const { locale, theme, width } of COMBOS) {
   }, theme);
 
   const page = await context.newPage();
+  await page.route(/vercel\.live|_next-live/, (route) => route.abort());
   await page.goto(`${BASE}${locale === "ar" ? "/ar" : "/"}`, {
     waitUntil: "networkidle"
   });

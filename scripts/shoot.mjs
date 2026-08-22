@@ -5,8 +5,10 @@
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
-
-const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
+/* _target.mjs carries the deployment-protection bypass header. Without it a
+   preview answers every navigation with the Vercel SSO page, and this script
+   photographs the login screen while reporting success. */
+import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
 
 await assertProductionBuild(BASE);
 const OUT = process.env.SHOOT_OUT ?? "screenshots";
@@ -32,7 +34,8 @@ for (const locale of LOCALES) {
     for (const viewport of VIEWPORTS) {
       const context = await browser.newContext({
         viewport: { width: viewport.width, height: viewport.height },
-        deviceScaleFactor: 1
+        deviceScaleFactor: 1,
+        extraHTTPHeaders: HEADERS
       });
 
       // Set the stored theme before any script runs, exactly like a returning
@@ -42,6 +45,14 @@ for (const locale of LOCALES) {
       }, theme);
 
       const page = await context.newPage();
+
+      /* Vercel injects a feedback widget into preview deployments which holds
+         a websocket open, so networkidle never fires and every navigation
+         times out at 30s. It does not exist on production, so blocking it
+         makes the preview behave like the real site rather than papering over
+         the wait condition. */
+      await page.route(/vercel\.live|_next-live/, (route) => route.abort());
+
       const errors = [];
       page.on("console", (msg) => {
         if (msg.type() === "error") errors.push(msg.text());
