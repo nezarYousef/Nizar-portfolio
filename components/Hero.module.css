@@ -2,6 +2,8 @@
   position: relative;
   display: flex;
   align-items: center;
+  /* token-audit-ignore: the hero's height is a proportion of the viewport with
+     a ceiling, not a spacing step. */
   min-height: min(92svh, 880px);
   padding-block: var(--space-3xl) var(--space-2xl);
   overflow: hidden;
@@ -28,7 +30,7 @@
   gap: var(--space-xs);
   color: var(--accent);
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
@@ -44,7 +46,7 @@
 .name {
   margin-block-start: var(--space-m);
   font-size: var(--text-4xl);
-  font-weight: 660;
+  font-weight: var(--weight-display);
 }
 
 /* Same reservation problem, same measured answer. The English name wraps to
@@ -66,7 +68,9 @@
    clip-path is composited, so this never triggers layout. */
 @media (prefers-reduced-motion: no-preference) {
   .typeOnce {
-    animation: typeIn 900ms steps(24, end) 120ms both;
+    /* token-audit-ignore: steps() is the effect, not an easing choice; the
+       character count is the name's length. Durations are tokens. */
+    animation: typeIn var(--dur-intro) steps(24, end) var(--dur-fast) both;
   }
 
   @keyframes typeIn {
@@ -101,7 +105,7 @@
   margin-block-start: var(--space-m);
   color: var(--ink);
   font-size: var(--text-xl);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-tight);
 }
@@ -121,21 +125,27 @@
    chip text are different lengths - which is precisely why this approach is
    fragile, and why it is measured rather than guessed. */
 .identity {
+  /* token-audit-ignore: measured row reservations, derived from the real chip
+     height - see the comment above. Rounding them to the spacing scale would
+     make them wrong. */
   min-block-size: 144px; /* en, < 768px: 4 rows */
 }
 
 @media (min-width: 768px) {
   .identity {
+    /* token-audit-ignore: measured, as above. */
     min-block-size: 68px; /* en, >= 768px: 2 rows */
   }
 }
 
 :global([dir="rtl"]) .identity {
+  /* token-audit-ignore: measured, as above. */
   min-block-size: 68px; /* ar: 2 rows at every width except one */
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   :global([dir="rtl"]) .identity {
+    /* token-audit-ignore: measured, as above. */
     min-block-size: 30px; /* ar, tablet only: 1 row */
   }
 }
@@ -168,15 +178,15 @@
 }
 
 .statusDot {
-  width: 6px;
-  height: 6px;
+  width: var(--dot-signal);
+  height: var(--dot-signal);
   border-radius: 50%;
   background: currentColor;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .statusDot {
-    animation: statusPulse 2.6s var(--ease-out) infinite;
+    animation: statusPulse var(--dur-pulse) var(--ease-out) infinite;
   }
 
   @keyframes statusPulse {
@@ -211,24 +221,17 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2xs);
-  min-height: 44px;
+  min-height: var(--control-h);
   padding-inline: var(--space-m);
   border-radius: var(--radius);
   font-size: var(--text-s);
-  font-weight: 600;
-  transition:
-    transform var(--dur) var(--ease-out),
-    background-color var(--dur) var(--ease-out),
-    border-color var(--dur) var(--ease-out);
+  font-weight: var(--weight-semibold);
+  transition: var(--t-control);
 }
 
 .primaryAction {
   background: var(--accent);
-  color: var(--paper-raised);
-}
-
-:root[data-theme="dark"] .primaryAction {
-  color: #06201e;
+  color: var(--ink-on-accent);
 }
 
 .secondaryAction {
@@ -238,7 +241,7 @@
 
 .primaryAction:hover,
 .secondaryAction:hover {
-  transform: translateY(-2px);
+  transform: translateY(var(--lift));
 }
 
 .secondaryAction:hover {
@@ -272,8 +275,8 @@
 .statValue {
   color: var(--ink);
   font-size: var(--text-xl);
-  font-weight: 500;
-  line-height: 1.1;
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
 }
 
 .statLabel {

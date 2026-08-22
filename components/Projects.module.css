@@ -54,7 +54,7 @@
 }
 
 .tag {
-  padding: 2px var(--space-2xs);
+  padding: var(--space-3xs) var(--space-2xs);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   color: var(--ink-muted);
@@ -72,23 +72,20 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-3xs);
-  min-height: 40px;
+  min-height: var(--control-h);
   padding-inline: var(--space-xs);
   border: 1px solid var(--line-interactive);
   border-radius: var(--radius);
   color: var(--ink);
   font-size: var(--text-xs);
   cursor: pointer;
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
+  transition: var(--t-control);
 }
 
 .action:hover {
   border-color: var(--accent);
   background: var(--accent-wash);
-  transform: translateY(-1px);
+  transform: translateY(var(--lift));
 }
 
 .externalMark {
@@ -137,7 +134,7 @@
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .rowInner {
     grid-template-columns: 3rem minmax(0, 1fr) 15rem;
     gap: var(--space-l);

@@ -58,6 +58,7 @@
 @media (min-width: 1280px) {
   .rail {
     position: fixed;
+    /* token-audit-ignore: 50% + translateY(-50%) is the centring idiom. */
     inset-block-start: 50%;
     inset-inline-start: var(--space-s);
     z-index: 20;

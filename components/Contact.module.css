@@ -7,25 +7,6 @@
   max-width: var(--measure);
 }
 
-.availability {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2xs);
-  padding: var(--space-3xs) var(--space-2xs);
-  border: 1px solid var(--signal-line);
-  border-radius: var(--radius-pill);
-  background: var(--signal-wash);
-  color: var(--signal);
-  font-size: var(--text-2xs);
-}
-
-.availabilityDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
 .description {
   margin-block-start: var(--space-s);
   color: var(--ink-muted);
@@ -36,7 +17,7 @@
   display: grid;
   gap: var(--space-2xs);
   align-self: start;
-  padding: var(--space-s);
+  padding: var(--space-m);
   border: var(--border);
   border-radius: var(--radius-lg);
   background: var(--paper-raised);
@@ -47,16 +28,14 @@
   grid-template-columns: auto 1fr;
   gap: var(--space-2xs);
   align-items: center;
-  min-height: 56px;
+  min-height: var(--control-h-lg);
   padding: var(--space-2xs) var(--space-s);
   border: 1px solid var(--line-interactive);
   border-radius: var(--radius);
   color: var(--ink);
   font-size: var(--text-s);
-  font-weight: 560;
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out);
+  font-weight: var(--weight-semibold);
+  transition: var(--t-control);
 }
 
 .method:hover {
@@ -81,26 +60,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--control-h);
+  height: var(--control-h);
   border: 1px solid var(--line-interactive);
   border-radius: var(--radius);
   color: var(--ink);
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
+  transition: var(--t-control);
 }
 
 .social:hover {
   border-color: var(--accent);
   background: var(--accent-wash);
-  transform: translateY(-2px);
+  transform: translateY(var(--lift));
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--panel-col));
     gap: var(--space-2xl);
     align-items: start;
   }

@@ -18,7 +18,7 @@ export default function FilterGroup({ options, label, children, className = "" }
           <button
             key={option.value}
             type="button"
-            className={styles.option}
+            className={`${styles.option} u-mono`}
             aria-pressed={active === option.value}
             onClick={() => setActive(option.value)}
             id={`${groupId}-${option.value}`}

@@ -7,7 +7,7 @@
   justify-content: center;
   padding: var(--space-s);
   background: color-mix(in srgb, var(--paper-sunken) 82%, transparent);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(var(--blur-surface));
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -52,13 +52,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: var(--control-h);
+  min-height: var(--control-h);
   border: 1px solid var(--line-interactive);
   border-radius: var(--radius);
   color: var(--ink);
   cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition: var(--t-control);
 }
 
 .close:hover {
@@ -92,10 +92,10 @@
 .highlights li::before {
   content: "";
   position: absolute;
-  inset-block-start: 0.62em;
+  inset-block-start: calc((1lh - var(--dot-bullet)) / 2);
   inset-inline-start: 0;
-  width: 5px;
-  height: 5px;
+  width: var(--dot-bullet);
+  height: var(--dot-bullet);
   border-radius: 50%;
   background: var(--accent);
 }

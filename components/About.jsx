@@ -28,8 +28,8 @@ export default function About({ copy, portraitAlt, index }) {
           </div>
 
           <div className={styles.panelBody}>
-            <p className={`${styles.availability} u-mono`}>
-              <span className={styles.availabilityDot} aria-hidden="true" />
+            <p className="u-signal-pill u-mono">
+              <span className="u-signal-dot" aria-hidden="true" />
               {copy.availability}
             </p>
 

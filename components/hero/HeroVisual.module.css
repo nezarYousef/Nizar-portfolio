@@ -4,6 +4,8 @@
      rasterises roughly half as many pixels as a full-bleed one would. */
   inset-block: 0;
   inset-inline-end: 0;
+  /* token-audit-ignore: the split point of the hero, measured against the copy
+     column - see the comment above. */
   inset-inline-start: 46%;
   z-index: 0;
   overflow: hidden;

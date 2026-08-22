@@ -31,7 +31,7 @@
   border-block-end: var(--border);
   color: var(--accent);
   font-size: var(--text-s);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
@@ -46,7 +46,7 @@
   display: grid;
   gap: var(--space-3xs);
   padding-block-end: var(--space-2xs);
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--border);
 }
 
 .skill:last-child {
@@ -57,7 +57,7 @@
 .skillName {
   color: var(--ink);
   font-size: var(--text-s);
-  font-weight: 560;
+  font-weight: var(--weight-semibold);
 }
 
 .evidence {
@@ -75,7 +75,7 @@
 .evidenceLabel {
   color: var(--ink-muted);
   font-size: var(--text-2xs);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -90,15 +90,17 @@
 .evidenceLink,
 .evidenceProgram {
   font-size: var(--text-2xs);
-  line-height: 1.4;
+  line-height: var(--leading-compact);
 }
 
 .evidenceLink {
   color: var(--ink-body);
   text-decoration: underline;
   text-decoration-color: var(--accent-line);
+  /* token-audit-ignore: an underline's distance from the baseline is a type
+     detail, not a layout step. */
   text-underline-offset: 2px;
-  transition: color var(--dur-fast) var(--ease-out);
+  transition: var(--t-control);
 }
 
 .evidenceLink:hover {
@@ -126,7 +128,7 @@
 .coreStackTitle {
   color: var(--ink-muted);
   font-size: var(--text-2xs);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
@@ -147,7 +149,7 @@
   font-size: var(--text-2xs);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -16,8 +16,8 @@ export default function Contact({ copy, index }) {
     <Section id="contact" index={index} kicker={copy.eyebrow} title={copy.title}>
       <div className={styles.grid}>
         <Reveal className={styles.intro}>
-          <p className={`${styles.availability} u-mono`}>
-            <span className={styles.availabilityDot} aria-hidden="true" />
+          <p className="u-signal-pill u-mono">
+            <span className="u-signal-dot" aria-hidden="true" />
             {copy.availability}
           </p>
           <p className={styles.description}>{copy.description}</p>

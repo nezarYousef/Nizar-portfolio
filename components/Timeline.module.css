@@ -9,8 +9,8 @@
 .rail::before {
   content: "";
   position: absolute;
-  inset-block: 0.75rem 0;
-  inset-inline-start: 11px;
+  inset-block: var(--space-xs) 0;
+  inset-inline-start: calc(var(--marker-size) / 2);
   width: 1px;
   background: linear-gradient(
     to bottom,
@@ -32,8 +32,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 23px;
-  height: 23px;
+  width: var(--marker-size);
+  height: var(--marker-size);
   border: 1px solid var(--accent-line);
   border-radius: 50%;
   background: var(--paper);
@@ -93,10 +93,10 @@
 .points li::before {
   content: "";
   position: absolute;
-  inset-block-start: 0.65em;
+  inset-block-start: calc((1lh - var(--dot-bullet)) / 2);
   inset-inline-start: 0;
-  width: 4px;
-  height: 4px;
+  width: var(--dot-bullet);
+  height: var(--dot-bullet);
   border-radius: 50%;
   background: var(--line-strong);
 }
