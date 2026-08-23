@@ -1,0 +1,11 @@
+/* Fixed behind everything (the .world glow layer renders above it, both sit
+   under all content). pointer-events: none keeps the canvas fully inert. */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}

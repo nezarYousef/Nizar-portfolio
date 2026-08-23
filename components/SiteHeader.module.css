@@ -7,6 +7,27 @@
   border-block-end: var(--border);
 }
 
+/* Reading progress - a hairline under the header edge, driven by one rAF-
+   batched transform write. Decorative, aria-hidden in the markup. */
+.progress {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 2px;
+  overflow: hidden;
+}
+
+.progressBar {
+  block-size: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+[dir="rtl"] .progressBar {
+  transform-origin: right center;
+}
+
 .nav {
   display: flex;
   align-items: center;

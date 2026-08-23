@@ -1,0 +1,333 @@
+.dock {
+  position: fixed;
+  inset-block-end: max(var(--space-m), env(safe-area-inset-bottom));
+  inset-inline-end: var(--space-m);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2xs);
+  /* Slides in only once the hero has been left, so it never competes with
+     the entrance choreography or the nebula. */
+  transform: translateY(140%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--dur-slow) var(--ease-out),
+    opacity var(--dur-slow) var(--ease-out);
+}
+
+.dock[data-visible="true"] {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Trigger + character ─────────────────────────────────────────────────── */
+
+.button {
+  display: grid;
+  place-items: center;
+  /* Grown from a chat-icon footprint to a character footprint - present at
+     the corner of the eye, still nowhere near competing with content. */
+  inline-size: calc(var(--control-h) + 34px);
+  block-size: calc(var(--control-h) + 30px);
+  padding-block-end: var(--space-2xs);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.charWrap {
+  position: relative;
+  display: block;
+}
+
+/* The shadow under the character is what separates it from the page: it
+   shrinks and fades as the body rises, in exactly the float's period. */
+.groundShadow {
+  position: absolute;
+  inset-block-end: -4px;
+  left: 50%;
+  translate: -50% 0;
+  width: 54px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--ink) 42%, transparent),
+    transparent 72%
+  );
+  filter: blur(2px);
+}
+
+/* The character floats inside a soft halo so it belongs to the same universe
+   as the nebula: same accent, same additive-glow language, no hard card edge. */
+.character {
+  position: relative;
+  width: 66px;
+  height: 73px;
+  overflow: visible;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.38))
+    drop-shadow(0 0 14px color-mix(in srgb, var(--accent-bright) 26%, transparent));
+}
+
+.headShell {
+  fill: var(--paper-raised);
+  stroke: var(--accent-line);
+  stroke-width: 1.5;
+}
+
+.visor {
+  fill: color-mix(in srgb, var(--paper-sunken) 88%, var(--ink));
+}
+
+.body {
+  fill: var(--paper-raised);
+  stroke: var(--accent-line);
+  stroke-width: 1.5;
+}
+
+.antenna {
+  stroke: var(--accent-line);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.antennaTip {
+  fill: var(--accent-bright);
+}
+
+.eye {
+  fill: var(--accent-bright);
+}
+
+.chestLight {
+  fill: var(--signal);
+}
+
+.arm {
+  fill: var(--paper-raised);
+  stroke: var(--accent-line);
+  stroke-width: 1.5;
+}
+
+/* Idle life: the whole character breathes, the head glances around slowly,
+   the antenna pings, the eyes blink once in a while. All long, slow, quiet
+   loops - and all dead under reduced motion via the global kill switch. */
+@media (prefers-reduced-motion: no-preference) {
+  .character {
+    /* Rise + a whisper of lean: two individual transform channels so the
+       hover wave (rotate on the arm) never fights the body motion. */
+    animation: charFloat 5.5s ease-in-out infinite;
+  }
+
+  .groundShadow {
+    animation: groundPulse 5.5s ease-in-out infinite;
+  }
+
+  .head {
+    transform-origin: 32px 42px;
+    animation: charGlance 9s ease-in-out infinite;
+  }
+
+  .antennaTip {
+    animation: charPing 3.4s ease-in-out infinite;
+  }
+
+  .eyes {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: charBlink 4.6s ease-in-out infinite;
+  }
+
+  /* The right arm waves while hovered or focused, or celebrates opening. */
+  .waveArm {
+    transform-origin: 51px 48px;
+  }
+
+  @keyframes charFloat {
+    0%,
+    100% {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+    50% {
+      translate: 0 -8px;
+      rotate: 1.6deg;
+    }
+  }
+
+  /* Counter-phase with the float: character up → shadow smaller and fainter.
+     Same period, same easing, so they stay locked forever. */
+  @keyframes groundPulse {
+    0%,
+    100% {
+      scale: 1;
+      opacity: 1;
+    }
+    50% {
+      scale: 0.74;
+      opacity: 0.55;
+    }
+  }
+
+  @keyframes charGlance {
+    0%,
+    64%,
+    100% {
+      rotate: 0deg;
+    }
+    74% {
+      rotate: 4deg;
+    }
+    86% {
+      rotate: -3deg;
+    }
+  }
+
+  @keyframes charPing {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes charBlink {
+    0%,
+    91%,
+    100% {
+      scale: 1 1;
+    }
+    94%,
+    96% {
+      scale: 1 0.08;
+    }
+  }
+}
+
+.button:hover .waveArm,
+.button:focus-visible .waveArm,
+.dock[data-open="true"] .waveArm {
+  animation: armWave 900ms var(--ease-out) infinite alternate;
+}
+
+@keyframes armWave {
+  from {
+    rotate: -8deg;
+  }
+  to {
+    rotate: 34deg;
+  }
+}
+
+/* A small hop when the panel opens - acknowledgement, not celebration. */
+@media (prefers-reduced-motion: no-preference) {
+  .dock[data-open="true"] .character {
+    animation: charFloat 5.5s ease-in-out infinite,
+      charHop 480ms var(--ease-out) 1;
+  }
+
+  @keyframes charHop {
+    0% {
+      scale: 1 1;
+    }
+    38% {
+      scale: 0.94 1.07;
+    }
+    70% {
+      scale: 1.04 0.95;
+    }
+    100% {
+      scale: 1 1;
+    }
+  }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+
+.panel {
+  min-inline-size: 15rem;
+  max-inline-size: min(19rem, calc(100vw - 2 * var(--space-m)));
+  padding: var(--space-s);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--paper-raised) 86%, transparent);
+  backdrop-filter: blur(var(--blur-surface));
+  box-shadow: var(--elev-3);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-3xs) var(--space-xs);
+  border: 1px solid var(--signal-line);
+  border-radius: var(--radius-pill);
+  background: var(--signal-wash);
+  color: var(--signal);
+  font-size: var(--text-2xs);
+}
+
+.statusDot {
+  width: var(--dot-signal);
+  height: var(--dot-signal);
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.links {
+  margin-block-start: var(--space-2xs);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-3xs) var(--space-2xs);
+  border-radius: var(--radius-sm);
+  color: var(--ink-body);
+  font-size: var(--text-s);
+  transition: var(--t-control);
+}
+
+.link:hover {
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.mail {
+  display: flex;
+  align-items: center;
+  margin-block-start: var(--space-2xs);
+  padding-block-start: var(--space-2xs);
+  border-block-start: var(--border);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  transition: var(--t-control);
+}
+
+.mail:hover {
+  color: var(--ink);
+}
+
+/* On phones the character scales down to stay companion-sized against the
+   smaller viewport - same character, smaller stage. */
+@media (max-width: 767px) {
+  .button {
+    inline-size: calc(var(--control-h) + 16px);
+    block-size: calc(var(--control-h) + 14px);
+  }
+
+  .character {
+    width: 50px;
+    height: 56px;
+  }
+
+  .groundShadow {
+    width: 40px;
+    height: 9px;
+  }
+}

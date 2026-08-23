@@ -1,0 +1,86 @@
+/* The cursor identity. Both parts are fixed, pointer-transparent and above
+   every surface (below the intro overlay). The ring carries the states; the
+   dot never lags, so precision is never traded for character. State scales
+   are composed by Cursor.jsx inside the translated transform - an individual
+   `scale` here would scale the translation itself and knock the part off the
+   pointer (see the comment there). */
+
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 240;
+  display: grid;
+  place-items: center;
+  inline-size: 34px;
+  block-size: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--accent-bright);
+  border-radius: 50%;
+  opacity: 0.6;
+  pointer-events: none;
+  transition:
+    inline-size 260ms var(--ease-out),
+    block-size 260ms var(--ease-out),
+    margin 260ms var(--ease-out),
+    background-color 260ms var(--ease-out),
+    opacity 260ms var(--ease-out);
+}
+
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 241;
+  inline-size: 6px;
+  block-size: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.label {
+  color: var(--accent);
+  font-family: var(--font-mono), "JetBrains Mono Metric Fallback", ui-monospace,
+    monospace;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+/* Interactive controls: the ring wraps them, the dot yields the centre.
+   The dot's shrink to half size is applied in Cursor.jsx's transform. */
+.ring[data-state="link"] {
+  inline-size: 48px;
+  block-size: 48px;
+  margin: -24px 0 0 -24px;
+  opacity: 0.9;
+}
+
+/* Project scenes: a labelled disc, numeral stamped from real project order. */
+.ring[data-state="view"] {
+  inline-size: 62px;
+  block-size: 62px;
+  margin: -31px 0 0 -31px;
+  background: color-mix(in srgb, var(--accent-bright) 12%, transparent);
+  opacity: 1;
+}
+
+.ring[data-state="view"] .label {
+  opacity: 1;
+}
+
+.dot[data-state="view"] {
+  opacity: 0;
+}
+
+/* Hidden while off-window. */
+.ring[data-state="hidden"],
+.dot[data-state="hidden"] {
+  opacity: 0 !important;
+}

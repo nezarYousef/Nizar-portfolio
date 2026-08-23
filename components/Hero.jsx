@@ -4,10 +4,10 @@ import styles from "./Hero.module.css";
 
 /* Server component. The only client code in the hero is the decorative
    canvas; every word here is in the static HTML. */
-export default function Hero({ copy, ui }) {
+export default function Hero({ copy, ui, skillWords }) {
   return (
     <section className={styles.hero} id="hero">
-      <HeroVisual label={ui.decorativeVisual} />
+      <HeroVisual label={ui.decorativeVisual} words={skillWords} />
 
       <div className={styles.inner}>
         <div className={styles.copy}>

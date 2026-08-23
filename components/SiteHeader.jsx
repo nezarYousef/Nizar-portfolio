@@ -1,7 +1,7 @@
 "use client";
 
 import { Languages, Menu, Moon, Sun, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./SiteHeader.module.css";
 
 const THEME_KEY = "nizar-portfolio-theme";
@@ -72,6 +72,38 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const active = useActiveSection(sectionIds);
+  const progressRef = useRef(null);
+
+  /* Reading progress: one passive scroll listener, rAF-batched, writing a
+     transform directly - no React state on the hot path. Decorative (the
+     browser already communicates position), so it stays aria-hidden. */
+  useEffect(() => {
+    let queued = false;
+    let frame = 0;
+
+    const update = () => {
+      queued = false;
+      const max =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const value = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${value})`;
+      }
+    };
+
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     const close = () => {
@@ -160,6 +192,10 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
           </button>
         </div>
       </nav>
+
+      <div className={styles.progress} aria-hidden="true">
+        <div ref={progressRef} className={styles.progressBar} />
+      </div>
     </header>
   );
 }

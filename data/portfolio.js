@@ -256,7 +256,7 @@ export const portfolioCopy = {
     },
     hero: {
       eyebrow: "Computer Engineer / Software, AI & Web",
-      name: "Nizar Yousef Alqerem",
+      name: "Nizar Y. Alqerem",
       identity: "Computer Engineer - Palestine 🇵🇸",
       title: "Computer engineer building software, intelligent systems, and modern web experiences.",
       typedRole: "AI + Web Engineering",

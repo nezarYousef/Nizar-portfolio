@@ -1,11 +1,16 @@
 .hero {
   position: relative;
   display: flex;
-  align-items: center;
   /* token-audit-ignore: the hero's height is a proportion of the viewport with
      a ceiling, not a spacing step. */
-  min-height: min(92svh, 880px);
-  padding-block: var(--space-3xl) var(--space-2xl);
+  min-height: min(88svh, 820px);
+  /* The header is sticky, so it already occupies its own band of flow - the
+     stage starts directly beneath it and needs no header-height
+     compensation on top. One spacing step below that edge gives the content
+     its breathing space without reopening the dead band a vertical centre
+     once produced. The nebula still fills the remaining depth to the fold. */
+  align-items: flex-start;
+  padding-block: var(--space-l) var(--space-2xl);
   overflow: hidden;
 }
 
@@ -49,28 +54,84 @@
   font-weight: var(--weight-display);
 }
 
-/* Same reservation problem, same measured answer. The English name wraps to
-   two lines below 480px and again at 1280px and up, but sits on one line in
-   between; the Arabic name is one line at every width. 2lh reserves exactly
-   two line boxes at whatever the fluid type scale currently resolves to. */
-@media (max-width: 480px), (min-width: 1280px) {
-  :global([dir="ltr"]) .name {
-    min-block-size: 2lh;
-  }
-}
+/* "Nizar Y. Alqerem" sits on one line at every width, so no line-box
+   reservation is needed - the content below hangs directly off the single
+   line instead of a reserved second one. Re-verify with
+   scripts/font-metrics-band.mjs if the name or its face ever changes. */
 
 .typeOnce {
   display: inline-block;
 }
 
-/* Types once on load, then stays put. Pure CSS: no timers, no state, and the
-   full name is in the DOM from the first byte for screen readers and search.
-   clip-path is composited, so this never triggers layout. */
+/* ── Entrance choreography ──────────────────────────────────────────────────
+   Released by IntroSequence setting [data-hero-in] on <html> in the same
+   frame the explosion overlay lets go, so nothing animates behind the cover.
+   While the intro owns the screen ([data-intro] without [data-hero-in]) the
+   copy is held invisible - time-boxed by a failsafe animation so a bundle
+   that dies after the inline scripts ran cannot hide the hero forever.
+   With no JavaScript at all neither attribute exists: fully static hero,
+   exactly like the rest of the page. */
 @media (prefers-reduced-motion: no-preference) {
-  .typeOnce {
+  :global([data-intro]:not([data-hero-in])) .copy > * {
+    opacity: 0;
+    /* token-audit-ignore: the failsafe duration is the point of the rule. */
+    animation: heroFailsafe 1ms linear 5s forwards;
+  }
+
+  @keyframes heroFailsafe {
+    to {
+      opacity: 1;
+    }
+  }
+
+  :global([data-hero-in]) .copy > * {
+    animation: heroRise 650ms var(--ease-out) 40ms both;
+  }
+
+  :global([data-hero-in]) .name {
+    animation-delay: 120ms;
+  }
+
+  :global([data-hero-in]) .lead {
+    animation-delay: 220ms;
+  }
+
+  :global([data-hero-in]) .identity {
+    animation-delay: 320ms;
+  }
+
+  :global([data-hero-in]) .description {
+    animation-delay: 400ms;
+  }
+
+  :global([data-hero-in]) .actions {
+    animation-delay: 480ms;
+  }
+
+  :global([data-hero-in]) .stats {
+    animation-delay: 560ms;
+  }
+
+  @keyframes heroRise {
+    from {
+      opacity: 0;
+      transform: translateY(var(--reveal-shift));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Types once as its line rises into place, then stays put. Pure CSS: no
+     timers, no state, and the full name is in the DOM from the first byte for
+     screen readers and search. clip-path is composited, so this never
+     triggers layout. The rise itself belongs to the parent h1 - the span only
+     clips, otherwise the name would move twice. */
+  :global([data-hero-in]) .typeOnce {
     /* token-audit-ignore: steps() is the effect, not an easing choice; the
        character count is the name's length. Durations are tokens. */
-    animation: typeIn var(--dur-intro) steps(24, end) var(--dur-fast) both;
+    animation: typeIn var(--dur-intro) steps(16, end) 300ms both;
   }
 
   @keyframes typeIn {
@@ -84,8 +145,8 @@
 
   /* Reveal from the opposite edge in Arabic, so the text still appears to
      arrive in reading order rather than backwards. */
-  :global([dir="rtl"]) .typeOnce {
-    animation-name: typeInRtl;
+  :global([dir="rtl"][data-hero-in]) .typeOnce {
+    animation-name: heroRise, typeInRtl;
   }
 
   @keyframes typeInRtl {
@@ -234,6 +295,29 @@
   color: var(--ink-on-accent);
 }
 
+/* Hover answers: the primary glows in its own ink, its arrow leans forward;
+   the secondary warms toward accent. Press feedback comes from the global
+   button :active rule. */
+.primaryAction:hover {
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--accent) 38%, transparent);
+}
+
+.primaryAction svg {
+  transition: translate var(--dur-fast) var(--ease-out);
+}
+
+.primaryAction:hover svg {
+  translate: 2px 0;
+}
+
+:global([dir="rtl"]) .primaryAction svg {
+  transform: scaleX(-1);
+}
+
+:global([dir="rtl"]) .primaryAction:hover svg {
+  translate: -2px 0;
+}
+
 .secondaryAction {
   border: 1px solid var(--line-interactive);
   color: var(--ink);
@@ -247,11 +331,6 @@
 .secondaryAction:hover {
   border-color: var(--accent);
   background: var(--accent-wash);
-}
-
-/* The arrow points along the reading direction in both scripts. */
-:global([dir="rtl"]) .primaryAction svg {
-  transform: scaleX(-1);
 }
 
 /* ── Stats ───────────────────────────────────────────────────────────────── */
@@ -288,7 +367,7 @@
 
 @media (min-width: 768px) {
   .hero {
-    padding-block: var(--space-4xl) var(--space-3xl);
+    padding-block: var(--space-xl) var(--space-3xl);
   }
 }
 

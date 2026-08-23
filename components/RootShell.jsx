@@ -5,6 +5,12 @@ import "@/app/globals.css";
 /* Runs before first paint, so a dark-mode visitor never sees a light flash.
    Kept deliberately tiny and dependency-free - it is inlined into every page.
 
+   Dark is the house default: a stored preference always wins, but a first
+   visit with no preference at all opens dark - the site is designed as a
+   space environment first, light is the alternate reading mode. (The OS
+   preference is deliberately not consulted: it flipped the first impression
+   away from the intended composition for roughly half of all visitors.)
+
    It sits as the first child of <body>, not inside a hand-written <head>.
    Rendering our own <head> element suppressed Next's managed head injection,
    and with it every next/font <link rel="preload">, so the faces were only
@@ -12,7 +18,15 @@ import "@/app/globals.css";
    late enough to reflow the page. A blocking inline script at the top of
    <body> still executes before any body content is painted, so the theme is
    set just as early. */
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}})();`;
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t="dark"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})();`;
+
+/* Mirrors IntroSequence's conditions so the right hold exists before first
+   paint: "boot" paints an opaque space cover ahead of the explosion sequence;
+   "quick" merely holds the hero entrance for the few frames until hydration
+   confirms the intro already played this session - without it the hero would
+   flash statically and then snap back to replay its entrance. Reduced-motion
+   visitors get neither. Without JS the attribute never appears at all. */
+const INTRO_SCRIPT = `(function(){try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;document.documentElement.dataset.intro=sessionStorage.getItem("nizar-portfolio-intro")==="done"?"quick":"boot"}catch(e){document.documentElement.dataset.intro="boot"}})();`;
 
 function StructuredData({ lang }) {
   const copy = portfolioCopy[lang];
@@ -48,10 +62,24 @@ function StructuredData({ lang }) {
 
 export default function RootShell({ lang, fontClass, children }) {
   return (
-    <html lang={lang} dir={LOCALES[lang].dir} className={fontClass}>
+    /* THEME_SCRIPT sets data-theme on this element before React hydrates, so
+       the server's <html> and the client's differ by design and React warns
+       about it in development. suppressHydrationWarning applies to this
+       element's own attributes and text only - one level, no deeper - so the
+       tree below is still fully checked and a genuine mismatch anywhere else
+       still surfaces. Verified: with this in place the dev console is clean
+       on both locales in both themes. */
+    <html
+      lang={lang}
+      dir={LOCALES[lang].dir}
+      className={fontClass}
+      suppressHydrationWarning
+    >
       <body>
         {/* eslint-disable-next-line @next/next/no-sync-scripts, react/no-danger */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts, react/no-danger */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <StructuredData lang={lang} />
         {children}
       </body>

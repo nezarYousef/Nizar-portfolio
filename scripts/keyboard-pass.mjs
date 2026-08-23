@@ -10,7 +10,7 @@
    Space and Escape. */
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
-import { BASE, HEADERS } from "./_target.mjs";
+import { BASE, HEADERS, waitForIntro } from "./_target.mjs";
 
 
 await assertProductionBuild(BASE);
@@ -66,6 +66,9 @@ for (const [lang, path] of LOCALES) {
   });
   const page = await context.newPage();
   await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+  /* The one-shot intro overlay owns the first seconds of a fresh session;
+     keyboard traversal starts once it has handed over. */
+  await waitForIntro(page);
   await page.waitForTimeout(600);
 
   /* ── 1. Skip link is the very first stop ────────────────────────────── */

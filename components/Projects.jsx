@@ -5,6 +5,7 @@ import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
 import GalleryButton from "@/components/projects/GalleryButton";
 import GalleryProvider from "@/components/projects/GalleryProvider";
+import TiltPanel from "@/components/projects/TiltPanel";
 import { FILTERS, categoriesFor } from "@/lib/projectCategories";
 import styles from "./Projects.module.css";
 
@@ -13,24 +14,29 @@ function Preview({ project, label }) {
 
   if (!previewImage) {
     return (
-      <div className={`${styles.previewEmpty} u-mono`} aria-hidden="true">
-        {label}
-      </div>
+      <TiltPanel className={styles.frame}>
+        <div className={`${styles.previewEmpty} u-mono`} aria-hidden="true">
+          {label}
+        </div>
+      </TiltPanel>
     );
   }
 
   return (
-    <div className={styles.preview}>
-      <Image
-        className={styles.previewImage}
-        src={previewImage}
-        alt=""
-        width={640}
-        height={400}
-        sizes="(max-width: 899px) 92vw, 260px"
-        data-fit={project.previewFit ?? "cover"}
-      />
-    </div>
+    <TiltPanel className={styles.frame}>
+      <div className={styles.preview}>
+        <Image
+          className={styles.previewImage}
+          src={previewImage}
+          alt=""
+          width={640}
+          height={400}
+          sizes="(max-width: 899px) 92vw, 420px"
+          data-fit={project.previewFit ?? "cover"}
+        />
+      </div>
+      <span className={styles.sheen} aria-hidden="true" />
+    </TiltPanel>
   );
 }
 
@@ -56,17 +62,27 @@ export default function Projects({ copy, index }) {
               return (
                 <Reveal
                   as="li"
-                  className={styles.row}
+                  className={styles.scene}
                   key={project.id}
-                  delay={position * 40}
                   data-categories={categories.join(" ")}
+                  data-flip={position % 2 === 1 ? "true" : undefined}
+                  data-cursor="view"
+                  data-cursor-text={String(position + 1).padStart(2, "0")}
                 >
-                  <article className={styles.rowInner}>
-                    <p className={`${styles.index} u-mono`} aria-hidden="true">
-                      {String(position + 1).padStart(2, "0")}
-                    </p>
+                  <p
+                    className={`${styles.numeral} u-mono`}
+                    aria-hidden="true"
+                  >
+                    {String(position + 1).padStart(2, "0")}
+                  </p>
 
+                  <article className={styles.stage}>
                     <div className={styles.main}>
+                      <p className={`${styles.sceneIndex} u-mono`}>
+                        <span className={styles.sceneMark} aria-hidden="true" />
+                        {String(position + 1).padStart(2, "0")}
+                      </p>
+
                       <h3 className={styles.title}>{project.title}</h3>
                       <p className={styles.description}>{project.description}</p>
 

@@ -14,7 +14,7 @@
    Usage: node scripts/hero-timeline.mjs <lang> <width>
 */
 import { chromium } from "playwright";
-import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
+import { BASE, HEADERS, HOST_LABEL, waitForIntro } from "./_target.mjs";
 
 const LANG = process.argv[2] ?? "en";
 const WIDTH = Number(process.argv[3] ?? 480);
@@ -70,6 +70,8 @@ await page.addInitScript(() => {
 });
 
 await page.goto(`${BASE}${PATH}`, { waitUntil: "load", timeout: 120000 });
+/* The hero entrance is released by the one-shot intro; measure from there. */
+await waitForIntro(page);
 await page.waitForTimeout(7500);
 
 const rows = await page.evaluate(() => window.__rows);

@@ -1,6 +1,11 @@
 .grid {
   display: grid;
   gap: var(--space-xl);
+  /* The portrait plate's accent halo deliberately bleeds past its card; this
+     clips just that horizontal bleed so narrow viewports never gain a
+     sideways scroll. `clip` (unlike hidden/auto) leaves the vertical axis
+     alone, so the floating motion stays uncut. */
+  overflow-x: clip;
 }
 
 .prose {
@@ -10,13 +15,65 @@
   font-size: var(--text-l);
 }
 
+/* The portrait lives on a floating plate: a glass surface with a hairline
+   accent rim, layered elevation, and its own very slow hover-agnostic bob so
+   it reads as suspended in the same space as the nebula - not a rectangle
+   dropped into the flow. Hover/focus lifts it a touch further; the float
+   rides `translate` while the lift uses `transform`, so they compose. */
 .panel {
+  position: relative;
   align-self: start;
-  overflow: hidden;
   border: var(--border);
   border-radius: var(--radius-lg);
-  background: var(--paper-raised);
-  box-shadow: var(--elev-1);
+  background: color-mix(in srgb, var(--paper-raised) 74%, transparent);
+  backdrop-filter: blur(var(--blur-surface));
+  box-shadow:
+    var(--elev-2),
+    0 0 0 1px color-mix(in srgb, var(--accent-line) 30%, transparent),
+    0 30px 70px -38px color-mix(in srgb, var(--accent) 42%, transparent);
+  transition: transform var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out);
+}
+
+/* Soft accent halo bleeding out from behind the plate. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: -9% -7%;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    62% 55% at 72% 10%,
+    color-mix(in srgb, var(--accent-bright) 20%, transparent),
+    transparent 70%
+  );
+  filter: blur(40px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.panel:hover,
+.panel:focus-within {
+  transform: translateY(-5px);
+  box-shadow:
+    var(--elev-3),
+    0 0 0 1px color-mix(in srgb, var(--accent-line) 45%, transparent),
+    0 36px 80px -40px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel {
+    animation: panelBob 9s ease-in-out infinite alternate;
+  }
+
+  @keyframes panelBob {
+    from {
+      translate: 0 3px;
+    }
+    to {
+      translate: 0 -4px;
+    }
+  }
 }
 
 .portraitFrame {
@@ -25,6 +82,10 @@
   overflow: hidden;
   background: var(--paper-sunken);
   border-block-end: var(--border);
+  /* Square-cornered frame inside a rounded card would poke out; follow the
+     card's top corners exactly. */
+  border-start-start-radius: calc(var(--radius-lg) - 1px);
+  border-start-end-radius: calc(var(--radius-lg) - 1px);
 }
 
 .portrait {
@@ -32,6 +93,32 @@
   height: 100%;
   object-fit: cover;
   object-position: center 12%;
+  /* A breath less saturation and a touch more contrast pull the photo into
+     the site's graded palette instead of fighting it. */
+  filter: saturate(0.93) contrast(1.04);
+}
+
+/* Atmosphere over the image: a dark-to-clear floor fade seating it in the
+   card, an accent sheen from the top corner matching the halo behind, and a
+   hairline inner ring so the photo feels mounted, not pasted. */
+.portraitFrame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--paper) 26%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      120% 90% at 85% -10%,
+      color-mix(in srgb, var(--accent-bright) 16%, transparent),
+      transparent 55%
+    );
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--line-strong) 55%, transparent);
 }
 
 .panelBody {
@@ -76,5 +163,38 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, var(--panel-col));
     gap: var(--space-2xl);
     align-items: start;
+  }
+
+  /* The plate is roughly twice the prose's height, so letting it start at the
+     grid's top edge left its lower half hanging beside finished text, and
+     centering the prose against it instead opened a dead band under the
+     heading. Raising the plate to the header's top line is the arrangement
+     that leaves no void anywhere: heading and plate share one top edge, the
+     prose follows the heading at the section's normal rhythm, and the plate's
+     overhang past the prose shrinks by the raised amount. The offset is the
+     measured header height (kicker line + one --space-xs + the two-line title
+     + the heading's --space-xl margin); the title wraps to two lines at every
+     width >= 1024px because the heading's max-width is ch-based, so one value
+     holds across the range (measured 150.1-151.5px at 1024/1280/1440). It is
+     coupled to Section's header structure - re-measure if that ever changes.
+     The raise itself waits for 1280px: below that the heading's ~600px box
+     reaches into the panel column (measured ~624px vs a 616px column edge at
+     1024px), so a raised plate would cover the title's last characters. */
+}
+
+@media (min-width: 1280px) {
+  .panel {
+    /* token-audit-ignore: a measured structural offset derived from Section's
+       header, not a spacing decision - see the comment above. */
+    margin-block-start: -151.5px;
+  }
+}
+
+/* Backdrop blur is the one expensive layer here; on phones the card sits on
+   a solid surface instead. */
+@media (max-width: 767px) {
+  .panel {
+    background: var(--paper-raised);
+    backdrop-filter: none;
   }
 }

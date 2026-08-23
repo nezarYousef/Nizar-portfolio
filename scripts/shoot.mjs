@@ -8,7 +8,7 @@ import { assertProductionBuild } from "./assert-prod-build.mjs";
 /* _target.mjs carries the deployment-protection bypass header. Without it a
    preview answers every navigation with the Vercel SSO page, and this script
    photographs the login screen while reporting success. */
-import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
+import { BASE, HEADERS, waitForIntro } from "./_target.mjs";
 
 await assertProductionBuild(BASE);
 const OUT = process.env.SHOOT_OUT ?? "screenshots";
@@ -60,6 +60,9 @@ for (const locale of LOCALES) {
       page.on("pageerror", (error) => errors.push(String(error)));
 
       await page.goto(`${BASE}${locale.path}`, { waitUntil: "networkidle" });
+      /* The one-shot intro holds the page behind an overlay for its first
+         seconds; wait it out so reveals and captures photograph the site. */
+      await waitForIntro(page);
 
       /* Trigger every reveal, then return to the top. `behavior: instant` is
          essential: the page sets scroll-behavior: smooth, and successive

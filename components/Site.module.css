@@ -1,3 +1,75 @@
+/* The shared world above the starfield: three atmosphere glows anchored to
+   the viewport corners (accent + signal, all far under legibility thresholds).
+   Under no-preference motion each glow drifts along its own very slow loop -
+   transform-only, GPU-friendly, decades-long-feeling so it reads as weather,
+   not animation. The global reduced-motion kill switch freezes them. */
+.world {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.world::before,
+.world::after {
+  content: "";
+  position: absolute;
+  inline-size: 60rem;
+  block-size: 44rem;
+  border-radius: 50%;
+  filter: blur(64px);
+  will-change: transform;
+}
+
+.world::before {
+  inset-block-start: -18%;
+  inset-inline-start: -12%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent-bright) 7%, transparent),
+    transparent 72%
+  );
+}
+
+.world::after {
+  inset-block-end: -22%;
+  inset-inline-end: -14%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--signal) 6%, transparent),
+    transparent 72%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .world::before {
+    animation: worldDriftA 90s ease-in-out infinite alternate;
+  }
+
+  .world::after {
+    animation: worldDriftB 120s ease-in-out infinite alternate;
+  }
+
+  @keyframes worldDriftA {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(9%, 7%, 0) scale(1.08);
+    }
+  }
+
+  @keyframes worldDriftB {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-8%, -6%, 0) scale(1.06);
+    }
+  }
+}
+
 .footer {
   border-block-start: var(--border);
 }

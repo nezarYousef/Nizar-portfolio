@@ -52,3 +52,20 @@ if (!IS_LOCAL && !secret) {
   );
   process.exit(1);
 }
+
+/* The redesigned portfolio plays a one-shot loading/explosion intro that locks
+   the page behind a full-screen overlay for roughly three and a half seconds
+   (skipped for repeat visits in the same session and under reduced motion -
+   both invisible to a fresh browser context, so harnesses must expect it).
+   Every script that interacts with the page after navigation should await the
+   hand-over: html[data-intro] disappears the moment the site becomes usable.
+   The catch keeps reduced-motion-style environments working unchanged. */
+export async function waitForIntro(page) {
+  await page
+    .waitForFunction(
+      () => !document.documentElement.hasAttribute("data-intro"),
+      null,
+      { timeout: 20000 }
+    )
+    .catch(() => {});
+}

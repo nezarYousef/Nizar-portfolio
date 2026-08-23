@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
-import { BASE, HEADERS } from "./_target.mjs";
+import { BASE, HEADERS, waitForIntro } from "./_target.mjs";
 
 const BASELINE = process.env.BASELINE_REF ?? "83d21a0";
 
@@ -88,6 +88,11 @@ const harvest = async (path) => {
     extraHTTPHeaders: HEADERS
   });
   await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+  /* A first-visit session plays the one-shot intro behind a full-screen
+     overlay; the narrow-viewport drawer click below must happen after its
+     hand-over, or it lands on the overlay and the open/close labels read as
+     missing. */
+  await waitForIntro(page);
 
   let collectedNarrow = "";
   /* Some labels only exist in a state that only exists on a narrow viewport -

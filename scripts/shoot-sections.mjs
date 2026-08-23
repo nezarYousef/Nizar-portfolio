@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 /* _target.mjs carries the deployment-protection bypass header. Without it a
    preview answers every navigation with the Vercel SSO page, and this script
    photographs the login screen while reporting success. */
-import { BASE, HEADERS } from "./_target.mjs";
+import { BASE, HEADERS, waitForIntro } from "./_target.mjs";
 const OUT = "screenshots/sections";
 
 const TARGETS = (process.env.SHOOT_TARGETS ?? "hero,skills,projects,contact").split(",");
@@ -36,6 +36,9 @@ for (const { locale, theme, width } of COMBOS) {
   await page.goto(`${BASE}${locale === "ar" ? "/ar" : "/"}`, {
     waitUntil: "networkidle"
   });
+  /* The one-shot intro holds the page behind an overlay for its first
+     seconds; wait it out so captures photograph the site. */
+  await waitForIntro(page);
 
   await page.evaluate(async () => {
     const step = Math.round(window.innerHeight * 0.5);

@@ -11,7 +11,7 @@
 import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
 import { assertProductionBuild } from "./assert-prod-build.mjs";
-import { BASE, HEADERS, HOST_LABEL } from "./_target.mjs";
+import { BASE, HEADERS, HOST_LABEL, waitForIntro } from "./_target.mjs";
 
 
 await assertProductionBuild(BASE);
@@ -39,6 +39,8 @@ async function loadAndWeigh(width) {
   });
 
   await page.goto(BASE, { waitUntil: "networkidle" });
+  /* Measure the nebula itself, not the intro canvas that precedes it. */
+  await waitForIntro(page);
   await page.waitForTimeout(3000);
 
   const hasCanvas = (await page.locator("canvas").count()) > 0;

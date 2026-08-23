@@ -2,15 +2,15 @@
 
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useRef, useState } from "react";
-import LatticePoster from "./LatticePoster";
+import NebulaPoster from "./NebulaPoster";
 import styles from "./HeroVisual.module.css";
 
 /* The r3f bundle is fetched only once every gate below has passed and the
    hero is actually on screen, so a phone that will fall back to the poster
    never downloads three.js at all. */
-const ConvolutionField = dynamic(() => import("./ConvolutionField"), {
+const SkillNebula = dynamic(() => import("./SkillNebula"), {
   ssr: false,
-  loading: () => <LatticePoster />
+  loading: () => <NebulaPoster words={[]} />
 });
 
 const MIN_WIDTH = 768;
@@ -46,11 +46,14 @@ function readThemeColors() {
   const style = getComputedStyle(document.documentElement);
   return {
     colorLow: style.getPropertyValue("--accent-bright").trim() || "#0ea5a4",
-    colorHigh: style.getPropertyValue("--signal").trim() || "#8a5600"
+    colorHigh: style.getPropertyValue("--signal").trim() || "#8a5600",
+    /* Word sprites must stay legible against the page itself, not the
+       canvas backdrop - the ink token flips with the theme. */
+    wordInk: style.getPropertyValue("--ink").trim() || "#13191b"
   };
 }
 
-export default function HeroVisual({ label }) {
+export default function HeroVisual({ label, words }) {
   const hostRef = useRef(null);
   const [live, setLive] = useState(false);
   const [inView, setInView] = useState(false);
@@ -131,16 +134,18 @@ export default function HeroVisual({ label }) {
       data-label={label}
     >
       {live && colors && hasEntered ? (
-        <Suspense fallback={wideEnough ? <LatticePoster /> : null}>
-          <ConvolutionField
+        <Suspense fallback={wideEnough ? <NebulaPoster words={words} /> : null}>
+          <SkillNebula
+            words={words}
             colorLow={colors.colorLow}
             colorHigh={colors.colorHigh}
+            wordInk={colors.wordInk}
             frameloop={running ? "always" : "never"}
           />
         </Suspense>
       ) : null}
 
-      {(!live || !hasEntered) && wideEnough ? <LatticePoster /> : null}
+      {(!live || !hasEntered) && wideEnough ? <NebulaPoster words={words} /> : null}
     </div>
   );
 }

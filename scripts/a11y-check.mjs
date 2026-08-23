@@ -5,6 +5,18 @@ import { chromium } from "playwright";
 const BASE = process.env.SHOOT_BASE ?? "http://localhost:4321";
 const path = process.env.A11Y_PATH ?? "/";
 
+/* The one-shot intro holds the page behind an overlay for its first seconds;
+   every pass below starts once it has handed over (html loses data-intro). */
+async function waitForIntro(page) {
+  await page
+    .waitForFunction(
+      () => !document.documentElement.hasAttribute("data-intro"),
+      null,
+      { timeout: 20000 }
+    )
+    .catch(() => {});
+}
+
 const browser = await chromium.launch({ channel: "chrome" });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await context.newPage();
@@ -16,6 +28,7 @@ const note = (label, ok, detail = "") => {
 };
 
 await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+await waitForIntro(page);
 
 /* ── Structure ─────────────────────────────────────────────────────────── */
 const structure = await page.evaluate(() => {
@@ -115,6 +128,7 @@ note(
 
 /* ── Modal: open by keyboard, trap, Escape, restore ────────────────────── */
 await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+await waitForIntro(page);
 const trigger = page.locator("#projects button").filter({ hasText: /gallery|صور/i }).first();
 await trigger.scrollIntoViewIfNeeded();
 await trigger.focus();

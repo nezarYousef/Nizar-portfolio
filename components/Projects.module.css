@@ -1,56 +1,123 @@
+/* ── Cinematic project scenes ───────────────────────────────────────────────
+   Each project is a full-width scene, not a card: an oversized ghost numeral,
+   editorial typography on one side and a pointer-tilted preview panel on the
+   other, alternating sides down the page like film frames. All of it is plain
+   CSS - the only JS is the optional TiltPanel pointer effect. */
+
 .list {
+  position: relative;
   display: grid;
-  gap: 0;
-  border-block-start: var(--border);
 }
 
-.row {
-  border-block-end: var(--border);
-}
-
-/* CSS-only filtering; every row stays in the HTML. */
-[data-filter="web"] .row:not([data-categories~="web"]),
-[data-filter="ai"] .row:not([data-categories~="ai"]),
-[data-filter="systems"] .row:not([data-categories~="systems"]) {
+/* CSS-only filtering; every scene stays in the HTML. */
+[data-filter="web"] .scene:not([data-categories~="web"]),
+[data-filter="ai"] .scene:not([data-categories~="ai"]),
+[data-filter="systems"] .scene:not([data-categories~="systems"]) {
   display: none;
 }
 
-.rowInner {
+.scene {
+  position: relative;
+  padding-block: var(--space-2xl);
+  border-block-end: var(--border);
+}
+
+.scene:first-child {
+  border-block-start: var(--border);
+}
+
+/* The ghost numeral anchors each scene without shouting over the content.
+   Stroke-only where supported; a faint fill elsewhere. */
+.numeral {
+  position: absolute;
+  inset-block-start: var(--space-s);
+  inset-inline-end: var(--space-2xs);
+  color: transparent;
+  font-size: clamp(4.5rem, 12vw, 9rem);
+  font-weight: var(--weight-display);
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  -webkit-text-stroke: 1px var(--line-strong);
+  transition: opacity var(--dur-slow) var(--ease-out),
+    -webkit-text-stroke-color var(--dur-slow) var(--ease-out);
+}
+
+.scene:hover .numeral,
+.scene:focus-within .numeral {
+  opacity: 0.9;
+  -webkit-text-stroke-color: var(--accent-line);
+}
+
+@supports not (-webkit-text-stroke: 1px black) {
+  .numeral {
+    color: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+}
+
+/* ── Stage ───────────────────────────────────────────────────────────────── */
+
+.stage {
   display: grid;
-  gap: var(--space-s);
-  padding-block: var(--space-m);
-  transition: background-color var(--dur) var(--ease-out);
-}
-
-.row:hover .rowInner {
-  background: color-mix(in srgb, var(--accent-wash) 55%, transparent);
-}
-
-.index {
-  color: var(--ink-muted);
-  font-size: var(--text-xs);
+  gap: var(--space-l);
+  align-items: center;
 }
 
 .main {
   min-width: 0;
 }
 
+.sceneIndex {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* token-audit-ignore: the mark is a glyph-sized diamond, not a spacing step. */
+.sceneMark {
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  rotate: 45deg;
+}
+
 .title {
-  font-size: var(--text-l);
+  margin-block-start: var(--space-xs);
+  font-size: clamp(var(--text-2xl), 1.35rem + 1.8vw, var(--text-3xl));
+  /* Accent underline sweeps in while its scene is hovered or focused. */
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 0% 2px;
+  transition: background-size var(--dur-slow) var(--ease-out);
+}
+
+[dir="rtl"] .title {
+  background-position: right bottom;
+}
+
+.scene:hover .title,
+.scene:focus-within .title {
+  background-size: 100% 2px;
 }
 
 .description {
-  max-width: var(--measure);
-  margin-block-start: var(--space-2xs);
+  max-width: var(--measure-narrow);
+  margin-block-start: var(--space-s);
   color: var(--ink-muted);
-  font-size: var(--text-s);
+  font-size: var(--text-m);
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3xs);
-  margin-block-start: var(--space-s);
+  margin-block-start: var(--space-m);
 }
 
 .tag {
@@ -65,7 +132,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2xs);
-  margin-block-start: var(--space-s);
+  margin-block-start: var(--space-l);
 }
 
 .action {
@@ -73,9 +140,10 @@
   align-items: center;
   gap: var(--space-3xs);
   min-height: var(--control-h);
-  padding-inline: var(--space-xs);
+  padding-inline: var(--space-s);
   border: 1px solid var(--line-interactive);
   border-radius: var(--radius);
+  background: var(--paper-raised);
   color: var(--ink);
   font-size: var(--text-xs);
   cursor: pointer;
@@ -92,14 +160,20 @@
   color: var(--ink-muted);
 }
 
-/* ── Preview ─────────────────────────────────────────────────────────────── */
+/* ── Preview frame ───────────────────────────────────────────────────────── */
+
+.frame {
+  position: relative;
+  will-change: transform;
+}
 
 .preview,
 .previewEmpty {
   overflow: hidden;
   border: var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--paper-sunken);
+  box-shadow: var(--elev-2);
 }
 
 .preview {
@@ -132,18 +206,83 @@
   text-transform: uppercase;
 }
 
+/* Pointer sheen driven by --mx / --my from TiltPanel; inert without them. */
+.sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    18rem 12rem at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.16),
+    transparent 70%
+  );
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.frame:hover .sheen {
+  opacity: 1;
+}
+
+/* The screenshot settles from a gentle zoom as its scene reveals. Gated on
+   the reveal system being armed so a no-JS visit shows images at rest. */
+@media (prefers-reduced-motion: no-preference) {
+  :global([data-reveal-armed="true"]) .previewImage {
+    transition: transform 1100ms var(--ease-out);
+  }
+
+  :global([data-reveal-armed="true"])
+    .scene:not([data-revealed="true"])
+    .previewImage {
+    transform: scale(1.07);
+  }
+}
+
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 
 @media (min-width: 1024px) {
-  .rowInner {
-    grid-template-columns: 3rem minmax(0, 1fr) 15rem;
-    gap: var(--space-l);
-    align-items: start;
-    padding-block: var(--space-l);
-    padding-inline: var(--space-2xs);
+  .scene {
+    padding-block: var(--space-3xl);
+  }
+
+  .stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .main {
+    order: 1;
+  }
+
+  .frame {
+    order: 2;
+  }
+
+  /* Alternating scenes mirror the composition, like shots in a sequence. */
+  [data-flip="true"] .stage {
+    grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+  }
+
+  [data-flip="true"] .main {
+    order: 2;
+  }
+
+  [data-flip="true"] .frame {
+    order: 1;
   }
 
   .description {
-    font-size: var(--text-m);
+    font-size: var(--text-l);
+  }
+}
+
+@media (max-width: 1023px) {
+  .numeral {
+    /* token-audit-ignore: keeps the ghost numeral clear of the title block
+       on small screens; derived from the numeral's own size, not a spacing
+       step. */
+    inset-block-start: calc(-1 * var(--space-2xs));
   }
 }

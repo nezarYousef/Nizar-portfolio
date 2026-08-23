@@ -455,6 +455,45 @@ body.is-modal-open {
   overflow: hidden;
 }
 
+/* ── Intro sequence states ───────────────────────────────────────────────── */
+/* data-intro is set pre-paint by RootShell's inline script only when the
+   sequence will actually play, so every rule below is inert without JS. While
+   it holds: scroll is locked and an opaque cover paints before the first
+   frame, so the hero never flashes ahead of the explosion. IntroSequence
+   removes the attribute when the overlay hands over to the page. */
+
+html[data-intro] {
+  overflow: hidden;
+}
+
+html[data-intro="boot"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: #05080a;
+}
+
+/* ── Custom cursor ───────────────────────────────────────────────────────── */
+/* html[data-cursor] is set by Cursor.jsx only when a fine pointer and motion
+   preferences allow it - so without JS (or on touch / reduced motion) the
+   native cursor is never hidden. The accent dot replaces the native pointer
+   one-to-one; precision stays exact. */
+
+@media (hover: hover) and (pointer: fine) {
+  [data-cursor="on"],
+  [data-cursor="on"] * {
+    cursor: none !important;
+  }
+}
+
+/* Every pressed control acknowledges the touch - tactile, not bouncy. */
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):active {
+    transform: translateY(var(--lift)) scale(0.97);
+  }
+}
+
 /* ── Reduced motion ──────────────────────────────────────────────────────── */
 /* JS honours this too: HeroVisual refuses to start the canvas under reduced
    motion, and ProjectModal drops its spring via useReducedMotion. */
