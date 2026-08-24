@@ -195,14 +195,18 @@ const EVIDENCE_LABELS = {
     studiedIn: "Studied in",
     filterAll: "All",
     filterLabel: "Filter skill categories",
-    coreStackTitle: "Core stack"
+    coreStackTitle: "Core stack",
+    details: "View details",
+    back: "Back"
   },
   ar: {
     usedIn: "مستخدمة في",
     studiedIn: "مدروسة في",
     filterAll: "الكل",
     filterLabel: "تصفية فئات المهارات",
-    coreStackTitle: "الحزمة الأساسية"
+    coreStackTitle: "الحزمة الأساسية",
+    details: "عرض التفاصيل",
+    back: "رجوع"
   }
 };
 

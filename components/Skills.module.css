@@ -117,27 +117,60 @@
 
 /* ── Evidence index ──────────────────────────────────────────────────────── */
 
-/* Category cards are nodes of the same network as the map above: glassy
-   surfaces suspended at their own phase, lifting on hover like objects
-   drifting closer. The float rides `translate`; hover lift uses `transform`,
-   so the two compose instead of fighting. */
+/* Category cards are nodes of the same network as the map above, styled after
+   the original main-branch card set: a thin accent gradient strip along the
+   top edge, layered rest shadows with an accent-tinted falloff, and a hover
+   that raises the plate toward the viewer with a whisper of perspective tilt
+   (the main version's 900px perspective, restrained to ~1.5deg so it reads as
+   depth, not gimmick). The idle float rides `translate`; the hover lift rides
+   `transform`, so the two compose instead of fighting. The flip interaction
+   inside each card lives in SkillCard. */
 .category {
   position: relative;
-  padding: var(--space-m);
   border: var(--border);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--paper-raised) 62%, transparent);
   backdrop-filter: blur(var(--blur-surface));
-  box-shadow: var(--elev-1);
+  box-shadow:
+    var(--elev-1),
+    0 0 0 1px color-mix(in srgb, var(--accent-line) 22%, transparent),
+    0 26px 60px -38px color-mix(in srgb, var(--accent) 40%, transparent);
   transition: transform var(--dur-slow) var(--ease-out),
     border-color var(--dur-fast) var(--ease-out),
     box-shadow var(--dur-slow) var(--ease-out);
 }
 
+/* The signature strip of the original cards, in the current palette. */
+.category::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: linear-gradient(90deg, var(--accent-bright), var(--signal));
+  opacity: 0.72;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
 .category:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-  box-shadow: var(--elev-2);
+  transform: perspective(900px) translateY(-7px) rotateX(1.5deg)
+    rotateY(-1.5deg);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
+  box-shadow:
+    var(--elev-2),
+    0 0 0 1px color-mix(in srgb, var(--accent-line) 45%, transparent),
+    0 34px 80px -40px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.category:hover::before {
+  opacity: 1;
+}
+
+/* Mirror the tilt so the plate leans toward its own content edge in Arabic. */
+:global([dir="rtl"]) .category:hover {
+  transform: perspective(900px) translateY(-7px) rotateX(1.5deg)
+    rotateY(1.5deg);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -159,6 +192,9 @@
 .grid {
   display: grid;
   gap: var(--space-l);
+  /* A card that flips to its taller back must not drag its row-mates down
+     with it: every card keeps its own height. */
+  align-items: start;
 }
 
 /* Filtering is CSS-only: the markup for every category is always present, so
@@ -175,104 +211,6 @@
 [data-filter="cat-4"] .category[data-category="cat-4"],
 [data-filter="cat-5"] .category[data-category="cat-5"] {
   display: block;
-}
-
-.categoryTitle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2xs);
-  padding-block-end: var(--space-2xs);
-  border-block-end: var(--border);
-  color: var(--ink);
-  font-size: var(--text-s);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-.categoryIndex {
-  color: var(--accent);
-  font-size: var(--text-xs);
-}
-
-.skillList {
-  display: grid;
-  gap: var(--space-2xs);
-  margin-block-start: var(--space-s);
-}
-
-.skill {
-  display: grid;
-  gap: var(--space-3xs);
-  padding-block-end: var(--space-2xs);
-  border-block-end: var(--border);
-}
-
-.skill:last-child {
-  padding-block-end: 0;
-  border-block-end: none;
-}
-
-.skillName {
-  color: var(--ink);
-  font-size: var(--text-s);
-  font-weight: var(--weight-semibold);
-}
-
-.evidence {
-  display: grid;
-  gap: var(--space-3xs);
-}
-
-.evidenceRow {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-2xs);
-  align-items: baseline;
-}
-
-.evidenceLabel {
-  color: var(--ink-muted);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.evidenceValue {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3xs);
-  margin: 0;
-}
-
-.evidenceLink,
-.evidenceProgram {
-  font-size: var(--text-2xs);
-  line-height: var(--leading-compact);
-}
-
-.evidenceLink {
-  color: var(--ink-body);
-  text-decoration: underline;
-  text-decoration-color: var(--accent-line);
-  /* token-audit-ignore: an underline's distance from the baseline is a type
-     detail, not a layout step. */
-  text-underline-offset: 2px;
-  transition: var(--t-control);
-}
-
-.evidenceLink:hover {
-  color: var(--accent);
-}
-
-.evidenceLink:not(:last-child)::after,
-.evidenceProgram:not(:last-child)::after {
-  content: " ·";
-  color: var(--ink-muted);
-}
-
-.evidenceProgram {
-  color: var(--ink-muted);
 }
 
 /* ── Core stack field ──────────────────────────────────────────────────────

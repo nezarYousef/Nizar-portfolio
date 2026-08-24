@@ -1,48 +1,8 @@
 import FilterGroup from "@/components/FilterGroup";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
+import SkillCard from "@/components/SkillCard";
 import styles from "./Skills.module.css";
-
-/* Every skill states what proves it. `projects` and `programs` are ids that
-   resolve against content already on the page, so a claim and its evidence
-   can never drift apart. Skills with neither render as a plain name rather
-   than borrowing credibility they do not have. */
-function Evidence({ item, labels, projectTitles, programLabels }) {
-  const projects = item.projects.map((id) => projectTitles[id]).filter(Boolean);
-  const programs = item.programs.map((key) => programLabels[key]).filter(Boolean);
-
-  if (!projects.length && !programs.length) return null;
-
-  return (
-    <dl className={styles.evidence}>
-      {projects.length ? (
-        <div className={styles.evidenceRow}>
-          <dt className={`${styles.evidenceLabel} u-mono`}>{labels.usedIn}</dt>
-          <dd className={styles.evidenceValue}>
-            {projects.map((title) => (
-              <a className={styles.evidenceLink} href="#projects" key={title}>
-                {title}
-              </a>
-            ))}
-          </dd>
-        </div>
-      ) : null}
-
-      {programs.length ? (
-        <div className={styles.evidenceRow}>
-          <dt className={`${styles.evidenceLabel} u-mono`}>{labels.studiedIn}</dt>
-          <dd className={styles.evidenceValue}>
-            {programs.map((title) => (
-              <span className={styles.evidenceProgram} key={title}>
-                {title}
-              </span>
-            ))}
-          </dd>
-        </div>
-      ) : null}
-    </dl>
-  );
-}
 
 /* ── Constellation map ───────────────────────────────────────────────────────
    A decorative star-map of the same data: categories are hubs arranged around
@@ -202,26 +162,14 @@ export default function Skills({ copy, projects, index }) {
                 "--node-dur": `${10.5 + (categoryIndex % 3) * 1.9}s`
               }}
             >
-              <h3 className={styles.categoryTitle}>
-                <span className={`${styles.categoryIndex} u-mono`}>
-                  {String(categoryIndex + 1).padStart(2, "0")}
-                </span>
-                {category.title}
-              </h3>
-
-              <ul className={styles.skillList}>
-                {category.items.map((item) => (
-                  <li className={styles.skill} key={item.key}>
-                    <p className={styles.skillName}>{item.name}</p>
-                    <Evidence
-                      item={item}
-                      labels={copy.evidence}
-                      projectTitles={projectTitles}
-                      programLabels={copy.programs}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <SkillCard
+                index={String(categoryIndex + 1).padStart(2, "0")}
+                title={category.title}
+                items={category.items}
+                projectTitles={projectTitles}
+                labels={copy.evidence}
+                programLabels={copy.programs}
+              />
             </Reveal>
           ))}
         </ul>

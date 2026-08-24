@@ -1,0 +1,263 @@
+/* ── Flip mechanics ────────────────────────────────────────────────────────
+   The visual identity (surface, gradient strip, layered shadows, hover
+   tilt) lives on the outer card in Skills.module.css; everything here is the
+   compact-front / details-back flip that lives inside it. */
+
+.flip {
+  position: relative;
+  /* Local stage for the rotation; the measured active-face height arrives as
+     --card-h once hydrated. Before that (and without JS) both faces simply
+     stack in flow, fully readable. */
+  height: var(--card-h, auto);
+  perspective: 1400px;
+  transition: height var(--dur-slow) var(--ease-out);
+}
+
+.flipInner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 560ms var(--ease-out);
+}
+
+.flip[data-flipped="true"] .flipInner {
+  transform: rotateY(180deg);
+}
+
+/* Mirror the flip direction in Arabic so the card turns toward its own
+   reading edge. */
+:global([dir="rtl"]) .flip[data-flipped="true"] .flipInner {
+  transform: rotateY(-180deg);
+}
+
+.face {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-m);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Until hydration the faces share normal flow; afterwards each one is
+   measured and pinned to the container's box. */
+.flip[data-ready="true"] .face {
+  position: absolute;
+  inset: 0;
+}
+
+.faceBack {
+  transform: rotateY(180deg);
+  justify-content: flex-end;
+  gap: var(--space-s);
+}
+
+/* Visibility (not just backface) takes the inactive face out of the tab
+   order and the accessibility tree, swapping halfway through the turn. */
+.faceFront {
+  visibility: visible;
+  transition: visibility 0s 0s;
+}
+
+.flip[data-flipped="true"] .faceFront {
+  visibility: hidden;
+  transition: visibility 0s 280ms;
+}
+
+.faceBack {
+  visibility: hidden;
+  transition: visibility 0s 280ms;
+}
+
+.flip[data-flipped="true"] .faceBack {
+  visibility: visible;
+  transition: visibility 0s 0s;
+}
+
+/* ── Front: number, title, preview chips, Details ────────────────────────── */
+
+.categoryTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding-block-end: var(--space-2xs);
+  border-block-end: var(--border);
+  color: var(--ink);
+  font-size: var(--text-s);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.categoryIndex {
+  color: var(--accent);
+  font-size: var(--text-xs);
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-s);
+}
+
+.previewChip {
+  padding: var(--space-3xs) var(--space-xs);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink-body);
+  font-size: var(--text-2xs);
+}
+
+.previewMore {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-2xs);
+  color: var(--accent);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+}
+
+.flipButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  align-self: start;
+  min-height: var(--control-h-sm);
+  margin-block-start: var(--space-m);
+  padding-inline: var(--space-s);
+  border: 1px solid var(--line-interactive);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: var(--text-s);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: var(--t-control), border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.flipButton:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  box-shadow: 0 8px 24px -14px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.faceFront .flipButton {
+  /* Pin the affordance to the card's foot so every front face shares one
+     button line regardless of how its chips wrapped. */
+  margin-block-start: auto;
+}
+
+.flipButton svg {
+  color: var(--accent);
+}
+
+.flipButton .chevronRtl {
+  display: none;
+}
+
+:global([dir="rtl"]) .flipButton .chevronRtl {
+  display: block;
+}
+
+:global([dir="rtl"]) .flipButton .chevronLtr {
+  display: none;
+}
+
+/* ── Back: full evidence ─────────────────────────────────────────────────── */
+
+.skillList {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.skill {
+  display: grid;
+  gap: var(--space-3xs);
+  padding-block-end: var(--space-2xs);
+  border-block-end: var(--border);
+}
+
+.skill:last-child {
+  padding-block-end: 0;
+  border-block-end: none;
+}
+
+.skillName {
+  color: var(--ink);
+  font-size: var(--text-s);
+  font-weight: var(--weight-semibold);
+}
+
+.evidence {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.evidenceRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2xs);
+  align-items: baseline;
+}
+
+.evidenceLabel {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.evidenceValue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  margin: 0;
+}
+
+.evidenceLink,
+.evidenceProgram {
+  font-size: var(--text-2xs);
+  line-height: var(--leading-compact);
+}
+
+.evidenceLink {
+  color: var(--ink-body);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  /* token-audit-ignore: an underline's distance from the baseline is a type
+     detail, not a layout step. */
+  text-underline-offset: 2px;
+  transition: var(--t-control);
+}
+
+.evidenceLink:hover {
+  color: var(--accent);
+}
+
+.evidenceLink:not(:last-child)::after,
+.evidenceProgram:not(:last-child)::after {
+  content: " ·";
+  color: var(--ink-muted);
+}
+
+.evidenceProgram {
+  color: var(--ink-muted);
+}
+
+.faceBack .flipButton {
+  margin-block-start: 0;
+  border-color: var(--line-strong);
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────────
+   The swap becomes instant - state still changes, nothing travels. */
+@media (prefers-reduced-motion: reduce) {
+  .flip,
+  .flipInner,
+  .faceFront,
+  .faceBack {
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}

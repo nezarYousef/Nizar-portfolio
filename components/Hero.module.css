@@ -3,14 +3,15 @@
   display: flex;
   /* token-audit-ignore: the hero's height is a proportion of the viewport with
      a ceiling, not a spacing step. */
-  min-height: min(88svh, 820px);
-  /* The header is sticky, so it already occupies its own band of flow - the
-     stage starts directly beneath it and needs no header-height
-     compensation on top. One spacing step below that edge gives the content
-     its breathing space without reopening the dead band a vertical centre
-     once produced. The nebula still fills the remaining depth to the fold. */
+  min-height: min(80svh, 780px);
+  /* The header is sticky and already occupies its own band of flow, so the
+     stage starts directly beneath it. One small step of top padding seats the
+     eyebrow close to the navigation without touching it; the stage is capped
+     near the copy's own height, so the slack a tall viewport adds pools at
+     the bottom - into the nebula's fade - instead of pushing the content
+     away from the header. */
   align-items: flex-start;
-  padding-block: var(--space-l) var(--space-2xl);
+  padding-block: var(--space-m) var(--space-xl);
   overflow: hidden;
 }
 
@@ -104,11 +105,11 @@
     animation-delay: 400ms;
   }
 
-  :global([data-hero-in]) .actions {
+  :global([data-hero-in]) .stats {
     animation-delay: 480ms;
   }
 
-  :global([data-hero-in]) .stats {
+  :global([data-hero-in]) .actions {
     animation-delay: 560ms;
   }
 
@@ -340,7 +341,7 @@
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   gap: var(--space-s);
   max-width: var(--measure);
-  margin-block-start: var(--space-2xl);
+  margin-block-start: var(--space-l);
   padding-block-start: var(--space-m);
   border-block-start: var(--border);
 }
@@ -367,7 +368,7 @@
 
 @media (min-width: 768px) {
   .hero {
-    padding-block: var(--space-xl) var(--space-3xl);
+    padding-block: var(--space-m) var(--space-xl);
   }
 }
 

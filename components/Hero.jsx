@@ -33,6 +33,15 @@ export default function Hero({ copy, ui, skillWords }) {
 
           <p className={styles.description}>{copy.description}</p>
 
+          <dl className={styles.stats}>
+            {copy.stats.map((stat) => (
+              <div className={styles.stat} key={stat.label}>
+                <dt className={styles.statLabel}>{stat.label}</dt>
+                <dd className={`${styles.statValue} u-mono`}>{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+
           <div className={styles.actions}>
             <a className={styles.primaryAction} href="#projects">
               <span>{copy.primaryAction}</span>
@@ -43,15 +52,6 @@ export default function Hero({ copy, ui, skillWords }) {
               <span>{copy.secondaryAction}</span>
             </a>
           </div>
-
-          <dl className={styles.stats}>
-            {copy.stats.map((stat) => (
-              <div className={styles.stat} key={stat.label}>
-                <dt className={styles.statLabel}>{stat.label}</dt>
-                <dd className={`${styles.statValue} u-mono`}>{stat.value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </div>
     </section>
