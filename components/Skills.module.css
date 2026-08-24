@@ -179,6 +179,14 @@
     animation-delay: var(--node-delay, 0ms);
   }
 
+  /* A drifting card is a moving target: the moment a pointer rests on it or
+     focus enters, the float freezes so its buttons hold still under the
+     cursor or finger. */
+  .category:hover,
+  .category:focus-within {
+    animation-play-state: paused;
+  }
+
   @keyframes nodeFloat {
     from {
       translate: 0 4px;

@@ -9,10 +9,18 @@ import styles from "./AssistantDock.module.css";
    existing copy, no invented dialogue.
 
    Character behaviour, all optional by environment:
-   - idle float / antenna pulse / occasional blink / hover wave / open bounce:
+   - idle float / antenna pulse / occasional blink / hover wave:
      CSS states, killed globally under prefers-reduced-motion
-   - eye tracking: one passive pointermove + one lerped rAF loop that parks
-     itself whenever the dock is off screen or the tab is hidden           */
+   - eye tracking with head-and-body follow: one passive pointermove + one
+     lerped rAF loop that parks itself whenever the dock is off screen or the
+     tab is hidden; the loop writes custom properties on the root only, and
+     each part reads them at a different gain - eyes lead, head follows, body
+     trails - so attention feels layered rather than rigid
+   - proximity: inside a short radius the character perks up (grows slightly,
+     visor tints); expressed purely through a data attribute + CSS, no
+     re-render
+   - click: a squash-and-flash acknowledgement on every press, timed out on a
+     ref so rapid clicking cannot stack timers */
 
 function AssistantCharacter({ eyeRef }) {
   return (
@@ -23,11 +31,13 @@ function AssistantCharacter({ eyeRef }) {
 
       {/* head */}
       <g className={styles.head}>
-        <rect className={styles.headShell} x="14" y="16" width="36" height="27" rx="11" />
-        <rect className={styles.visor} x="19" y="23.5" width="26" height="12.5" rx="6.2" />
-        <g ref={eyeRef} className={styles.eyes}>
-          <circle className={styles.eye} cx="27.2" cy="29.8" r="2.5" />
-          <circle className={styles.eye} cx="36.8" cy="29.8" r="2.5" />
+        <g className={styles.headLook}>
+          <rect className={styles.headShell} x="14" y="16" width="36" height="27" rx="11" />
+          <rect className={styles.visor} x="19" y="23.5" width="26" height="12.5" rx="6.2" />
+          <g ref={eyeRef} className={styles.eyes}>
+            <circle className={styles.eye} cx="27.2" cy="29.8" r="2.5" />
+            <circle className={styles.eye} cx="36.8" cy="29.8" r="2.5" />
+          </g>
         </g>
       </g>
 
@@ -82,10 +92,13 @@ export default function AssistantDock({ nav, status, email, controls }) {
     };
   }, [open]);
 
-  /* Eyes follow the pointer with a short look radius and a soft lerp. */
+  /* Eyes lead the gaze; head and body follow at lower gains so the character
+     seems to turn toward you rather than slide. Everything lands as custom
+     properties on the root - one style write per frame - and CSS maps them
+     per part. Proximity is a plain data attribute swap. */
   useEffect(() => {
-    const eyes = eyeRef.current;
-    if (!eyes || !buttonRef.current) return undefined;
+    const root = rootRef.current;
+    if (!root || !buttonRef.current) return undefined;
 
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -98,25 +111,39 @@ export default function AssistantDock({ nav, status, email, controls }) {
     let cx = 0;
     let cy = 0;
 
-    const apply = () => {
+    const paint = () => {
       cx += (tx - cx) * 0.16;
       cy += (ty - cy) * 0.16;
-      eyes.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)`;
-      if (running) raf = requestAnimationFrame(apply);
+      const s = root.style;
+      s.setProperty("--lx", cx.toFixed(2));
+      s.setProperty("--ly", cy.toFixed(2));
+      s.setProperty("--hr", (cx * 1.15).toFixed(2));
+      s.setProperty("--hy", (cy * 0.55).toFixed(2));
+      s.setProperty("--bx", (cx * 0.4).toFixed(2));
+      s.setProperty("--by", (cy * 0.32).toFixed(2));
+      if (running) raf = requestAnimationFrame(paint);
     };
 
     const start = () => {
       if (running) return;
       running = true;
-      raf = requestAnimationFrame(apply);
+      raf = requestAnimationFrame(paint);
     };
 
     const stop = () => {
       running = false;
       cancelAnimationFrame(raf);
-      /* Park the gaze back centre when the loop stops. */
+      /* Park every channel back centre when the loop stops. */
       tx = 0;
       ty = 0;
+      const s = root.style;
+      s.setProperty("--lx", "0");
+      s.setProperty("--ly", "0");
+      s.setProperty("--hr", "0");
+      s.setProperty("--hy", "0");
+      s.setProperty("--bx", "0");
+      s.setProperty("--by", "0");
+      delete root.dataset.near;
     };
 
     const onMove = (event) => {
@@ -127,10 +154,16 @@ export default function AssistantDock({ nav, status, email, controls }) {
       const reach = Math.min(len, 260) / 260;
       tx = (dx / len) * 2.6 * reach;
       ty = (dy / len) * 2.1 * reach;
+
+      const near = len < 200;
+      if ((root.dataset.near === "true") !== near) {
+        if (near) root.dataset.near = "true";
+        else delete root.dataset.near;
+      }
     };
 
     const sync = () => {
-      if (document.hidden || rootRef.current?.dataset.visible !== "true") {
+      if (document.hidden || root.dataset.visible !== "true") {
         stop();
       } else {
         start();
@@ -140,12 +173,10 @@ export default function AssistantDock({ nav, status, email, controls }) {
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("visibilitychange", sync);
     const attrObserver = new MutationObserver(sync);
-    if (rootRef.current) {
-      attrObserver.observe(rootRef.current, {
-        attributes: true,
-        attributeFilter: ["data-visible"]
-      });
-    }
+    attrObserver.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-visible"]
+    });
     sync();
 
     return () => {
@@ -155,6 +186,21 @@ export default function AssistantDock({ nav, status, email, controls }) {
       attrObserver.disconnect();
     };
   }, []);
+
+  /* Squash-and-flash on any press. The timeout lives on a ref so spamming
+     the button restarts one timer instead of stacking several. */
+  const bounceTimer = useRef(0);
+  useEffect(() => () => clearTimeout(bounceTimer.current), []);
+
+  const excite = () => {
+    const root = rootRef.current;
+    if (!root) return;
+    root.dataset.bounce = "true";
+    clearTimeout(bounceTimer.current);
+    bounceTimer.current = setTimeout(() => {
+      delete root.dataset.bounce;
+    }, 680);
+  };
 
   return (
     <div
@@ -202,7 +248,10 @@ export default function AssistantDock({ nav, status, email, controls }) {
         aria-controls={open ? "assistant-panel" : undefined}
         aria-label={open ? controls.close : controls.open}
         title={open ? controls.close : controls.open}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          excite();
+          setOpen((value) => !value);
+        }}
       >
         <span className={styles.charWrap}>
           {/* Ground shadow breathes in counter-phase with the float - it is

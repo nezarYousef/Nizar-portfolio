@@ -29,8 +29,8 @@
   place-items: center;
   /* Grown from a chat-icon footprint to a character footprint - present at
      the corner of the eye, still nowhere near competing with content. */
-  inline-size: calc(var(--control-h) + 34px);
-  block-size: calc(var(--control-h) + 30px);
+  inline-size: calc(var(--control-h) + 38px);
+  block-size: calc(var(--control-h) + 34px);
   padding-block-end: var(--space-2xs);
   border: none;
   background: none;
@@ -64,8 +64,8 @@
    as the nebula: same accent, same additive-glow language, no hard card edge. */
 .character {
   position: relative;
-  width: 66px;
-  height: 73px;
+  width: 70px;
+  height: 78px;
   overflow: visible;
   filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.38))
     drop-shadow(0 0 14px color-mix(in srgb, var(--accent-bright) 26%, transparent));
@@ -79,6 +79,7 @@
 
 .visor {
   fill: color-mix(in srgb, var(--paper-sunken) 88%, var(--ink));
+  transition: fill var(--dur-slow) var(--ease-out);
 }
 
 .body {
@@ -99,6 +100,41 @@
 
 .eye {
   fill: var(--accent-bright);
+}
+
+/* ── Pointer-driven channels ───────────────────────────────────────────────
+   The rAF loop writes --lx/--ly/--hr/--hy/--bx/--by on the dock root once
+   per frame; each part reads them through its own individual transform
+   channel, so nothing here can fight the idle keyframes (which animate
+   translate/rotate/scale on *other* elements or other channels). Gains are
+   layered - eyes lead at 1.35, head follows at 1.0/0.55 plus a turn, body
+   trails at 0.4 - which is what makes the look feel alive instead of rigid. */
+.headLook {
+  translate: calc(var(--lx, 0) * 1px) calc(var(--ly, 0) * 0.6px);
+  rotate: calc(var(--hr, 0) * 0.9deg);
+}
+
+.eyes {
+  translate: calc(var(--lx, 0) * 1.35px) calc(var(--ly, 0) * 1.1px);
+}
+
+.bodyGroup {
+  translate: calc(var(--bx, 0) * 1px) calc(var(--by, 0) * 1px);
+}
+
+/* Proximity: within reach of the cursor the character perks up - a slight
+   grow on the wrapper (kept off .character so the hop's scale channel stays
+   untouched) and the visor tints toward the accent. */
+.charWrap {
+  transition: scale var(--dur-slow) var(--ease-out);
+}
+
+.dock[data-near="true"] .charWrap {
+  scale: 1.05;
+}
+
+.dock[data-near="true"] .visor {
+  fill: color-mix(in srgb, var(--paper-sunken) 62%, var(--accent));
 }
 
 .chestLight {
@@ -223,11 +259,16 @@
   }
 }
 
-/* A small hop when the panel opens - acknowledgement, not celebration. */
+/* A squash-and-flash acknowledgement on every press - opening, closing,
+   doesn't matter; the character answers. Replaces the old open-only hop. */
 @media (prefers-reduced-motion: no-preference) {
-  .dock[data-open="true"] .character {
+  .dock[data-bounce="true"] .character {
     animation: charFloat 5.5s ease-in-out infinite,
-      charHop 480ms var(--ease-out) 1;
+      charHop 620ms var(--ease-out) 1;
+  }
+
+  .dock[data-bounce="true"] .chestLight {
+    animation: chestFlash 620ms var(--ease-out) 1;
   }
 
   @keyframes charHop {
@@ -242,6 +283,19 @@
     }
     100% {
       scale: 1 1;
+    }
+  }
+
+  @keyframes chestFlash {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.2;
+    }
+    70% {
+      opacity: 1;
     }
   }
 }
@@ -317,17 +371,17 @@
    smaller viewport - same character, smaller stage. */
 @media (max-width: 767px) {
   .button {
-    inline-size: calc(var(--control-h) + 16px);
-    block-size: calc(var(--control-h) + 14px);
+    inline-size: calc(var(--control-h) + 18px);
+    block-size: calc(var(--control-h) + 16px);
   }
 
   .character {
-    width: 50px;
-    height: 56px;
+    width: 54px;
+    height: 60px;
   }
 
   .groundShadow {
-    width: 40px;
+    width: 42px;
     height: 9px;
   }
 }

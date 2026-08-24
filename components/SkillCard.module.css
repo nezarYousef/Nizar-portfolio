@@ -39,10 +39,13 @@
 }
 
 /* Until hydration the faces share normal flow; afterwards each one is
-   measured and pinned to the container's box. */
+   pinned to the container's top edge and measured by its own content - never
+   inset:0, which would stretch both faces to whatever height the container
+   already had and make measurement circular. */
 .flip[data-ready="true"] .face {
   position: absolute;
-  inset: 0;
+  top: 0;
+  inset-inline: 0;
 }
 
 .faceBack {
