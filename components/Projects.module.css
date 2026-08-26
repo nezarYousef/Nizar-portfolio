@@ -373,7 +373,7 @@
 .archiveActions {
   display: flex;
   flex-wrap: wrap;
-  align-content: start;
+  align-content: flex-start;
   gap: var(--space-2xs);
 }
 

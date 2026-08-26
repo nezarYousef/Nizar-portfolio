@@ -70,6 +70,9 @@
    While the intro owns the screen ([data-intro] without [data-hero-in]) the
    copy is held invisible - time-boxed by a failsafe animation so a bundle
    that dies after the inline scripts ran cannot hide the hero forever.
+   (Letting the copy paint beneath the opaque cover was measured here and
+   rejected: occlusion-skipping made skipping the paint cheaper than doing
+   it - LCP/TBT both regressed on throttled hardware.)
    With no JavaScript at all neither attribute exists: fully static hero,
    exactly like the rest of the page. */
 @media (prefers-reduced-motion: no-preference) {

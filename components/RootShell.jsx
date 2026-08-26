@@ -22,10 +22,13 @@ const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfoli
 /* Mirrors IntroSequence's conditions so the right hold exists before first
    paint: "boot" paints an opaque space cover ahead of the explosion sequence;
    "quick" merely holds the hero entrance for the few frames until hydration
-   confirms the intro already played this session - without it the hero would
-   flash statically and then snap back to replay its entrance. Reduced-motion
-   visitors get neither. Without JS the attribute never appears at all. */
-const INTRO_SCRIPT = `(function(){try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;document.documentElement.dataset.intro=sessionStorage.getItem("nizar-portfolio-intro")==="done"?"quick":"boot"}catch(e){document.documentElement.dataset.intro="boot"}})();`;
+   confirms there is nothing to play - without it the hero would flash
+   statically and then snap back to replay its entrance. The full sequence is
+   reserved for devices that can afford it: reduced-motion visitors and
+   low-memory / data-saver devices get the quick hand-over instead of a
+   particle canvas on a throttled CPU. Without JS the attribute never appears
+   at all. */
+const INTRO_SCRIPT = `(function(){try{if(matchMedia("(prefers-reduced-motion: reduce)").matches){return}var lowPower=(navigator.deviceMemory&&navigator.deviceMemory<4)||(navigator.connection&&navigator.connection.saveData);document.documentElement.dataset.intro=sessionStorage.getItem("nizar-portfolio-intro")==="done"?"quick":(lowPower?"quick":"boot")}catch(e){document.documentElement.dataset.intro="boot"}})();`;
 
 function StructuredData({ lang }) {
   const copy = portfolioCopy[lang];
@@ -34,7 +37,7 @@ function StructuredData({ lang }) {
     "@type": "Person",
     name: copy.hero.name,
     jobTitle: copy.hero.eyebrow,
-    description: copy.hero.description,
+    description: copy.hero.title,
     url: `${SITE_URL}${LOCALES[lang].path}`,
     image: `${SITE_URL}${profileImage}`,
     email: copy.contact.links.email.replace("mailto:", ""),

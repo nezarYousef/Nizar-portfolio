@@ -189,22 +189,6 @@ export default function Starfield() {
     readPalette();
     resize();
 
-    /* Reduced motion: paint the field once, statically - atmosphere without
-       movement - and never attach the loop or the pointer listener. */
-    if (reduced.matches) {
-      drawFrame(0, false);
-    } else {
-      drawFrame(0, true);
-      start();
-      window.addEventListener("resize", onResize, { passive: true });
-      document.addEventListener("visibilitychange", onVisibility);
-      if (finePointer.matches) {
-        window.addEventListener("pointermove", onPointerMove, {
-          passive: true
-        });
-      }
-    }
-
     /* Theme flips change the CSS variable palette; keep the dust in sync. */
     const themeObserver = new MutationObserver(() => {
       readPalette();
@@ -215,13 +199,54 @@ export default function Starfield() {
       attributeFilter: ["data-theme"]
     });
 
-    return () => {
+    let pendingBegin = 0;
+
+    const teardown = () => {
       stop();
+      if (pendingBegin) {
+        if (typeof window.cancelIdleCallback === "function") {
+          window.cancelIdleCallback(pendingBegin);
+        } else {
+          window.clearTimeout(pendingBegin);
+        }
+      }
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("visibilitychange", onVisibility);
       themeObserver.disconnect();
     };
+
+    /* Reduced motion: paint the field once, statically - atmosphere without
+       movement - and never attach the loop or the pointer listener. */
+    if (reduced.matches) {
+      drawFrame(0, false);
+      return teardown;
+    }
+
+    /* One static frame so the sky exists from first paint; the animated loop
+       and its listeners wait for browser idle. Starting the rAF loop during
+       hydration competed with framework work inside the TBT window for no
+       visible gain - the field is subliminal by design. */
+    drawFrame(0, true);
+
+    const begin = () => {
+      pendingBegin = 0;
+      start();
+      window.addEventListener("resize", onResize, { passive: true });
+      document.addEventListener("visibilitychange", onVisibility);
+      if (finePointer.matches) {
+        window.addEventListener("pointermove", onPointerMove, {
+          passive: true
+        });
+      }
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      pendingBegin = window.requestIdleCallback(begin, { timeout: 2000 });
+    } else {
+      pendingBegin = window.setTimeout(begin, 1200);
+    }
+
+    return teardown;
   }, []);
 
   return (

@@ -66,6 +66,21 @@ export default function HeroVisual({ label, words }) {
      312 invisible SVG nodes in the DOM - and in the served HTML - for nothing.
      It mounts only once we know the viewport is wide enough to show it. */
   const [wideEnough, setWideEnough] = useState(false);
+  /* The r3f chunk is heavy; evaluating it during hydration steals main-thread
+     time from everything else in the TBT window. Wait for browser idle before
+     even requesting it - the static poster covers the gap seamlessly. */
+  const [idleReady, setIdleReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(() => setIdleReady(true), {
+        timeout: 1500
+      });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setIdleReady(true), 1200);
+    return () => window.clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const query = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
@@ -135,7 +150,7 @@ export default function HeroVisual({ label, words }) {
       role="presentation"
       data-label={label}
     >
-      {live && colors && hasEntered ? (
+      {live && colors && hasEntered && idleReady ? (
         <Suspense fallback={wideEnough ? <NebulaPoster words={words} /> : null}>
           <SkillNebula
             words={words}
@@ -145,9 +160,9 @@ export default function HeroVisual({ label, words }) {
             frameloop={running ? "always" : "never"}
           />
         </Suspense>
+      ) : wideEnough ? (
+        <NebulaPoster words={words} />
       ) : null}
-
-      {(!live || !hasEntered) && wideEnough ? <NebulaPoster words={words} /> : null}
     </div>
   );
 }

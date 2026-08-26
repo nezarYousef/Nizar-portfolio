@@ -60,8 +60,9 @@ export default function IntroSequence({ words, dir, skipLabel }) {
   /* Release hands over to the hero: data-hero-in starts the hero entrance
      choreography in the same frame the intro cover lets go, and removing
      data-intro unlocks scrolling. Both live on <html> so plain CSS can react
-     with zero JS after this point. Focus moves to <main> so keyboard users
-     resume from the content instead of a lost position behind the overlay. */
+     with zero JS after this point. The inert gates come OFF first - inert
+     elements cannot receive focus at all - then focus lands on <main> so
+     keyboard users resume from the content instead of a lost position. */
   const release = useCallback(() => {
     const html = document.documentElement;
     html.dataset.heroIn = "true";
@@ -71,6 +72,7 @@ export default function IntroSequence({ words, dir, skipLabel }) {
     } catch {
       /* Storage can be blocked; the intro just replays next visit. */
     }
+    setSurfacesInert(false);
     document.getElementById("main")?.focus();
     setPhase("release");
     window.setTimeout(() => setPhase("done"), T_UNMOUNT * 1000 - T_RELEASE * 1000 + 400);
@@ -85,8 +87,12 @@ export default function IntroSequence({ words, dir, skipLabel }) {
       played = false;
     }
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    /* The pre-paint script decides eligibility: "boot" means the full
+       sequence was approved for this device (motion OK, not low-power, not
+       already played). Anything else takes the quick hand-over. */
+    const approved = html.dataset.intro === "boot";
 
-    if (played || reduced || !words.length) {
+    if (!approved || played || reduced || !words.length) {
       delete html.dataset.intro;
       html.dataset.heroIn = "true";
       return undefined;
