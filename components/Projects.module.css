@@ -156,6 +156,20 @@
   transform: translateY(var(--lift));
 }
 
+/* Disabled "Coming soon" placeholder (live/repo URL not in the data file
+   yet): visibly inert, holds its slot so enabling it later never shifts
+   the row. */
+.action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.actionSm {
+  min-height: var(--control-h-sm);
+  padding-inline: var(--space-xs);
+}
+
 .externalMark {
   color: var(--ink-muted);
 }
@@ -241,13 +255,35 @@
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 
+/* Filtered-in scenes replay a short staggered entrance instead of
+   hard-cutting; display:none -> grid item restarts the animation. Scoped
+   behind reveal-armed + revealed so it can never unhide an unrevealed
+   scene. */
+@media (prefers-reduced-motion: no-preference) {
+  :global([data-reveal-armed="true"]) .scene[data-revealed="true"] {
+    animation: sceneFilterIn var(--dur) var(--ease-out) both;
+    animation-delay: var(--filter-delay, 0ms);
+  }
+
+  @keyframes sceneFilterIn {
+    from {
+      opacity: 0;
+      transform: translateY(var(--reveal-shift));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
 @media (min-width: 1024px) {
   .scene {
     padding-block: var(--space-3xl);
   }
 
   .stage {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
     gap: var(--space-2xl);
     align-items: center;
   }
@@ -284,5 +320,67 @@
        on small screens; derived from the numeral's own size, not a spacing
        step. */
     inset-block-start: calc(-1 * var(--space-2xs));
+  }
+}
+
+/* ── Other Projects archive ──────────────────────────────────────────────── */
+
+.archive {
+  margin-block-start: var(--space-3xl);
+  padding-block-start: var(--space-xl);
+  border-block-start: var(--border);
+}
+
+.archiveTitle {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.archiveList {
+  display: grid;
+  margin-block-start: var(--space-m);
+}
+
+.archiveItem {
+  display: grid;
+  gap: var(--space-s);
+  padding-block: var(--space-m);
+  border-block-end: var(--border);
+}
+
+.archiveItem:last-child {
+  border-block-end: none;
+}
+
+.archiveName {
+  font-size: var(--text-l);
+}
+
+.archiveDescription {
+  max-width: var(--measure-narrow);
+  margin-block-start: var(--space-3xs);
+  color: var(--ink-muted);
+  font-size: var(--text-s);
+}
+
+.archiveItem .tags {
+  margin-block-start: var(--space-xs);
+}
+
+.archiveActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: var(--space-2xs);
+}
+
+@media (min-width: 768px) {
+  .archiveItem {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-l);
   }
 }

@@ -1,10 +1,16 @@
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 import HeroVisual from "@/components/hero/HeroVisual";
 import styles from "./Hero.module.css";
 
 /* Server component. The only client code in the hero is the decorative
-   canvas; every word here is in the static HTML. */
-export default function Hero({ copy, ui, skillWords }) {
+   canvas; every word here is in the static HTML.
+
+   Column order (deliberate): eyebrow -> name -> one value-prop line ->
+   identity chips -> stats -> CTAs. The long fundamentals paragraph and the
+   second availability badge were removed to cut vertical clutter; the
+   availability state lives once, in the Contact section and the assistant. */
+
+export default function Hero({ copy, ui, skillWords, cvPath }) {
   return (
     <section className={styles.hero} id="hero">
       <HeroVisual label={ui.decorativeVisual} words={skillWords} />
@@ -25,13 +31,7 @@ export default function Hero({ copy, ui, skillWords }) {
           <ul className={styles.identity}>
             <li className={`${styles.role} u-mono`}>{copy.typedRole}</li>
             <li className={`${styles.identityItem} u-mono`}>{copy.identity}</li>
-            <li className={`${styles.status} u-mono`}>
-              <span className={styles.statusDot} aria-hidden="true" />
-              {copy.status}
-            </li>
           </ul>
-
-          <p className={styles.description}>{copy.description}</p>
 
           <dl className={styles.stats}>
             {copy.stats.map((stat) => (
@@ -47,10 +47,30 @@ export default function Hero({ copy, ui, skillWords }) {
               <span>{copy.primaryAction}</span>
               <ArrowRight size={17} aria-hidden="true" />
             </a>
-            <a className={styles.secondaryAction} href="#contact">
-              <Mail size={17} aria-hidden="true" />
-              <span>{copy.secondaryAction}</span>
-            </a>
+
+            {cvPath ? (
+              <a
+                className={styles.secondaryAction}
+                href={cvPath}
+                download
+              >
+                <Download size={17} aria-hidden="true" />
+                <span>{copy.downloadCv}</span>
+              </a>
+            ) : (
+              /* CV file not added yet: disabled placeholder, same convention
+                 as the project buttons. Setting cvConfig.path enables it. */
+              <button
+                className={styles.secondaryAction}
+                type="button"
+                disabled
+                aria-disabled="true"
+                title={copy.downloadCv}
+              >
+                <Download size={17} aria-hidden="true" />
+                <span>{copy.downloadCv}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

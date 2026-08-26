@@ -17,103 +17,8 @@ const coreStack = [
   "OOP"
 ];
 
-const gallery = (folder, count) =>
-  Array.from({ length: count }, (_, index) => ({
-    src: `/images/${folder}/${index + 1}.webp`,
-    alt: `${folder} project screenshot ${index + 1}`
-  }));
-
-const edufusionGallery = [
-  ...gallery("edufusion", 10),
-  {
-    src: "/images/edufusion/11.webp",
-    alt: "EduFusion AI LectureScribe screenshot"
-  }
-];
-
-const advancedTasksGallery = gallery("advanced-tasks", 4);
-
-const aidSignGallery = [
-  {
-    src: "/images/aid-sign/1.webp",
-    alt: "AidSign landing page with patient and doctor views"
-  },
-  {
-    src: "/images/aid-sign/2.webp",
-    alt: "AidSign patient and doctor experience cards"
-  },
-  {
-    src: "/images/aid-sign/3.webp",
-    alt: "AidSign patient view with phrasebook and sign recognition actions"
-  },
-  {
-    src: "/images/aid-sign/4.0.webp",
-    alt: "AidSign doctor view with communication scope and safety guidance"
-  },
-  {
-    src: "/images/aid-sign/4.webp",
-    alt: "AidSign doctor phrasebook with searchable sign cards"
-  },
-  {
-    src: "/images/aid-sign/5.webp",
-    alt: "AidSign sign recognition interface"
-  },
-  {
-    src: "/images/aid-sign/6.webp",
-    alt: "AidSign recognition controls and experimental result state"
-  }
-];
-
-const projectMeta = {
-  restaurant: {
-    tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
-    gallery: gallery("restaurant", 19)
-  },
-  expenses: {
-    tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"],
-    gallery: gallery("expenses", 2)
-  },
-  tasks: {
-    tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"],
-    gallery: gallery("tasks", 5)
-  },
-  grade: {
-    tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
-    previewImage: "/images/edufusion/ba.webp",
-    gallery: edufusionGallery
-  },
-  shell: {
-    tags: ["C", "Linux/UNIX", "OS", "Systems"],
-    gallery: [],
-    github: "https://github.com/nezarYousef/shell.git"
-  },
-  school: {
-    tags: ["Java", "OOP", "Desktop App"],
-    gallery: [],
-    github: "https://github.com/nezarYousef/school.git"
-  },
-  ai: {
-    tags: ["AI", "API", "Python", "Automation"],
-    gallery: []
-  },
-  vision: {
-    tags: ["Computer Vision", "Python", "AI", "OpenHands"],
-    previewImage: "/images/aid-sign/1.webp",
-    previewFit: "contain",
-    gallery: aidSignGallery
-  },
-  advancedTasks: {
-    tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
-    previewImage: "/images/advanced-tasks/ba.webp",
-    gallery: advancedTasksGallery
-  }
-};
-
-const withMeta = (projects) =>
-  projects.map((project) => ({
-    ...projectMeta[project.id],
-    ...project
-  }));
+/* Project content now lives in ./projects.js (typed, featured/archive
+   split, live/repo URL fields). This file keeps site-wide copy only. */
 
 /* The phone number is stored in parts and joined at runtime, so neither the
    digits nor a `tel:` / `wa.me` href ever appear in the served HTML. Resolves
@@ -131,6 +36,12 @@ const contactLinks = {
   linkedin: "https://linkedin.com/in/nizar-alqerem-33829a3a1",
   instagram: "https://www.instagram.com/eng.nizar_/"
 };
+
+/* Download-CV wiring. Drop the PDF into public/ (e.g. /cv/nizar-alqerem.pdf)
+   and set path below - the hero and contact buttons enable themselves. While
+   path is null both render as disabled "coming soon" placeholders, matching
+   the projects-button convention. */
+export const cvConfig = /** @type {{ path: string | null }} */ ({ path: null });
 
 /* ── Skill evidence ─────────────────────────────────────────────────────────
    Replaces the old self-assigned `level` percentages. Every entry below is
@@ -195,7 +106,6 @@ const EVIDENCE_LABELS = {
     studiedIn: "Studied in",
     filterAll: "All",
     filterLabel: "Filter skill categories",
-    coreStackTitle: "Core stack",
     details: "View details",
     back: "Back"
   },
@@ -204,7 +114,6 @@ const EVIDENCE_LABELS = {
     studiedIn: "مدروسة في",
     filterAll: "الكل",
     filterLabel: "تصفية فئات المهارات",
-    coreStackTitle: "الحزمة الأساسية",
     details: "عرض التفاصيل",
     back: "رجوع"
   }
@@ -240,7 +149,7 @@ export const portfolioCopy = {
       { id: "skills", label: "Skills" },
       { id: "projects", label: "Projects" },
       { id: "experience", label: "Experience" },
-      { id: "other-experience", label: "Other Experience" },
+      { id: "other-experience", label: "Community & Field Work" },
       { id: "education", label: "Education" },
       { id: "contact", label: "Contact" }
     ],
@@ -253,6 +162,7 @@ export const portfolioCopy = {
     },
     ui: {
       skipToContent: "Skip to content",
+      skipIntro: "Skip intro",
       sectionRailLabel: "Section navigation",
       mainNavLabel: "Main navigation",
       readingProgress: "Reading progress",
@@ -264,10 +174,9 @@ export const portfolioCopy = {
       identity: "Computer Engineer - Palestine 🇵🇸",
       title: "Computer engineer building software, intelligent systems, and modern web experiences.",
       typedRole: "AI + Web Engineering",
-      description:
-        "I combine computer engineering fundamentals with practical development across Python, Java, C, JavaScript, React, Next.js, Machine Learning, AI, CNN, Computer Vision, APIs, and OOP.",
       primaryAction: "View Projects",
       secondaryAction: "Get In Touch",
+      downloadCv: "Download CV",
       status: "Available for software, web, and AI opportunities",
       imageAlt: "Portrait of Nizar Yousef Alqerem",
       stats: [
@@ -276,6 +185,12 @@ export const portfolioCopy = {
         { value: "AI + Web", label: "Core Technical Focus" }
       ]
     },
+    /* Owner's real text, kept verbatim. Suggestion for a future pass (owner's
+       call, intentionally not applied): tighten the generic openers —
+       "highly motivated" and "strong foundation" carry no information a
+       recruiter can verify. Replacing them with one concrete fact (e.g. the
+       graduation project, or the 96% GPA already listed under Education)
+       would make the first line do real work. */
     about: {
       eyebrow: "About Me",
       title: "A computer engineer who connects software fundamentals with AI and polished interfaces.",
@@ -332,79 +247,14 @@ export const portfolioCopy = {
       title: "Projects across web development, systems programming, AI, and applied software.",
       viewGallery: "View project gallery",
       viewGithub: "View on GitHub",
+      viewLive: "Live Demo",
       comingSoon: "Details coming soon",
+      soon: "Coming soon",
       screenshots: "screenshots",
       inDevelopment: "In Development",
+      archiveTitle: "Other Projects",
       filterLabel: "Filter projects by category",
-      filters: { all: "All", web: "Web", ai: "AI", systems: "Systems" },
-      list: withMeta([
-        {
-          id: "restaurant",
-          title: "Smart Restaurant Management",
-          description:
-            "A digital restaurant workflow system with role-based interfaces for customers, chefs, waiters, and administrators, designed around real-time order tracking and clean UI engineering."
-        },
-        {
-          id: "expenses",
-          title: "Expense Tracker App",
-          description:
-            "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
-        },
-        {
-          id: "tasks",
-          title: "Task Management App",
-          description:
-            "A productivity application for creating, organizing, and tracking daily tasks with a clear user flow and responsive interface."
-        },
-        {
-          id: "grade",
-          title: "EduFusion AI",
-          description:
-            "A production-ready AI academic platform with authentication, dashboard, and chatbot integration.",
-          highlights: [
-            "Project Overview: EduPredict was developed as a graduation project focused on student success analytics. The project started with supervised, unsupervised, segmentation, semi-supervised, and hybrid machine learning experiments, then evolved into a practical temporal prediction system with a FastAPI backend.",
-            "The final deliverable focuses on real-time style prediction: given a student's current course day, demographic information, VLE activity, and assessment submissions so far, the system returns a risk probability, risk level, recommended action, explanation, model confidence, and data completeness summary.",
-            "LectureScribe AI converts YouTube lectures into readable text. It downloads the lecture audio, transcribes it with Faster-Whisper, optionally formats the transcript with Groq or Ollama, and keeps the text output for future cache hits.",
-            "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
-            "Smart chatbot for academic support, course guidance, and student questions."
-          ]
-        },
-        {
-          id: "shell",
-          title: "Custom Unix Shell",
-          description:
-            "A C-based Linux shell built from scratch with internal commands, I/O redirection, batch files, background processes, environment variables, and error handling."
-        },
-        {
-          id: "school",
-          title: "School Management System",
-          description:
-            "A Java desktop system for managing students, classes, and administrative records using object-oriented design."
-        },
-        {
-          id: "ai",
-          title: "AI Assistant Tools",
-          description:
-            "AI and API-based tools that simplify learning, improve access to information, and support understanding complex concepts through intelligent assistance."
-        },
-        {
-          id: "vision",
-          title: "AidSign - Computer Vision Project",
-          description:
-            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
-          highlights: [
-            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
-            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
-            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
-          ]
-        },
-        {
-          id: "advancedTasks",
-          title: "Advanced Task Management App",
-          description:
-            "A modern task management experience focused on clean UI architecture, advanced task organization, and maintainable React component structure."
-        }
-      ])
+      filters: { all: "All", web: "Web", ai: "AI", systems: "Systems" }
     },
     experience: {
       eyebrow: "Experience",
@@ -422,13 +272,13 @@ export const portfolioCopy = {
           ]
         },
         {
-          title: "Skill Stack Paths Program",
+          title: "SkillStack Paths - Programming & DSA",
           company: "Gaza Sky Geeks",
           date: "May 2023 - Aug 2025",
           points: ["Programming Fundamentals", "Data Structures & Algorithms"]
         },
         {
-          title: "Skill Stack Paths Program",
+          title: "SkillStack Paths - Neural Networks & Computer Vision",
           company: "Gaza Sky Geeks",
           date: "March 2026 - July 2026",
           points: [
@@ -443,7 +293,7 @@ export const portfolioCopy = {
       ]
     },
     otherExperience: {
-      eyebrow: "Other Experience",
+      eyebrow: "Community & Field Work",
       title: "Field, interview, and coordination work shaped by responsibility and accuracy.",
       items: [
         {
@@ -531,6 +381,7 @@ export const portfolioCopy = {
         "I'm interested in software engineering, frontend development, AI, machine learning, and computer vision opportunities. Feel free to reach out for collaborations, projects, or technical discussions.",
       emailLabel: "Email Me",
       phoneLabel: "Call Me",
+      downloadCv: "Download CV",
       availability: "Available for new opportunities",
       showPhone: "Show phone number",
       phoneRevealHint: "Revealed on request to keep it away from scrapers",
@@ -552,7 +403,7 @@ export const portfolioCopy = {
       { id: "skills", label: "المهارات" },
       { id: "projects", label: "المشاريع" },
       { id: "experience", label: "الخبرة" },
-      { id: "other-experience", label: "خبرات أخرى" },
+      { id: "other-experience", label: "أعمال مجتمعية وميدانية" },
       { id: "education", label: "التعليم" },
       { id: "contact", label: "التواصل" }
     ],
@@ -565,6 +416,7 @@ export const portfolioCopy = {
     },
     ui: {
       skipToContent: "تخطي إلى المحتوى",
+      skipIntro: "تخطي المقدمة",
       sectionRailLabel: "التنقل بين الأقسام",
       mainNavLabel: "التنقل الرئيسي",
       readingProgress: "تقدم القراءة",
@@ -576,10 +428,9 @@ export const portfolioCopy = {
       identity: "مهندس حاسوب - فلسطين 🇵🇸",
       title: "مهندس حاسوب يبني برمجيات وأنظمة ذكية وتجارب ويب حديثة.",
       typedRole: "هندسة ذكاء وويب",
-      description:
-        "أجمع بين أساسيات هندسة الحاسوب والتطوير العملي باستخدام Python و Java و C و JavaScript و React و Next.js و Machine Learning و AI و CNN و Computer Vision و API و OOP.",
       primaryAction: "عرض المشاريع",
       secondaryAction: "تواصل معي",
+      downloadCv: "تحميل السيرة الذاتية",
       status: "متاح لفرص البرمجيات والويب والذكاء الاصطناعي",
       imageAlt: "صورة شخصية لنزار يوسف القرَم",
       stats: [
@@ -588,6 +439,10 @@ export const portfolioCopy = {
         { value: "AI + Web", label: "تركيز تقني أساسي" }
       ]
     },
+    /* نص صاحب الموقع كما هو، دون تعديل. اقتراح لتمريرة لاحقة (قرار صاحب
+       الموقع، لم يُطبَّق عمدًا): استبدال الافتتاحيات العامة - "عالي الدافعية"
+       و"أساس قوي" - بحقيقة ملموسة واحدة (مشروع التخرج، أو معدل 96% المذكور
+       أصلًا في التعليم) تجعل السطر الأول يشتغل فعلاً. */
     about: {
       eyebrow: "نبذة عني",
       title: "مهندس حاسوب يربط أساسيات البرمجيات بالذكاء الاصطناعي والواجهات الحديثة.",
@@ -644,79 +499,14 @@ export const portfolioCopy = {
       title: "مشاريع تجمع بين تطوير الويب وبرمجة الأنظمة والذكاء الاصطناعي والبرمجيات التطبيقية.",
       viewGallery: "عرض صور المشروع",
       viewGithub: "عرض على GitHub",
+      viewLive: "معاينة حية",
       comingSoon: "التفاصيل قريباً",
+      soon: "قريباً",
       screenshots: "صورة",
       inDevelopment: "قيد التطوير",
+      archiveTitle: "مشاريع أخرى",
       filterLabel: "تصفية المشاريع حسب الفئة",
-      filters: { all: "الكل", web: "ويب", ai: "ذكاء اصطناعي", systems: "أنظمة" },
-      list: withMeta([
-        {
-          id: "restaurant",
-          title: "نظام إدارة مطعم ذكي",
-          description:
-            "نظام رقمي لإدارة سير عمل المطعم بواجهات حسب الدور للعملاء والطهاة والنوادل والمديرين، مع تتبع الطلبات لحظياً وهندسة واجهة واضحة."
-        },
-        {
-          id: "expenses",
-          title: "تطبيق تتبع المصاريف",
-          description:
-            "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
-        },
-        {
-          id: "tasks",
-          title: "تطبيق إدارة المهام",
-          description:
-            "تطبيق إنتاجية لإنشاء المهام وتنظيمها وتتبعها من خلال تجربة استخدام واضحة وواجهة متجاوبة."
-        },
-        {
-          id: "grade",
-          title: "EduFusion AI",
-          description:
-            "A production-ready AI academic platform with authentication, dashboard, and chatbot integration.",
-          highlights: [
-            "Project Overview: EduPredict was developed as a graduation project focused on student success analytics. The project started with supervised, unsupervised, segmentation, semi-supervised, and hybrid machine learning experiments, then evolved into a practical temporal prediction system with a FastAPI backend.",
-            "The final deliverable focuses on real-time style prediction: given a student's current course day, demographic information, VLE activity, and assessment submissions so far, the system returns a risk probability, risk level, recommended action, explanation, model confidence, and data completeness summary.",
-            "LectureScribe AI converts YouTube lectures into readable text. It downloads the lecture audio, transcribes it with Faster-Whisper, optionally formats the transcript with Groq or Ollama, and keeps the text output for future cache hits.",
-            "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
-            "Smart chatbot for academic support, course guidance, and student questions."
-          ]
-        },
-        {
-          id: "shell",
-          title: "صدفة Unix مخصصة",
-          description:
-            "صدفة Linux مبنية بلغة C من الصفر وتدعم الأوامر الداخلية وإعادة توجيه الإدخال والإخراج وملفات الدفعات والعمليات الخلفية ومتغيرات البيئة ومعالجة الأخطاء."
-        },
-        {
-          id: "school",
-          title: "نظام إدارة مدرسة",
-          description:
-            "نظام سطح مكتب باستخدام Java لإدارة الطلاب والصفوف والسجلات الإدارية اعتماداً على التصميم كائني التوجه OOP."
-        },
-        {
-          id: "ai",
-          title: "أدوات مساعد ذكي",
-          description:
-            "أدوات تعتمد على AI و API لتسهيل التعلم وتحسين الوصول للمعلومة ودعم فهم المفاهيم المعقدة بمساعدة ذكية."
-        },
-        {
-          id: "vision",
-          title: "AidSign - مشروع رؤية حاسوبية",
-          description:
-            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
-          highlights: [
-            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
-            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
-            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
-          ]
-        },
-        {
-          id: "advancedTasks",
-          title: "تطبيق متقدم لإدارة المهام",
-          description:
-            "تجربة حديثة لإدارة المهام تركز على بنية واجهة نظيفة، وتنظيم متقدم للمهام، وهيكلة مكونات React قابلة للصيانة."
-        }
-      ])
+      filters: { all: "الكل", web: "ويب", ai: "ذكاء اصطناعي", systems: "أنظمة" }
     },
     experience: {
       eyebrow: "الخبرة",
@@ -734,13 +524,13 @@ export const portfolioCopy = {
           ]
         },
         {
-          title: "برنامج Skill Stack Paths",
+          title: "SkillStack Paths - البرمجة وهياكل البيانات",
           company: "Gaza Sky Geeks",
           date: "مايو 2023 - أغسطس 2025",
           points: ["أساسيات البرمجة", "هياكل البيانات والخوارزميات"]
         },
         {
-          title: "برنامج Skill Stack Paths",
+          title: "SkillStack Paths - الشبكات العصبية والرؤية الحاسوبية",
           company: "Gaza Sky Geeks",
           date: "مارس 2026 - يوليو 2026",
           points: [
@@ -755,7 +545,7 @@ export const portfolioCopy = {
       ]
     },
     otherExperience: {
-      eyebrow: "خبرات أخرى",
+      eyebrow: "أعمال مجتمعية وميدانية",
       title: "خبرات ميدانية وتنظيمية ومقابلات مبنية على المسؤولية والدقة.",
       items: [
         {
@@ -843,6 +633,7 @@ export const portfolioCopy = {
         "أهتم بفرص هندسة البرمجيات وتطوير الواجهات والذكاء الاصطناعي وتعلم الآلة والرؤية الحاسوبية. يسعدني تواصلك للتعاون أو المشاريع أو النقاشات التقنية.",
       emailLabel: "راسلني",
       phoneLabel: "اتصل بي",
+      downloadCv: "تحميل السيرة الذاتية",
       availability: "متاح لفرص جديدة",
       showPhone: "إظهار رقم الهاتف",
       phoneRevealHint: "يظهر عند الطلب لحمايته من برامج جمع البيانات",

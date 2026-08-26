@@ -12,7 +12,8 @@ import Skills from "@/components/Skills";
 import Starfield from "@/components/ambient/Starfield";
 import Timeline from "@/components/Timeline";
 import IntroGate from "@/components/intro/IntroGate";
-import { portfolioCopy } from "@/data/portfolio";
+import { portfolioCopy, cvConfig } from "@/data/portfolio";
+import { featuredProjects, archiveProjects } from "@/data/projects";
 import { LOCALES } from "@/lib/site";
 import styles from "./Site.module.css";
 
@@ -59,7 +60,7 @@ export default function Site({ lang }) {
 
       <CustomCursor />
 
-      <IntroGate words={skillWords} dir={copy.dir} skipLabel={copy.ui.skipToContent} />
+      <IntroGate words={skillWords} dir={copy.dir} skipLabel={copy.ui.skipIntro} />
 
       <SiteHeader
         copy={copy}
@@ -71,12 +72,19 @@ export default function Site({ lang }) {
       <SectionRail sections={copy.nav} />
       <RevealController />
 
-      <main id="main">
-        <Hero copy={copy.hero} ui={copy.ui} skillWords={skillWords} />
+      <main id="main" tabIndex={-1}>
+        <Hero
+          copy={copy.hero}
+          ui={copy.ui}
+          skillWords={skillWords}
+          cvPath={cvConfig.path}
+        />
         <About copy={copy.about} portraitAlt={copy.hero.imageAlt} index="01" />
-        <Skills copy={copy.skills} projects={copy.projects.list} index="02" />
+        <Skills copy={copy.skills} projects={featuredProjects} index="02" />
         <Projects
           copy={{ ...copy.projects, modalCopy: copy.modal }}
+          projects={featuredProjects}
+          archive={archiveProjects}
           index="03"
         />
         <Timeline
@@ -92,10 +100,10 @@ export default function Site({ lang }) {
           variant="education"
           index="06"
         />
-        <Contact copy={copy.contact} index="07" />
+        <Contact copy={copy.contact} cvPath={cvConfig.path} index="07" />
       </main>
 
-      <footer className={styles.footer}>
+      <footer className={styles.footer} id="site-footer">
         <div className={styles.footerInner}>
           <p className="u-mono">&copy; {copy.footer}</p>
         </div>
