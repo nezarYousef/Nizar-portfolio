@@ -1,11 +1,11 @@
-import { Github, Instagram, Linkedin, Mail } from "lucide-react";
+import { Download, Github, Instagram, Linkedin, Mail } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
 import PhoneReveal from "@/components/contact/PhoneReveal";
 import WhatsappLink from "@/components/contact/WhatsappLink";
 import styles from "./Contact.module.css";
 
-export default function Contact({ copy, index }) {
+export default function Contact({ copy, cvPath, index }) {
   const socials = [
     { href: copy.links.github, label: "GitHub", Icon: Github },
     { href: copy.links.linkedin, label: "LinkedIn", Icon: Linkedin },
@@ -24,6 +24,26 @@ export default function Contact({ copy, index }) {
         </Reveal>
 
         <Reveal className={styles.panel} delay={80}>
+          {cvPath ? (
+            <a className={`${styles.method} ${styles.methodPrimary}`} href={cvPath} download>
+              <Download size={18} aria-hidden="true" />
+              <span>{copy.downloadCv}</span>
+            </a>
+          ) : (
+            /* Placeholder until cvConfig.path points at the PDF - same
+               convention as the project buttons. */
+            <button
+              className={`${styles.method} ${styles.methodPrimary}`}
+              type="button"
+              disabled
+              aria-disabled="true"
+              title={copy.downloadCv}
+            >
+              <Download size={18} aria-hidden="true" />
+              <span>{copy.downloadCv}</span>
+            </button>
+          )}
+
           <a className={styles.method} href={copy.links.email}>
             <Mail size={18} aria-hidden="true" />
             <span>{copy.emailLabel}</span>

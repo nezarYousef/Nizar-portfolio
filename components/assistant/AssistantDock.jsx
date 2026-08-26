@@ -78,11 +78,19 @@ export default function AssistantDock({ nav, status, email, controls }) {
 
   useEffect(() => {
     if (!open) return undefined;
+    /* Every close path returns focus to the trigger, so keyboard users are
+       never dropped onto <body> when the panel unmounts. */
     const onKey = (event) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
     };
     const onPointer = (event) => {
-      if (!rootRef.current?.contains(event.target)) setOpen(false);
+      if (!rootRef.current?.contains(event.target)) {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -206,6 +214,7 @@ export default function AssistantDock({ nav, status, email, controls }) {
     <div
       ref={rootRef}
       className={styles.dock}
+      id="assistant-dock"
       data-visible={pastHero ? "true" : "false"}
       data-open={open ? "true" : "false"}
     >
@@ -222,7 +231,10 @@ export default function AssistantDock({ nav, status, email, controls }) {
                 <a
                   className={styles.link}
                   href={`#${item.id}`}
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setOpen(false);
+                    buttonRef.current?.focus();
+                  }}
                 >
                   {item.label}
                 </a>
@@ -233,7 +245,10 @@ export default function AssistantDock({ nav, status, email, controls }) {
           <a
             className={`${styles.mail} u-mono`}
             href={email.href}
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              buttonRef.current?.focus();
+            }}
           >
             {email.label}
           </a>

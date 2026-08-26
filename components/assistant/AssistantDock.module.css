@@ -67,8 +67,10 @@
   width: 70px;
   height: 78px;
   overflow: visible;
-  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.38))
-    drop-shadow(0 0 14px color-mix(in srgb, var(--accent-bright) 26%, transparent));
+  /* Soft contact shadow + a whisper of the accent halo. Kept faint: the
+     character should sit in the scene, not glow over it. */
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.32))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--accent-bright) 16%, transparent));
 }
 
 .headShell {
@@ -137,8 +139,9 @@
   fill: color-mix(in srgb, var(--paper-sunken) 62%, var(--accent));
 }
 
+/* Accent, not amber - amber is reserved for the availability state only. */
 .chestLight {
-  fill: var(--signal);
+  fill: var(--accent-bright);
 }
 
 .arm {

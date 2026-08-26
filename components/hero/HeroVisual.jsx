@@ -46,7 +46,9 @@ function readThemeColors() {
   const style = getComputedStyle(document.documentElement);
   return {
     colorLow: style.getPropertyValue("--accent-bright").trim() || "#0ea5a4",
-    colorHigh: style.getPropertyValue("--signal").trim() || "#8a5600",
+    /* Second tone of the same accent family for depth. Amber (--signal) was
+       retired from decoration - it is reserved for the availability state. */
+    colorHigh: style.getPropertyValue("--accent").trim() || "#0a6b69",
     /* Word sprites must stay legible against the page itself, not the
        canvas backdrop - the ink token flips with the theme. */
     wordInk: style.getPropertyValue("--ink").trim() || "#13191b"

@@ -1,15 +1,14 @@
 import { LOCALES, SITE_URL } from "@/lib/site";
-import { portfolioCopy } from "@/data/portfolio";
+import { portfolioCopy, profileImage } from "@/data/portfolio";
 import "@/app/globals.css";
 
-/* Runs before first paint, so a dark-mode visitor never sees a light flash.
+/* Runs before first paint, so a visitor never sees the wrong theme flash.
    Kept deliberately tiny and dependency-free - it is inlined into every page.
 
-   Dark is the house default: a stored preference always wins, but a first
-   visit with no preference at all opens dark - the site is designed as a
-   space environment first, light is the alternate reading mode. (The OS
-   preference is deliberately not consulted: it flipped the first impression
-   away from the intended composition for roughly half of all visitors.)
+   Precedence: a stored preference always wins; a first visit with no stored
+   preference follows the OS setting; dark remains the final fallback so the
+   space-first composition is preserved on systems that express no colour
+   preference at all.
 
    It sits as the first child of <body>, not inside a hand-written <head>.
    Rendering our own <head> element suppressed Next's managed head injection,
@@ -18,7 +17,7 @@ import "@/app/globals.css";
    late enough to reflow the page. A blocking inline script at the top of
    <body> still executes before any body content is painted, so the theme is
    set just as early. */
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t="dark"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})();`;
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}})();`;
 
 /* Mirrors IntroSequence's conditions so the right hold exists before first
    paint: "boot" paints an opaque space cover ahead of the explosion sequence;
@@ -37,7 +36,7 @@ function StructuredData({ lang }) {
     jobTitle: copy.hero.eyebrow,
     description: copy.hero.description,
     url: `${SITE_URL}${LOCALES[lang].path}`,
-    image: `${SITE_URL}/images/profile/nizar-profile-full.jpeg`,
+    image: `${SITE_URL}${profileImage}`,
     email: copy.contact.links.email.replace("mailto:", ""),
     alumniOf: {
       "@type": "CollegeOrUniversity",

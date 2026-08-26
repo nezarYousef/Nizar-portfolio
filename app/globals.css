@@ -87,8 +87,8 @@ ol {
   --accent-wash: #e4f2f1;
   --accent-line: #9fd3d0;
 
-  /* Signal — amber. Reserved strictly for state: available, experimental,
-     in development. Never decorative. */
+  /* Signal — amber. Reserved strictly for the availability / status badge.
+     Never decorative, never ambience. */
   --signal: #8a5600;
   --signal-wash: #fbf0da;
   --signal-line: #e2c48c;
@@ -192,12 +192,11 @@ ol {
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 
   /* Ambient tier — one-shot entrances and long loops. They are far longer than
-     an interaction duration and belong to a different class of motion, but
-     they are named here so they are part of the shared set rather than three
-     numbers invented in three component files. */
+      an interaction duration and belong to a different class of motion, but
+      they are named here so they are part of the shared set rather than three
+      numbers invented in three component files. */
   --dur-intro: 900ms;
   --dur-pulse: 2600ms;
-  --dur-marquee: 46s;
 
   /* How far a revealed block travels, and how far a standalone button lifts on
      hover. One value each, so the gesture reads the same everywhere. */
@@ -491,6 +490,27 @@ html[data-intro="boot"] body::before {
 @media (prefers-reduced-motion: no-preference) {
   button:not(:disabled):active {
     transform: translateY(var(--lift)) scale(0.97);
+  }
+}
+
+/* ── Theme flip transition ───────────────────────────────────────────────── */
+/* SiteHeader briefly sets html.theme-fade around a toggle so surfaces cross-
+   fade instead of snapping. Scoped to the class (present for ~350ms only) and
+   to paint-cheap properties; !important wins the cascade over component
+   transition lists for exactly that window, then the class is removed and
+   every component's own transitions resume untouched. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .theme-fade,
+  .theme-fade *,
+  .theme-fade *::before,
+  .theme-fade *::after {
+    transition:
+      background-color var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out),
+      fill var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out) !important;
   }
 }
 

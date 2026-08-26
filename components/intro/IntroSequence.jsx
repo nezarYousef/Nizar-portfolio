@@ -32,9 +32,20 @@ function readColors() {
   const cs = window.getComputedStyle(document.documentElement);
   return {
     accent: cs.getPropertyValue("--accent-bright").trim() || "#35d6c6",
-    signal: cs.getPropertyValue("--signal").trim() || "#e8ad46",
     spark: "#eafcf9"
   };
+}
+
+/* Surfaces behind the opaque cover are made inert for the duration of the
+   sequence, so keyboard focus cannot land on links the visitor cannot see.
+   Each id lives in Site.jsx / SiteHeader.jsx / AssistantDock.jsx. */
+const INERT_SURFACES = ["main", "site-header", "site-footer", "assistant-dock"];
+
+function setSurfacesInert(inert) {
+  INERT_SURFACES.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.inert = inert;
+  });
 }
 
 export default function IntroSequence({ words, dir, skipLabel }) {
@@ -44,11 +55,13 @@ export default function IntroSequence({ words, dir, skipLabel }) {
   const counterRef = useRef(null);
   const barRef = useRef(null);
   const wordsRef = useRef(null);
+  const skipRef = useRef(null);
 
   /* Release hands over to the hero: data-hero-in starts the hero entrance
      choreography in the same frame the intro cover lets go, and removing
      data-intro unlocks scrolling. Both live on <html> so plain CSS can react
-     with zero JS after this point. */
+     with zero JS after this point. Focus moves to <main> so keyboard users
+     resume from the content instead of a lost position behind the overlay. */
   const release = useCallback(() => {
     const html = document.documentElement;
     html.dataset.heroIn = "true";
@@ -58,6 +71,7 @@ export default function IntroSequence({ words, dir, skipLabel }) {
     } catch {
       /* Storage can be blocked; the intro just replays next visit. */
     }
+    document.getElementById("main")?.focus();
     setPhase("release");
     window.setTimeout(() => setPhase("done"), T_UNMOUNT * 1000 - T_RELEASE * 1000 + 400);
   }, []);
@@ -88,6 +102,11 @@ export default function IntroSequence({ words, dir, skipLabel }) {
 
     const html = document.documentElement;
     html.dataset.intro = "play";
+
+    /* The cover is opaque: park background surfaces out of the tab order and
+       put focus on the one interactive element that exists up here. */
+    setSurfacesInert(true);
+    skipRef.current?.focus();
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -152,8 +171,9 @@ export default function IntroSequence({ words, dir, skipLabel }) {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed * 0.82,
           size: 0.7 + rand() * 2.1,
-          color:
-            pick < 0.68 ? colors.accent : pick < 0.9 ? colors.signal : colors.spark,
+          /* Amber is reserved for the availability state, so the burst is
+             accent + white-hot only. */
+          color: pick < 0.85 ? colors.accent : colors.spark,
           life: 1.7 + rand() * 1.5,
           age: 0
         };
@@ -344,6 +364,7 @@ export default function IntroSequence({ words, dir, skipLabel }) {
          out at that point, and cancelling would snap the words to their
          unanimated position for a frame before unmount removes them. */
       delete html.dataset.intro;
+      setSurfacesInert(false);
     };
   }, [phase, dir, words, release]);
 
@@ -355,6 +376,9 @@ export default function IntroSequence({ words, dir, skipLabel }) {
       className={styles.overlay}
       data-phase={phase}
       data-dir={dir}
+      role="dialog"
+      aria-modal="true"
+      aria-label={skipLabel}
     >
       <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
 
@@ -376,7 +400,12 @@ export default function IntroSequence({ words, dir, skipLabel }) {
         </>
       ) : null}
 
-      <button type="button" className={`${styles.skip} u-mono`} onClick={release}>
+      <button
+        type="button"
+        ref={skipRef}
+        className={`${styles.skip} u-mono`}
+        onClick={release}
+      >
         {skipLabel}
       </button>
     </div>

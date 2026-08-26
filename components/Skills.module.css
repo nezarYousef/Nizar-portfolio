@@ -25,15 +25,20 @@
     box-shadow var(--dur-slow) var(--ease-out);
 }
 
-/* The signature strip of the original cards, in the current palette. */
+/* The signature strip of the original cards, accent-only - amber stays
+   reserved for the availability state. */
 .category::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
   height: 3px;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  background: linear-gradient(90deg, var(--accent-bright), var(--signal));
-  opacity: 0.72;
+  background: linear-gradient(
+    90deg,
+    var(--accent-bright),
+    color-mix(in srgb, var(--accent-bright) 35%, transparent)
+  );
+  opacity: 0.8;
   pointer-events: none;
   transition: opacity var(--dur-fast) var(--ease-out);
 }

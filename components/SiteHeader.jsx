@@ -47,20 +47,31 @@ function useActiveSection(ids) {
 
 function useTheme() {
   const [theme, setTheme] = useState("light");
+  const fadeTimer = useRef(0);
 
   useEffect(() => {
     setTheme(document.documentElement.dataset.theme ?? "light");
+    return () => clearTimeout(fadeTimer.current);
   }, []);
 
   const toggle = useCallback(() => {
     setTheme((current) => {
       const next = current === "dark" ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
+      const root = document.documentElement;
+
+      /* Brief global cross-fade so surfaces don't snap between palettes.
+         The class scopes the transition to this one flip; globals.css owns
+         the actual rule and reduced-motion gating. */
+      root.classList.add("theme-fade");
+      root.dataset.theme = next;
       try {
         localStorage.setItem(THEME_KEY, next);
       } catch {
         /* Persistence is a progressive enhancement. */
       }
+      clearTimeout(fadeTimer.current);
+      fadeTimer.current = setTimeout(() => root.classList.remove("theme-fade"), 350);
+
       return next;
     });
   }, []);
@@ -73,10 +84,20 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
   const [theme, toggleTheme] = useTheme();
   const active = useActiveSection(sectionIds);
   const progressRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const navRef = useRef(null);
+
+  /* Close-with-focus: every intentional close hands focus back to the
+     hamburger so keyboard users never land on <body>. Resize-driven closes
+     stay silent - nobody asked for focus. */
+  const closeMenu = useCallback((refocus = false) => {
+    setMenuOpen(false);
+    if (refocus) menuButtonRef.current?.focus();
+  }, []);
 
   /* Reading progress: one passive scroll listener, rAF-batched, writing a
-     transform directly - no React state on the hot path. Decorative (the
-     browser already communicates position), so it stays aria-hidden. */
+      transform directly - no React state on the hot path. Decorative (the
+      browser already communicates position), so it stays aria-hidden. */
   useEffect(() => {
     let queued = false;
     let frame = 0;
@@ -105,27 +126,77 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
     };
   }, []);
 
+  /* Crossing into the desktop nav (>= 1024px, matching the CSS breakpoint)
+     retires the drawer. matchMedia instead of a magic width keeps the JS and
+     the stylesheet on one source of truth. */
   useEffect(() => {
-    const close = () => {
-      if (window.innerWidth > 900) setMenuOpen(false);
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      if (mq.matches) setMenuOpen(false);
     };
-    window.addEventListener("resize", close);
-    return () => window.removeEventListener("resize", close);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
+  /* Drawer behaviour while open: Escape closes (with focus restored), Tab is
+     trapped across the header's controls so keyboard users can reach the
+     language/theme buttons without escaping into the page behind. */
   useEffect(() => {
     if (!menuOpen) return undefined;
-    const onKey = (event) => {
-      if (event.key === "Escape") setMenuOpen(false);
+
+    const focusable = () => {
+      const nav = navRef.current;
+      if (!nav) return [];
+      return [
+        ...nav.querySelectorAll("a[href], button:not([disabled])")
+      ];
     };
+
+    const onKey = (event) => {
+      if (event.key === "Escape") {
+        closeMenu(true);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const items = focusable();
+      if (!items.length) return;
+
+      const first = items[0];
+      const last = items[items.length - 1];
+      const current = document.activeElement;
+
+      if (event.shiftKey && (current === first || !navRef.current?.contains(current))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && current === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    /* Opening moves focus into the menu itself, mirroring native disclosure
+       widgets. The drawer is CSS-shown via data-open; by effect time it is
+       rendered and focusable. */
+    document.getElementById("site-nav-links")?.querySelector("a")?.focus();
+
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [menuOpen]);
+  }, [menuOpen, closeMenu]);
 
   return (
-    <header className={styles.header}>
-      <nav className={styles.nav} aria-label={ui.mainNavLabel}>
-        <a className={styles.brand} href="#hero" onClick={() => setMenuOpen(false)}>
+    <header className={styles.header} id="site-header">
+      <nav
+        ref={navRef}
+        className={styles.nav}
+        aria-label={ui.mainNavLabel}
+      >
+        <a
+          className={styles.brand}
+          href="#hero"
+          onClick={() => closeMenu()}
+        >
           <span className={`${styles.brandMark} u-mono`} aria-hidden="true">
             /
           </span>
@@ -133,6 +204,7 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
         </a>
 
         <button
+          ref={menuButtonRef}
           className={styles.menuButton}
           type="button"
           aria-expanded={menuOpen}
@@ -154,7 +226,7 @@ export default function SiteHeader({ copy, ui, sectionIds, otherLangHref }) {
                 className={styles.link}
                 href={`#${item.id}`}
                 aria-current={active === item.id ? "true" : undefined}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => closeMenu(true)}
               >
                 {item.label}
               </a>

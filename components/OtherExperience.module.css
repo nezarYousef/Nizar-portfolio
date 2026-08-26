@@ -1,32 +1,14 @@
-.viewport {
-  overflow: hidden;
-  /* Fades both ends so cards enter and leave rather than being cut off. */
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black var(--space-l),
-    black calc(100% - var(--space-l)),
-    transparent
-  );
-}
-
-.track {
-  display: flex;
-  width: max-content;
-}
-
-.group {
-  display: flex;
-  gap: var(--space-s);
-  padding-inline-end: var(--space-s);
+.grid {
+  display: grid;
+  gap: var(--space-l);
+  /* Auto-fit keeps cards whole at every width: one column on phones, two on
+     tablets, three/four on wide screens - never a clipped edge. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  /* token-audit-ignore: a carousel card's width is a track dimension, chosen
-     so roughly two and a half cards are visible; it is not a spacing step. */
-  width: 280px;
   overflow: hidden;
   border: var(--border);
   border-radius: var(--radius-lg);
@@ -47,6 +29,9 @@
 }
 
 .body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   padding: var(--space-s);
 }
 
@@ -99,61 +84,4 @@
   height: var(--dot-bullet);
   border-radius: 50%;
   background: var(--line-strong);
-}
-
-/* ── Marquee ─────────────────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: no-preference) {
-  .track {
-    /* token-audit-ignore: linear is required - any easing would make a
-       continuous loop visibly stutter at the seam. */
-    animation: marquee var(--dur-marquee) linear infinite;
-  }
-
-  /* Reverse the travel direction in Arabic so cards still enter from the
-     side the reader is coming from. */
-  :global([dir="rtl"]) .track {
-    animation-name: marqueeRtl;
-  }
-
-  .viewport:hover .track,
-  .viewport:focus-within .track {
-    animation-play-state: paused;
-  }
-
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  @keyframes marqueeRtl {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(50%);
-    }
-  }
-}
-
-/* Without motion the track becomes a normal horizontal scroller. */
-@media (prefers-reduced-motion: reduce) {
-  .viewport {
-    overflow-x: auto;
-  }
-
-  .track {
-    animation: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .card {
-    /* token-audit-ignore: as above. */
-    width: 340px;
-  }
 }

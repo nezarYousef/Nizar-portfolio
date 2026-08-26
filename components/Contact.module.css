@@ -35,7 +35,28 @@
   color: var(--ink);
   font-size: var(--text-s);
   font-weight: var(--weight-semibold);
+  text-align: start;
   transition: var(--t-control);
+}
+
+/* The CV row leads the panel and reads as the primary action. */
+.methodPrimary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--ink-on-accent);
+}
+
+.methodPrimary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+  transform: translateY(var(--lift));
+}
+
+.methodPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-style: dashed;
+  background: var(--paper-raised);
+  color: var(--ink-muted);
 }
 
 .method:hover {
