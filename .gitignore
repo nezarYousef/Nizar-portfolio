@@ -4,3 +4,9 @@ out/
 
 *.log
 .env*.local
+screenshots/
+reports/
+.claude/
+
+# ad-hoc measurement drivers
+*.sh
