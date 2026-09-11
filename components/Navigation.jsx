@@ -1,7 +1,8 @@
 "use client";
 
-import { Languages, Menu, Moon, Sun, X, Terminal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Languages, Menu, Moon, Sun, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import styles from "./Navigation.module.css";
 
 export default function Navigation({
   activeSection,
@@ -12,154 +13,154 @@ export default function Navigation({
   theme
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const closeOnLargeScreen = () => {
-      if (window.innerWidth > 860) setMenuOpen(false);
-    };
-    window.addEventListener("resize", closeOnLargeScreen);
-    return () => window.removeEventListener("resize", closeOnLargeScreen);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const [compact, setCompact] = useState(false);
+  const progressRef = useRef(null);
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const nextLanguage = language === "en" ? "ar" : "en";
   const nextTheme = theme === "dark" ? "light" : "dark";
-  const brandHandle = "~/nizar_";
+
+  // Compact header + reading progress, one rAF-throttled listener, no re-render
+  // per scroll tick (the bar is written directly).
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const progress = max > 0 ? window.scrollY / max : 0;
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`;
+      setCompact(window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Mobile menu: lock scroll, close on Escape, return focus to the toggle.
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    document.body.classList.add("is-locked");
+    const first = menuRef.current?.querySelector("a");
+    first?.focus();
+
+    const onKey = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    const onResize = () => {
+      if (window.innerWidth >= 1100) setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      document.body.classList.remove("is-locked");
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
+
+  const links = copy.nav.map((item, index) => ({
+    ...item,
+    index: String(index + 1).padStart(2, "0")
+  }));
 
   return (
     <>
-      <style>{`
-        .site-header {
-          transition: box-shadow 300ms ease, background 300ms ease, border-color 300ms ease;
-        }
-        .site-header.is-scrolled {
-          box-shadow: 0 4px 30px rgba(14, 165, 164, 0.08), 0 1px 0 var(--line);
-        }
-        .nav-links a {
-          position: relative;
-        }
-        .nav-links a.is-active::before {
-          content: "";
-          position: absolute;
-          bottom: -2px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 4px;
-          height: 4px;
-          border-radius: 50%;
-          background: var(--accent);
-          box-shadow: 0 0 8px var(--accent);
-        }
-        .brand {
-          transition: color 200ms ease;
-        }
-        .brand:hover .brand-mark {
-          text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 70%, transparent);
-        }
-        .nav-progress-bar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 2px;
-          background: linear-gradient(90deg, var(--accent), var(--blue), var(--violet));
-          z-index: 200;
-          transition: width 120ms ease;
-          pointer-events: none;
-        }
-      `}</style>
+      <div className={styles.progress} ref={progressRef} aria-hidden="true" />
 
-      <NavProgressBar />
-
-      <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-        <nav className="nav-inner" aria-label="Main navigation">
-          <a className="brand" href="#hero" onClick={() => setMenuOpen(false)}>
-            <span className="brand-mark">~</span>
-            <span className="brand-name">{brandHandle}</span>
+      <header className={styles.header} data-compact={compact || menuOpen}>
+        <nav className={`container ${styles.bar}`} aria-label="Main">
+          <a className={styles.brand} href="#hero" onClick={() => setMenuOpen(false)}>
+            <span className={styles.brandMark}>~</span>/nizar<span className={styles.brandCursor}>_</span>
+            <span className="sr-only">{copy.brand}</span>
           </a>
 
-          <button
-            className="icon-button mobile-menu-button"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? copy.controls.closeMenuLabel : copy.controls.menuLabel}
-            title={menuOpen ? copy.controls.closeMenuLabel : copy.controls.menuLabel}
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-
-          <div className={`nav-links ${menuOpen ? "is-open" : ""}`}>
-            {copy.nav.map((item, index) => (
-              <a
-                key={item.id}
-                className={activeSection === item.id ? "is-active" : ""}
-                href={`#${item.id}`}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className="nav-index">{String(index + 1).padStart(2, "0")}</span>
-                <span>{item.label}</span>
-              </a>
+          <ul className={styles.links}>
+            {links.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={`#${item.id}`}
+                  className={styles.link}
+                  aria-current={activeSection === item.id ? "true" : undefined}
+                >
+                  <span className={styles.index}>{item.index}</span>
+                  <span>{item.label}</span>
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
 
-          <div className="nav-controls">
+          <div className={styles.controls}>
             <button
-              className="icon-button language-toggle"
+              className={`icon-btn ${styles.lang}`}
               type="button"
               aria-label={copy.controls.languageLabel}
               title={copy.controls.languageLabel}
               onClick={() => onLanguageChange(nextLanguage)}
             >
-              <Languages size={18} />
+              <Languages size={17} aria-hidden="true" />
               <span>{copy.controls.language}</span>
             </button>
 
             <button
-              className="icon-button"
+              className="icon-btn"
               type="button"
               aria-label={copy.controls.themeLabel}
               title={copy.controls.themeLabel}
               onClick={() => onThemeChange(nextTheme)}
             >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+            </button>
+
+            <button
+              ref={toggleRef}
+              className={`icon-btn ${styles.menuToggle}`}
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls="site-menu"
+              aria-label={menuOpen ? copy.controls.closeMenuLabel : copy.controls.menuLabel}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              {menuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
             </button>
           </div>
         </nav>
       </header>
+
+      <div
+        id="site-menu"
+        ref={menuRef}
+        className={styles.sheet}
+        data-open={menuOpen}
+        inert={menuOpen ? undefined : true}
+      >
+        <ul className={`container ${styles.sheetList}`}>
+          {links.map((item, i) => (
+            <li key={item.id} style={{ "--i": i }}>
+              <a
+                href={`#${item.id}`}
+                aria-current={activeSection === item.id ? "true" : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className={styles.index}>{item.index}</span>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
-  );
-}
-
-function NavProgressBar() {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const docEl = document.documentElement;
-      const scrollTop = window.scrollY || docEl.scrollTop;
-      const scrollHeight = docEl.scrollHeight - docEl.clientHeight;
-      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-      setWidth(progress);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <div
-      className="nav-progress-bar"
-      style={{ width: `${width}%` }}
-      role="progressbar"
-      aria-label="Reading progress"
-      aria-valuenow={Math.round(width)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-    />
   );
 }

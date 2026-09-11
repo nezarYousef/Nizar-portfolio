@@ -1,0 +1,129 @@
+/* Split layout: the heading holds its place while the timeline is read. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(40px, 6vw, 104px);
+  align-items: start;
+}
+
+.aside {
+  position: sticky;
+  top: calc(var(--header-h) + 40px);
+}
+
+.timeline {
+  --p: 0;
+  --rail-x: 5px;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Rail + fill as pseudo-elements (an <ol> may only contain <li>). */
+.timeline::before,
+.timeline::after {
+  position: absolute;
+  inset-block: 12px 12px;
+  inset-inline-start: var(--rail-x);
+  content: "";
+}
+
+.timeline::before {
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.timeline::after {
+  width: 2px;
+  margin-inline-start: -0.5px;
+  background: var(--accent);
+  transform: scaleY(var(--p));
+  transform-origin: top center;
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding-block: 0 clamp(36px, 4vw, 56px);
+  padding-inline-start: 40px;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+.node {
+  position: absolute;
+  z-index: 1;
+  top: 5px;
+  inset-inline-start: 0;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.date {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.body {
+  max-width: 62ch;
+}
+
+.role {
+  font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.55rem);
+  font-weight: 800;
+  font-stretch: var(--display-stretch);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+html[lang="ar"] .role {
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.org {
+  margin-top: 4px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.points {
+  display: grid;
+  gap: 8px;
+  margin-top: var(--s-4);
+  padding-inline-start: 1.1em;
+  color: var(--muted);
+}
+
+.points li::marker {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .aside {
+    position: relative;
+    top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline::after {
+    transform: none;
+  }
+}

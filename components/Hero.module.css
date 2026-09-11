@@ -1,0 +1,377 @@
+.hero {
+  position: relative;
+  --p: 0;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Layers ─────────────────────────────────────────── */
+
+.visual {
+  position: relative;
+  order: 2;
+  height: clamp(360px, 112vw, 560px);
+  margin-top: -8px;
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+}
+
+.visual[data-ready="true"] {
+  opacity: 1;
+}
+
+.visual canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.copyLayer {
+  position: relative;
+  order: 1;
+  z-index: 2;
+  padding-top: calc(var(--header-h) + clamp(28px, 6vh, 56px));
+}
+
+.beatLayer {
+  order: 3;
+  padding-bottom: var(--s-8);
+}
+
+/* ─── Copy ───────────────────────────────────────────── */
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 38rem;
+}
+
+.boot {
+  align-self: flex-start;
+  margin-bottom: var(--s-4);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.boot span {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--s-5);
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.statusDot {
+  position: relative;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.statusDot::after {
+  position: absolute;
+  inset: -5px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  animation: ping 2.8s var(--ease-out) infinite;
+}
+
+.name {
+  font-size: var(--t-hero);
+  font-weight: 900;
+  font-stretch: var(--display-stretch);
+  line-height: 0.9;
+  letter-spacing: -0.042em;
+}
+
+.nameLine {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .nameLine {
+    white-space: nowrap;
+  }
+}
+
+html[lang="ar"] .name {
+  line-height: 1.12;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.075em;
+  height: 0.76em;
+  margin-inline-start: 0.07em;
+  background: var(--accent);
+  vertical-align: -0.02em;
+  animation: blink 1.15s steps(1) infinite;
+}
+
+.role {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6ch;
+  margin-top: var(--s-5);
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: clamp(1.15rem, 0.95rem + 0.8vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.prompt {
+  color: var(--ink);
+}
+
+.typed {
+  display: inline-block;
+  white-space: nowrap;
+  clip-path: inset(0 0 0 0);
+  animation: type 1.2s steps(var(--chars, 20), end) 0.55s both;
+}
+
+html[dir="rtl"] .typed {
+  animation-name: typeRtl;
+}
+
+.description {
+  max-width: 46ch;
+  margin-top: var(--s-5);
+  color: var(--text);
+  font-size: 1.06rem;
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: var(--s-6);
+}
+
+/* ─── Second beat (the exploded view's caption) ─────── */
+
+.beat {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.beatEyebrow {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+.beatTitle {
+  max-width: 26ch;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+  font-weight: 800;
+  font-stretch: var(--display-stretch);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+html[lang="ar"] .beatTitle {
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* ─── Desktop composition ───────────────────────────── */
+
+@media (min-width: 1024px) {
+  .stage {
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+  }
+
+  .visual {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    order: 0;
+    height: auto;
+    margin: 0;
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%);
+  }
+
+  .copyLayer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding-top: var(--header-h);
+    pointer-events: none;
+  }
+
+  .copyInner {
+    display: flex;
+  }
+
+  .copy {
+    pointer-events: auto;
+    max-width: min(40rem, 46vw);
+  }
+
+  /* Not pinned (short screens, reduced motion): the caption stays for
+     assistive tech only; the copy already carries the message. */
+  .beatLayer {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* Pinned: a sticky stage and 100svh of scroll that explodes the system. */
+@media (min-width: 1024px) {
+  .hero[data-pin="true"] {
+    height: 205svh;
+  }
+
+  .hero[data-pin="true"] .stage {
+    position: sticky;
+    top: 0;
+  }
+
+  .hero[data-pin="true"] .copy {
+    transform: translate3d(0, calc(var(--p) * -16vh), 0);
+    opacity: calc(1 - var(--p) * 2.6);
+    will-change: transform, opacity;
+  }
+
+  .hero[data-pin="true"] .beatLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    padding: var(--header-h) 0 0;
+    pointer-events: none;
+  }
+
+  .hero[data-pin="true"] .beat {
+    justify-items: center;
+    text-align: center;
+    position: relative;
+    opacity: calc((var(--p) - 0.64) * 4.5);
+    transform: translate3d(0, calc((1 - var(--p)) * 64px), 0);
+  }
+
+  /* A soft ground under the caption only, so the core stays visible
+     between the letters without fighting them. */
+  .hero[data-pin="true"] .beat::before {
+    position: absolute;
+    inset: -12% -8%;
+    z-index: -1;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 78%, transparent) 30%, transparent 100%);
+    content: "";
+  }
+
+  .hero[data-pin="true"] .beatTitle {
+    max-width: 19ch;
+    font-size: clamp(2rem, 1rem + 2.3vw, 3.2rem);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.032em;
+  }
+}
+
+@media (max-width: 1023px) {
+  .copy {
+    max-width: 34rem;
+  }
+
+  .name {
+    font-size: clamp(2.7rem, 1.2rem + 7.6vw, 4.4rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .actions :global(.btn) {
+    padding: 0 12px;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes ping {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.6);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes type {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes typeRtl {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret,
+  .statusDot::after {
+    animation: none;
+  }
+
+  .typed {
+    animation: none;
+  }
+
+  .visual {
+    transition: opacity 300ms linear;
+  }
+}

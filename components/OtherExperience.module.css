@@ -1,0 +1,123 @@
+.section {
+  --p: 0;
+  --edge: max(var(--gutter), calc((100vw - var(--max)) / 2));
+}
+
+.heading {
+  margin-bottom: clamp(32px, 4vw, 56px);
+}
+
+.viewport {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: thin;
+}
+
+.viewport:focus-visible {
+  outline-offset: -2px;
+}
+
+.track {
+  display: flex;
+  gap: clamp(16px, 2vw, 24px);
+  width: max-content;
+  margin: 0;
+  padding: 4px var(--edge) 24px;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: clamp(280px, 29vw, 400px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  scroll-snap-align: start;
+}
+
+.photo {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.body {
+  display: grid;
+  gap: 6px;
+  padding: 20px 22px 24px;
+}
+
+.date {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 1.14rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.org {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.points {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding-inline-start: 1.05em;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.points li::marker {
+  color: var(--accent);
+}
+
+/* ─── Pinned pan (tall desktop screens) ─────────────── */
+
+.section[data-pinned="true"] {
+  height: calc(100svh + var(--travel));
+  padding-block: 0;
+}
+
+.section[data-pinned="true"] .stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100svh;
+  padding-top: var(--header-h);
+  overflow: hidden;
+}
+
+.section[data-pinned="true"] .viewport {
+  overflow: visible;
+  scroll-snap-type: none;
+}
+
+.section[data-pinned="true"] .track {
+  transform: translate3d(calc(var(--p) * var(--travel) * var(--dir)), 0, 0);
+  will-change: transform;
+}
+
+.section[data-pinned="true"] .card {
+  box-shadow: var(--shadow-2);
+}

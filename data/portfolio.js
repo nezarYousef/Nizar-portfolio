@@ -66,20 +66,25 @@ const aidSignGallery = [
 
 const projectMeta = {
   restaurant: {
+    cover: "/images/restaurant/1.png",
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
     gallery: gallery("restaurant", 19)
   },
   expenses: {
+    cover: "/images/expenses/1.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"],
     gallery: gallery("expenses", 2)
   },
   tasks: {
+    cover: "/images/tasks/1.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"],
     gallery: gallery("tasks", 5)
   },
   grade: {
     tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
     previewImage: "/images/edufusion/ba.png",
+    cover: "/images/edufusion/ba.png",
+    coverPosition: "center 18%",
     gallery: edufusionGallery
   },
   shell: {
@@ -99,21 +104,48 @@ const projectMeta = {
   vision: {
     tags: ["Computer Vision", "Python", "AI", "OpenHands"],
     previewImage: "/images/aid-sign/1.PNG",
+    cover: "/images/aid-sign/1.PNG",
+    coverPosition: "center top",
     previewFit: "contain",
     gallery: aidSignGallery
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
     previewImage: "/images/advanced-tasks/ba.png",
+    cover: "/images/advanced-tasks/ba.png",
+    coverPosition: "center 9%",
     gallery: advancedTasksGallery
   }
 };
 
+/*
+ * Project links: each project shows exactly one destination.
+ * `github` wins over `demo`; with neither, the card shows no link.
+ * Only real, published URLs belong here.
+ */
 const withMeta = (projects) =>
   projects.map((project) => ({
     ...projectMeta[project.id],
     ...project
   }));
+
+/*
+ * Modules shown as floating cards in the hero's 3D scene. They are the v1
+ * "portfolio.lab" cards plus the Vision Lab signal and the whoami terminal row.
+ */
+export const heroModules = [
+  { id: "web", label: "Interface Layer", value: "React / Next.js", swatch: "web" },
+  { id: "ai", label: "Intelligence", value: "ML / Python / PyCaret", swatch: "ai" },
+  { id: "systems", label: "Systems Core", value: "Java / OOP / Data Structures", swatch: "systems" },
+  { id: "data", label: "Data Flow", value: "APIs / Models", swatch: "data" },
+  { id: "vision", label: "Vision Lab", value: "CNN / Computer Vision", swatch: "vision" },
+  {
+    id: "terminal",
+    kind: "terminal",
+    command: "whoami",
+    output: "Computer Engineer - Palestine"
+  }
+];
 
 const contactLinks = {
   email: "mailto:nizaryousef01@gmail.com",
@@ -143,7 +175,8 @@ export const portfolioCopy = {
       languageLabel: "Switch to Arabic",
       themeLabel: "Toggle light and dark mode",
       menuLabel: "Open navigation menu",
-      closeMenuLabel: "Close navigation menu"
+      closeMenuLabel: "Close navigation menu",
+      skipLabel: "Skip to content"
     },
     hero: {
       eyebrow: "Computer Engineer / Software, AI & Web",
@@ -177,14 +210,15 @@ export const portfolioCopy = {
         "OOP and desktop application experience"
       ],
       cardTitle: "Computer Engineering Profile",
-      cardMeta: "Software Systems / AI / Web Engineering"
+      cardMeta: "Software Systems / AI / Web Engineering",
+      badge: "Available for hire"
     },
     skills: {
       eyebrow: "Technical Stack",
       title: "A stack that covers systems, web interfaces, AI, and applied software projects.",
        categories: [
          {
-           title: "Programming Lang",
+           title: "Programming Languages",
            items: [
              { name: "Python", level: 90 },
              { name: "Java", level: 83 },
@@ -246,6 +280,12 @@ export const portfolioCopy = {
       viewGallery: "View project gallery",
       viewGithub: "View on GitHub",
       comingSoon: "Details coming soon",
+      viewDemo: "Open live demo",
+      inDevelopment: "In development",
+      previous: "Previous project",
+      next: "Next project",
+      position: "Project {n} of {total}",
+      deckLabel: "Project deck",
       list: withMeta([
         {
           id: "restaurant",
@@ -440,6 +480,7 @@ export const portfolioCopy = {
         "I'm interested in software engineering, frontend development, AI, machine learning, and computer vision opportunities. Feel free to reach out for collaborations, projects, or technical discussions.",
       emailLabel: "Email Me",
       phoneLabel: "Call Me",
+      badge: "Available for new opportunities",
       links: contactLinks
     },
     modal: {
@@ -467,7 +508,8 @@ export const portfolioCopy = {
       languageLabel: "التبديل إلى الإنجليزية",
       themeLabel: "تبديل الوضع الليلي والنهاري",
       menuLabel: "فتح قائمة التنقل",
-      closeMenuLabel: "إغلاق قائمة التنقل"
+      closeMenuLabel: "إغلاق قائمة التنقل",
+      skipLabel: "تخطَّ إلى المحتوى"
     },
     hero: {
       eyebrow: "مهندس حاسوب / برمجيات وذكاء اصطناعي وويب",
@@ -501,7 +543,8 @@ export const portfolioCopy = {
         "خبرة في OOP وتطبيقات سطح المكتب"
       ],
       cardTitle: "ملف هندسة الحاسوب",
-      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب"
+      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب",
+      badge: "متاح للعمل"
     },
     skills: {
       eyebrow: "المهارات التقنية",
@@ -570,6 +613,12 @@ export const portfolioCopy = {
       viewGallery: "عرض صور المشروع",
       viewGithub: "عرض على GitHub",
       comingSoon: "التفاصيل قريباً",
+      viewDemo: "فتح العرض المباشر",
+      inDevelopment: "قيد التطوير",
+      previous: "المشروع السابق",
+      next: "المشروع التالي",
+      position: "المشروع {n} من {total}",
+      deckLabel: "مجموعة المشاريع",
       list: withMeta([
         {
           id: "restaurant",
@@ -764,6 +813,7 @@ export const portfolioCopy = {
         "أهتم بفرص هندسة البرمجيات وتطوير الواجهات والذكاء الاصطناعي وتعلم الآلة والرؤية الحاسوبية. يسعدني تواصلك للتعاون أو المشاريع أو النقاشات التقنية.",
       emailLabel: "راسلني",
       phoneLabel: "اتصل بي",
+      badge: "متاح لفرص جديدة",
       links: contactLinks
     },
     modal: {

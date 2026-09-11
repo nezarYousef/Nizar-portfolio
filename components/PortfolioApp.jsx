@@ -3,15 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
-import CustomCursor from "@/components/CustomCursor";
+import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navigation from "@/components/Navigation";
 import OtherExperience from "@/components/OtherExperience";
-import ProjectModal from "@/components/ProjectModal";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import TimelineSection from "@/components/TimelineSection";
 import { portfolioCopy } from "@/data/portfolio";
+import { refreshScrollProgress } from "@/lib/scrollProgress";
 
 const LANGUAGE_KEY = "nizar-portfolio-language";
 const THEME_KEY = "nizar-portfolio-theme";
@@ -37,106 +37,71 @@ export default function PortfolioApp() {
   const [theme, setTheme] = useState("light");
   const [settingsReady, setSettingsReady] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-  const [activeProjectId, setActiveProjectId] = useState(null);
 
   const copy = portfolioCopy[language];
-  const activeProject = copy.projects.list.find(
-    (project) => project.id === activeProjectId
-  );
+  const sectionIds = useMemo(() => copy.nav.map((item) => item.id), [copy.nav]);
 
-  const sectionIds = useMemo(
-    () => ["hero", ...copy.nav.map((item) => item.id)],
-    [copy.nav]
-  );
-
-  const changeLanguage = (nextLanguage) => {
-    setLanguage(nextLanguage);
-    writePreference(LANGUAGE_KEY, nextLanguage);
-  };
-
-  const changeTheme = (nextTheme) => {
-    setTheme(nextTheme);
-    writePreference(THEME_KEY, nextTheme);
-  };
-
+  // The inline boot script in app/layout.jsx has already applied the saved
+  // (or OS) theme and language to <html>; adopt them without a flash.
   useEffect(() => {
+    const root = document.documentElement;
     const savedLanguage = readPreference(LANGUAGE_KEY);
-    const savedTheme = readPreference(THEME_KEY);
-
-    if (savedLanguage === "en" || savedLanguage === "ar") {
-      setLanguage(savedLanguage);
-    }
-
-    if (savedTheme === "dark" || savedTheme === "light") {
-      setTheme(savedTheme);
-    }
-
+    if (savedLanguage === "en" || savedLanguage === "ar") setLanguage(savedLanguage);
+    setTheme(root.dataset.theme === "dark" ? "dark" : "light");
     setSettingsReady(true);
   }, []);
 
   useEffect(() => {
-    document.documentElement.lang = copy.lang;
-    document.documentElement.dir = copy.dir;
-    document.documentElement.dataset.theme = theme;
+    if (!settingsReady) return;
+    const root = document.documentElement;
+    root.lang = copy.lang;
+    root.dir = copy.dir;
+    root.dataset.theme = theme;
+    // Layout can shift when direction or fonts change; re-measure scroll acts.
+    refreshScrollProgress();
+  }, [copy.dir, copy.lang, settingsReady, theme]);
 
-    if (settingsReady) {
-      writePreference(LANGUAGE_KEY, language);
-      writePreference(THEME_KEY, theme);
-    }
-  }, [copy.dir, copy.lang, language, settingsReady, theme]);
+  const changeLanguage = (next) => {
+    setLanguage(next);
+    writePreference(LANGUAGE_KEY, next);
+  };
 
+  const changeTheme = (next) => {
+    setTheme(next);
+    writePreference(THEME_KEY, next);
+  };
+
+  // Active nav item: the last section whose top has passed a line near the top.
   useEffect(() => {
-    const animatedElements = document.querySelectorAll("[data-animate]");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
-    );
-
-    animatedElements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, [language]);
-
-  useEffect(() => {
-    const updateActiveSection = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.35;
       let current = "hero";
-
       sectionIds.forEach((id) => {
         const element = document.getElementById(id);
-        if (element && element.getBoundingClientRect().top <= 150) {
-          current = id;
-        }
+        if (element && element.getBoundingClientRect().top <= line) current = id;
       });
-
       setActiveSection(current);
     };
-
-    updateActiveSection();
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    window.addEventListener("resize", updateActiveSection);
-
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener("scroll", updateActiveSection);
-      window.removeEventListener("resize", updateActiveSection);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, [sectionIds]);
 
   return (
-    <div className="site-shell">
-      <CustomCursor />
-      <div className="ambient-background" aria-hidden="true">
-        <span className="ambient-band ambient-band-one" />
-        <span className="ambient-band ambient-band-two" />
-        <span className="ambient-scanline" />
-      </div>
+    <>
+      <a className="skip-link" href="#main">
+        {copy.controls.skipLabel}
+      </a>
 
       <Navigation
         activeSection={activeSection}
@@ -147,39 +112,23 @@ export default function PortfolioApp() {
         onThemeChange={changeTheme}
       />
 
-      <main>
-        <Hero copy={copy.hero} />
-        <About copy={copy.about} />
-        <Skills copy={copy.skills} />
-        <Projects
-          copy={copy.projects}
+      <main id="main">
+        <Hero copy={copy.hero} theme={theme} dir={copy.dir} />
+        <About
+          copy={copy.about}
+          stats={copy.hero.stats}
+          imageAlt={copy.hero.imageAlt}
           language={language}
-          onOpenProject={(projectId) => setActiveProjectId(projectId)}
         />
-        <TimelineSection
-          copy={copy.experience}
-          iconType="experience"
-          id="experience"
-        />
-        <OtherExperience copy={copy.otherExperience} />
-        <TimelineSection
-          copy={copy.education}
-          iconType="education"
-          id="education"
-        />
-        <Contact copy={copy.contact} />
+        <Skills copy={copy.skills} language={language} />
+        <Projects copy={copy.projects} dir={copy.dir} language={language} />
+        <TimelineSection copy={copy.experience} id="experience" index="04" language={language} />
+        <OtherExperience copy={copy.otherExperience} dir={copy.dir} language={language} />
+        <TimelineSection copy={copy.education} id="education" index="06" language={language} />
+        <Contact copy={copy.contact} language={language} />
       </main>
 
-      <footer className="site-footer">
-        <p>&copy; {copy.footer}</p>
-      </footer>
-
-      <ProjectModal
-        labels={copy.projects}
-        modalCopy={copy.modal}
-        project={activeProject}
-        onClose={() => setActiveProjectId(null)}
-      />
-    </div>
+      <Footer text={copy.footer} />
+    </>
   );
 }

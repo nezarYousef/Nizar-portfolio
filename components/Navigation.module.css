@@ -1,0 +1,253 @@
+.progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 70;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+html[dir="rtl"] .progress {
+  transform-origin: right center;
+}
+
+.header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 60;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 240ms var(--ease-out),
+    border-color 240ms var(--ease-out),
+    backdrop-filter 240ms var(--ease-out);
+}
+
+.header[data-compact="true"] {
+  border-bottom-color: var(--line);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  height: var(--header-h);
+  transition: height 240ms var(--ease-out);
+}
+
+.header[data-compact="true"] .bar {
+  height: 60px;
+}
+
+.brand {
+  flex: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  direction: ltr;
+}
+
+.brandMark {
+  color: var(--accent-text);
+}
+
+.brandCursor {
+  animation: brandBlink 1.15s steps(1) infinite;
+}
+
+.links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 2px;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 10px 11px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color var(--d-micro) var(--ease-out);
+}
+
+.index {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.link::after {
+  position: absolute;
+  inset-inline: 11px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  content: "";
+  transform: scaleX(0);
+  transition: transform 320ms var(--ease-out);
+}
+
+.link[aria-current="true"] {
+  color: var(--ink);
+}
+
+.link[aria-current="true"]::after {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--ink);
+  }
+}
+
+.controls {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.lang {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  gap: 6px;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.menuToggle {
+  display: none;
+}
+
+/* ─── Mobile sheet ─────────────────────────────────── */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: flex-end;
+  padding-block: calc(var(--header-h) + 24px) 40px;
+  background: var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 280ms var(--ease-out),
+    visibility 0s linear 280ms;
+}
+
+.sheet[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 280ms var(--ease-out);
+}
+
+.sheetList {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+
+.sheetList li {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 360ms var(--ease-out),
+    transform 460ms var(--ease-out);
+}
+
+.sheet[data-open="true"] .sheetList li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i) * 40ms + 60ms);
+}
+
+.sheetList a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 1.2rem + 3vw, 2.4rem);
+  font-weight: 800;
+  font-stretch: var(--display-stretch);
+  letter-spacing: -0.02em;
+}
+
+.sheetList a[aria-current="true"] {
+  color: var(--accent-text);
+}
+
+.sheetList .index {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1099px) {
+  .links {
+    display: none;
+  }
+
+  .menuToggle {
+    display: inline-grid;
+  }
+
+  .controls {
+    margin-inline-start: auto;
+  }
+}
+
+@media (min-width: 1100px) {
+  .sheet {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .lang span {
+    display: none;
+  }
+
+  .lang {
+    width: 44px;
+    padding: 0;
+  }
+}
+
+@keyframes brandBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandCursor {
+    animation: none;
+  }
+
+  .sheetList li {
+    transform: none;
+  }
+}
