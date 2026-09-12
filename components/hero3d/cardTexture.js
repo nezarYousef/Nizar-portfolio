@@ -29,7 +29,7 @@ function fitText(ctx, text, maxWidth, size, weight, family) {
 }
 
 const MONO = '"JetBrains Mono", ui-monospace, Consolas, monospace';
-const SANS = '"Archivo", system-ui, "Segoe UI", sans-serif';
+const SANS = '"Manrope", system-ui, "Segoe UI", sans-serif';
 
 export function drawModuleCard(module, size, palette, index) {
   const [widthUnits, heightUnits] = size;

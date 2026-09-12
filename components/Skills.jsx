@@ -1,53 +1,58 @@
 "use client";
 
-import { useRef } from "react";
-import { useReveal } from "@/lib/useReveal";
+import { useEffect, useRef, useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
-import { useScrollProgress } from "@/lib/scrollProgress";
-import { usePrefersReducedMotion } from "@/lib/useMedia";
+import SkillPanel from "@/components/SkillPanel";
+import { useReveal } from "@/lib/useReveal";
 import styles from "./Skills.module.css";
 
-// v1 category colours, in the same order (teal, blue, violet, green, rust, tools).
-const SWATCHES = [
-  "var(--mod-web)",
-  "var(--mod-data)",
-  "var(--mod-ai)",
-  "var(--mod-vision)",
-  "var(--mod-systems)",
-  "var(--mod-tools)"
-];
-
-const itemName = (item) => (typeof item === "string" ? item : item.name);
-
+/*
+ * The stack, as five panels rather than a table of bars. Scrolling emphasises
+ * one category at a time; nothing else on the panel moves.
+ */
 export default function Skills({ copy, language }) {
   const sectionRef = useRef(null);
   const listRef = useRef(null);
-  useReveal(sectionRef, [language]);
-  const reducedMotion = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
 
-  // Rows slide into the sheet by scroll position (scrubbed, not timed).
-  useScrollProgress(listRef, { mode: "enter", span: 0.95, disabled: reducedMotion, resetTo: 1 });
+  useReveal(sectionRef, [language]);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || !("IntersectionObserver" in window)) return undefined;
+    const panels = Array.from(list.children);
+    // A thin band across the middle of the viewport: whatever is in it is
+    // what the visitor is reading.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(panels.indexOf(entry.target));
+        });
+      },
+      { rootMargin: "-46% 0px -46% 0px", threshold: 0 }
+    );
+    panels.forEach((panel) => observer.observe(panel));
+    return () => observer.disconnect();
+  }, [copy.categories, language]);
 
   return (
-    <section className="section" id="skills" ref={sectionRef} aria-labelledby="skills-title">
+    <section
+      className="section screen band"
+      id="skills"
+      ref={sectionRef}
+      aria-labelledby="skills-title"
+    >
       <div className="container">
         <SectionHeading index="02" eyebrow={copy.eyebrow} title={copy.title} id="skills-title" />
 
-        <ol className={styles.sheet} ref={listRef} style={{ "--n": copy.categories.length }}>
+        <ol className={styles.list} ref={listRef}>
           {copy.categories.map((category, index) => (
-            <li
-              className={styles.row}
-              key={category.title}
-              style={{ "--i": index, "--swatch": SWATCHES[index % SWATCHES.length] }}
-            >
-              <span className={styles.swatch} aria-hidden="true" />
-              <h3 className={styles.name}>{category.title}</h3>
-              <ul className={styles.items} aria-label={category.title}>
-                {category.items.map((item) => (
-                  <li key={itemName(item)}>{itemName(item)}</li>
-                ))}
-              </ul>
-            </li>
+            <SkillPanel
+              key={category.key}
+              category={category}
+              index={index}
+              active={index === active}
+            />
           ))}
         </ol>
       </div>

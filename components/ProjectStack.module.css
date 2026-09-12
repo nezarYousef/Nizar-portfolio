@@ -22,8 +22,9 @@ html[dir="rtl"] .deck {
 .slot {
   grid-area: 1 / 1;
   min-width: 0;
-  /* Scroll device: the deck arrives fanned downward and closes as --p → 1. */
-  transform: translate3d(0, calc((1 - var(--p)) * var(--k) * 72px), 0);
+  /* Scroll device: the deck arrives fanned and tilted, then closes flat. */
+  transform: translate3d(0, calc((1 - var(--p)) * var(--k) * 72px), 0)
+    rotateX(calc((1 - var(--p)) * 3.5deg));
 }
 
 .slot[data-pose="0"] {
@@ -130,6 +131,16 @@ html[dir="rtl"] .deck {
 
 .slot[data-pose="0"] .coverWrap > * {
   transform: scale(1);
+  animation: coverWipe 900ms var(--ease-out);
+}
+
+@keyframes coverWipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 .content {
@@ -157,11 +168,10 @@ html[dir="rtl"] .deck {
 }
 
 .title {
-  font-size: clamp(1.6rem, 1.15rem + 1.3vw, 2.35rem);
-  font-weight: 850;
-  font-stretch: var(--display-stretch);
-  line-height: 1.04;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.35rem, 1.05rem + 1vw, 1.85rem);
+  font-weight: var(--w-head);
+  line-height: 1.1;
+  letter-spacing: -0.022em;
 }
 
 html[lang="ar"] .title {
@@ -173,8 +183,13 @@ html[lang="ar"] .title {
 .description {
   max-width: 42ch;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--t-small);
   line-height: 1.6;
+}
+
+/* The deck card is smaller than the flagship, so the title comes down with it. */
+.tags {
+  margin-top: calc(var(--s-2) * -1);
 }
 
 .action {
@@ -240,8 +255,8 @@ html[dir="rtl"] .actionArrow {
 
 .segment {
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 40px;
   padding: 0;
   border: 0;
   border-radius: 6px;

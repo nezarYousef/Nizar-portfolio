@@ -22,7 +22,7 @@ function Rig({ children, progressRef, pointerRef, compact, dir, reducedMotion })
     const dt = Math.min(delta, 0.05);
     const k = 1 - Math.exp(-dt * 5);
     const s = smoothed.current;
-    s.p += (progressRef.current - s.p) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 7));
+    s.p += (progressRef.current - s.p) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 16));
     s.x += ((pointerRef.current?.x ?? 0) - s.x) * k;
     s.y += ((pointerRef.current?.y ?? 0) - s.y) * k;
 

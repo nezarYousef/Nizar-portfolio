@@ -17,12 +17,14 @@ function poseFor(offset, total) {
   return "back";
 }
 
-export default function ProjectStack({ projects, labels, dir }) {
+export default function ProjectStack({ projects, labels, dir, offset = 0 }) {
   const [active, setActive] = useState(0);
   const deckRef = useRef(null);
   const pointer = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
   const total = projects.length;
+  // Numbering continues from the flagship, so the deck reads 02..09 of 09.
+  const shown = total + offset;
 
   // The fanned deck closes into a neat stack as the section arrives.
   useScrollProgress(deckRef, { mode: "enter", span: 0.8, disabled: reducedMotion, resetTo: 1 });
@@ -70,8 +72,8 @@ export default function ProjectStack({ projects, labels, dir }) {
 
   const activeProject = projects[active];
   const status = labels.position
-    .replace("{n}", String(active + 1))
-    .replace("{total}", String(total));
+    .replace("{n}", String(active + 1 + offset))
+    .replace("{total}", String(shown));
 
   return (
     <div
@@ -84,6 +86,7 @@ export default function ProjectStack({ projects, labels, dir }) {
       <div
         ref={deckRef}
         className={styles.deck}
+        data-cursor="swipe"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={() => (pointer.current = null)}
@@ -104,8 +107,8 @@ export default function ProjectStack({ projects, labels, dir }) {
               <div className={styles.slotInner}>
                 <ProjectCard
                   project={project}
-                  index={index}
-                  total={total}
+                  index={index + offset}
+                  total={shown}
                   labels={labels}
                   isActive={isActive}
                   priority={index === 0}
@@ -124,7 +127,7 @@ export default function ProjectStack({ projects, labels, dir }) {
               type="button"
               className={styles.segment}
               aria-current={index === active ? "true" : undefined}
-              aria-label={`${String(index + 1).padStart(2, "0")} ${project.title}`}
+              aria-label={`${String(index + 1 + offset).padStart(2, "0")} ${project.title}`}
               title={project.title}
               onClick={() => setActive(index)}
             />
@@ -136,8 +139,8 @@ export default function ProjectStack({ projects, labels, dir }) {
             {rtl ? <ArrowRight size={19} aria-hidden="true" /> : <ArrowLeft size={19} aria-hidden="true" />}
           </button>
           <span className={styles.counter} aria-hidden="true">
-            {String(active + 1).padStart(2, "0")}
-            <span> / {String(total).padStart(2, "0")}</span>
+            {String(active + 1 + offset).padStart(2, "0")}
+            <span> / {String(shown).padStart(2, "0")}</span>
           </span>
           <button className="icon-btn" type="button" onClick={next} aria-label={labels.next} title={labels.next}>
             {rtl ? <ArrowLeft size={19} aria-hidden="true" /> : <ArrowRight size={19} aria-hidden="true" />}

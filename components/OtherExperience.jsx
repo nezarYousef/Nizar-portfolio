@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BlurImage from "@/components/BlurImage";
+import FieldCard from "@/components/FieldCard";
 import SectionHeading from "@/components/SectionHeading";
 import { useScrollProgress } from "@/lib/scrollProgress";
 import { useMediaQuery } from "@/lib/useMedia";
@@ -9,23 +9,25 @@ import { useReveal } from "@/lib/useReveal";
 import styles from "./OtherExperience.module.css";
 
 /*
- * Field work reads as breadth, not hierarchy, so it travels sideways. On tall
- * desktop screens the rail is pinned and scrubbed by vertical scroll; on touch
- * and small screens it is a native swipe rail.
+ * Field work reads as breadth rather than hierarchy, so it travels sideways:
+ * on tall desktop screens the rail is pinned and panned by vertical scroll; on
+ * touch and small screens it degrades to a native swipe rail with snapping.
+ * Either way the page keeps scrolling normally.
  */
 export default function OtherExperience({ copy, dir, language }) {
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const [travel, setTravel] = useState(0);
   const canPan = useMediaQuery(
-    "(min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)",
+    "(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
     false
   );
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return undefined;
-    const measure = () => setTravel(Math.max(0, Math.round(track.scrollWidth - window.innerWidth)));
+    const measure = () =>
+      setTravel(Math.max(0, Math.round(track.scrollWidth - window.innerWidth)));
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(track);
@@ -42,7 +44,7 @@ export default function OtherExperience({ copy, dir, language }) {
 
   return (
     <section
-      className={`section ${styles.section}`}
+      className={`section band ${pinned ? "" : "screen"} ${styles.section}`}
       id="other-experience"
       ref={sectionRef}
       data-pinned={pinned}
@@ -52,7 +54,6 @@ export default function OtherExperience({ copy, dir, language }) {
       <div className={styles.stage}>
         <div className="container">
           <SectionHeading
-            index="05"
             eyebrow={copy.eyebrow}
             title={copy.title}
             id="other-experience-title"
@@ -60,34 +61,26 @@ export default function OtherExperience({ copy, dir, language }) {
           />
         </div>
 
-        <div className={styles.viewport} tabIndex={pinned ? undefined : 0} aria-label={copy.eyebrow}>
+        <div
+          className={styles.viewport}
+          tabIndex={pinned ? undefined : 0}
+          role={pinned ? undefined : "group"}
+          aria-label={copy.eyebrow}
+        >
           <ol className={styles.track} ref={trackRef}>
             {copy.items.map((item, i) => (
-              <li className={styles.card} key={item.title} data-reveal="" style={{ "--delay": `${i * 70}ms` }}>
-                <div className={styles.photo}>
-                  <BlurImage
-                    src={item.image}
-                    alt={item.imageAlt}
-                    fill
-                    sizes="(max-width: 680px) 82vw, 400px"
-                    className={styles.image}
-                    style={{ objectPosition: item.imagePosition ?? "center" }}
-                  />
-                </div>
-                <div className={styles.body}>
-                  <p className={styles.date}>{item.date}</p>
-                  <h3 className={styles.title}>{item.title}</h3>
-                  <p className={styles.org}>{item.company}</p>
-                  <ul className={styles.points}>
-                    {item.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
+              <FieldCard item={item} index={i} key={item.title} />
             ))}
           </ol>
         </div>
+
+        {pinned ? (
+          <div className="container">
+            <div className={styles.meter} aria-hidden="true">
+              <span />
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );

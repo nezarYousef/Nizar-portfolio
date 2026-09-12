@@ -1,0 +1,286 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow: hidden;
+  color: var(--text);
+  opacity: 1;
+  transition: opacity 340ms var(--ease-out) 380ms;
+}
+
+.intro[data-phase="exit"] {
+  opacity: 0;
+}
+
+/* Panels: the ground, and the thing that flies up at the end. */
+.panels {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.panels span {
+  background: var(--bg);
+  border-inline-end: 1px solid var(--line);
+  transform: translate3d(0, 0, 0);
+  transition: transform 780ms cubic-bezier(0.76, 0, 0.24, 1);
+  transition-delay: calc(var(--i) * 60ms);
+}
+
+/* A scan sweeps down each column while the modules load. */
+.panels span {
+  position: relative;
+  overflow: hidden;
+}
+
+.panels span::after {
+  position: absolute;
+  inset-inline: 0;
+  top: -34vh;
+  height: 34vh;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 5%, transparent) 74%,
+    color-mix(in srgb, var(--accent) 17%, transparent)
+  );
+  content: "";
+  animation: scan 2000ms cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  animation-delay: calc(var(--i) * 220ms);
+}
+
+.intro[data-phase="exit"] .panels span::after {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes scan {
+  to {
+    transform: translate3d(0, 142vh, 0);
+  }
+}
+
+.intro[data-phase="exit"] .panels span {
+  transform: translate3d(0, -101%, 0);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  gap: clamp(20px, 3vh, 34px);
+  width: min(100% - var(--gutter) * 2, 720px);
+  height: 100%;
+  margin-inline: auto;
+  transition:
+    opacity 300ms var(--ease-out),
+    transform 520ms var(--ease-out);
+}
+
+.intro[data-phase="exit"] .inner {
+  opacity: 0;
+  transform: translate3d(0, -18px, 0) scale(0.985);
+}
+
+.brand {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.brand span {
+  color: var(--accent-text);
+}
+
+/* ─── Boot lines ─────────────────────────────────────── */
+
+.lines {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lines li {
+  --on: clamp(0, calc(var(--step) - var(--i)), 1);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  opacity: var(--on);
+  transform: translate3d(0, calc((1 - var(--on)) * 10px), 0);
+  transition:
+    opacity 300ms var(--ease-out),
+    transform 420ms var(--ease-out);
+}
+
+.lines li:first-child {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.lineLabel {
+  color: var(--muted);
+  unicode-bidi: isolate;
+}
+
+.lines li:first-child .lineLabel {
+  color: var(--ink);
+}
+
+.lineValue {
+  position: relative;
+  color: var(--text);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.lineValue::before {
+  position: absolute;
+  inset-inline: -8px;
+  bottom: 4px;
+  height: 1px;
+  background: var(--line);
+  content: "";
+  transform: scaleX(var(--on));
+  transform-origin: left center;
+  transition: transform 520ms var(--ease-out);
+}
+
+html[dir="rtl"] .lineValue::before,
+html[dir="rtl"] .meter > span {
+  transform-origin: right center;
+}
+
+.lineOk {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ─── Greeting ───────────────────────────────────────── */
+
+.greeting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.28em;
+  max-width: 20ch;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 1.2rem + 3.4vw, 3.9rem);
+  font-weight: var(--w-head);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+html[lang="ar"] .greeting {
+  letter-spacing: 0;
+  line-height: 1.3;
+  font-weight: 700;
+  max-width: 22ch;
+}
+
+.word {
+  display: inline-flex;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.word > span {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+}
+
+.intro[data-phase="greet"] .word > span,
+.intro[data-phase="exit"] .word > span {
+  animation: wordRise 760ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 55ms);
+}
+
+.signature {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out) 240ms;
+}
+
+.intro[data-phase="greet"] .signature,
+.intro[data-phase="exit"] .signature {
+  opacity: 1;
+}
+
+/* ─── Footer ─────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(8px, 2vh, 20px);
+}
+
+.meter {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.meter > span {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.percent {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+
+.skip {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  transition:
+    color var(--d-micro) var(--ease-out),
+    border-color var(--d-micro) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .skip:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 680px) {
+  .panels {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panels span:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@keyframes wordRise {
+  to {
+    transform: none;
+  }
+}

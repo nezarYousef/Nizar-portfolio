@@ -60,7 +60,7 @@ export default function Navigation({
       }
     };
     const onResize = () => {
-      if (window.innerWidth >= 1100) setMenuOpen(false);
+      if (window.innerWidth >= 980) setMenuOpen(false);
     };
     document.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);

@@ -1,0 +1,263 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 4.4fr) minmax(0, 7.6fr);
+  gap: clamp(32px, 5vw, 88px);
+  align-items: start;
+}
+
+/* The heading holds its place while the road scrolls past it. */
+.aside {
+  position: sticky;
+  top: calc(var(--header-h) + clamp(24px, 5vh, 56px));
+}
+
+/* ─── Stage marker ──────────────────────────────────── */
+
+.marker {
+  display: grid;
+  gap: 2px;
+  padding-inline-start: 16px;
+  border-inline-start: 2px solid var(--accent);
+}
+
+.markerCount {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.markerCount span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.markerRole {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: var(--w-strong);
+  line-height: 1.35;
+}
+
+.markerDate {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+/* ─── The road ──────────────────────────────────────── */
+
+.road {
+  --p: 0;
+  --rail-x: 7px;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Rail and its fill are pseudo-elements: an <ol> may only contain <li>. */
+.road::before,
+.road::after {
+  position: absolute;
+  inset-block: 14px 18px;
+  inset-inline-start: var(--rail-x);
+  content: "";
+}
+
+.road::before {
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.road::after {
+  width: 2px;
+  margin-inline-start: -0.5px;
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, transparent));
+  transform: scaleY(var(--p));
+  transform-origin: top center;
+}
+
+.entry {
+  position: relative;
+  padding-block: 0 clamp(28px, 3.4vw, 48px);
+  padding-inline-start: clamp(34px, 3.4vw, 52px);
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+/* Stop marker on the rail. */
+.node {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.node i {
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  transition:
+    background-color 320ms var(--ease-out),
+    box-shadow 320ms var(--ease-out),
+    transform 320ms var(--ease-out);
+}
+
+/* ─── Card ──────────────────────────────────────────── */
+
+.card {
+  max-width: 60ch;
+  padding: clamp(16px, 1.6vw, 22px) clamp(16px, 1.8vw, 26px);
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+  background: transparent;
+  transition:
+    border-color 380ms var(--ease-out),
+    background-color 380ms var(--ease-out),
+    box-shadow 380ms var(--ease-out),
+    opacity 380ms var(--ease-out);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.step {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.step i {
+  font-style: normal;
+  opacity: 0.5;
+}
+
+.date {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.role {
+  font-size: clamp(1.15rem, 1rem + 0.55vw, 1.45rem);
+  font-weight: var(--w-head);
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+}
+
+html[lang="ar"] .role {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.org {
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: var(--w-strong);
+}
+
+.points {
+  display: grid;
+  gap: 7px;
+  margin-top: var(--s-4);
+  padding-inline-start: 1.1em;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+.points li::marker {
+  color: var(--accent);
+}
+
+.stack {
+  display: grid;
+  gap: 8px;
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+/* ─── Progression ───────────────────────────────────── */
+
+/* Read but passed: still there, no longer competing. */
+.entry:not([data-active="true"]) .card {
+  opacity: 0.52;
+}
+
+.entry[data-active="true"] .card {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
+  box-shadow: var(--shadow-1);
+}
+
+.entry[data-active="true"] .node i {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+  transform: scale(1.12);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+
+  .aside {
+    position: relative;
+    top: 0;
+  }
+
+  .marker {
+    display: none;
+  }
+
+  .card {
+    padding-inline: clamp(12px, 3vw, 18px);
+  }
+
+  .entry:not([data-active="true"]) .card {
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .road::after {
+    transform: none;
+  }
+
+  .card,
+  .node i {
+    transition: none;
+  }
+
+  .entry:not([data-active="true"]) .card {
+    opacity: 1;
+  }
+}

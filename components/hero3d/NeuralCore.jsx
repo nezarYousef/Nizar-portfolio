@@ -122,8 +122,8 @@ export default function NeuralCore({ palette, compact, reducedMotion, progressRe
       // In the exploded view the core steps back so the caption stays legible.
       const target = progressRef?.current ?? 0;
       shrink.current += (target - shrink.current) * (1 - Math.exp(-dt * 6));
-      groupRef.current.scale.setScalar(1 - shrink.current * 0.3);
-      groupRef.current.position.z = -shrink.current * 0.6;
+      groupRef.current.scale.setScalar(1 - shrink.current * 0.22);
+      groupRef.current.position.z = -shrink.current * 0.45;
     }
     if (innerRef.current && !reducedMotion) {
       innerRef.current.rotation.y -= dt * 0.18;
@@ -159,28 +159,33 @@ export default function NeuralCore({ palette, compact, reducedMotion, progressRe
     mesh.instanceMatrix.needsUpdate = true;
   });
 
+  /*
+   * The core is the supporting layer, not the subject: the headline is. Every
+   * material here is deliberately held below the cards so the eye reads
+   * headline, then cards, then network.
+   */
   return (
     <group ref={groupRef}>
       <lineSegments geometry={network.lineGeometry}>
-        <lineBasicMaterial color={palette.edge} transparent opacity={0.34} depthWrite={false} />
+        <lineBasicMaterial color={palette.edge} transparent opacity={0.17} depthWrite={false} />
       </lineSegments>
 
       <instancedMesh ref={nodesRef} args={[nodeGeometry, undefined, network.nodes.length]}>
-        <meshStandardMaterial roughness={0.45} metalness={0.05} />
+        <meshStandardMaterial roughness={0.5} metalness={0.05} transparent opacity={0.62} />
       </instancedMesh>
 
       <instancedMesh ref={pulsesRef} args={[pulseGeometry, undefined, pulseCount]}>
-        <meshBasicMaterial color={palette.pulse} toneMapped={false} />
+        <meshBasicMaterial color={palette.pulse} toneMapped={false} transparent opacity={0.7} />
       </instancedMesh>
 
       <lineSegments ref={innerRef}>
         <wireframeGeometry args={[innerGeometry]} />
-        <lineBasicMaterial color={palette.nodeB} transparent opacity={0.22} depthWrite={false} />
+        <lineBasicMaterial color={palette.nodeB} transparent opacity={0.12} depthWrite={false} />
       </lineSegments>
 
       <mesh>
         <sphereGeometry args={[0.13, 24, 24]} />
-        <meshStandardMaterial color={palette.nodeA} roughness={0.35} metalness={0.1} />
+        <meshStandardMaterial color={palette.nodeA} roughness={0.4} metalness={0.1} transparent opacity={0.72} />
       </mesh>
     </group>
   );

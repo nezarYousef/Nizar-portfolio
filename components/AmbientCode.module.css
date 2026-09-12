@@ -1,0 +1,49 @@
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /*
+   * Texture in the margins only. The reading column is masked out completely,
+   * so a fragment can never drift across a paragraph.
+   */
+  -webkit-mask-image:
+    linear-gradient(
+      90deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.4) 16%,
+      transparent 32%,
+      transparent 68%,
+      rgba(0, 0, 0, 0.4) 84%,
+      #000 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(
+      90deg,
+      #000 0%,
+      rgba(0, 0, 0, 0.4) 16%,
+      transparent 32%,
+      transparent 68%,
+      rgba(0, 0, 0, 0.4) 84%,
+      #000 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Narrow screens have no margins to spare, so it becomes a whisper. */
+@media (max-width: 860px) {
+  .ambient {
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 600px) {
+  .ambient {
+    opacity: 0.34;
+  }
+}

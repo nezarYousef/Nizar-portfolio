@@ -116,7 +116,7 @@ export default function ModuleCards({
     // The hand drives the target; the scene glides toward it (no stutter from
     // uneven wheel events).
     const target = progressRef.current;
-    smoothed.current += (target - smoothed.current) * (1 - Math.exp(-dt * 7));
+    smoothed.current += (target - smoothed.current) * (1 - Math.exp(-dt * 16));
     const p = reducedMotion ? target : smoothed.current;
     const time = state.clock.elapsedTime;
     const positions = lineGeometry.attributes.position;

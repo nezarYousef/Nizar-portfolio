@@ -1,0 +1,103 @@
+.ring,
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 400;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out);
+  will-change: transform;
+}
+
+.ring[data-visible="true"],
+.dot[data-visible="true"] {
+  opacity: 1;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  background: var(--accent-fill);
+  transition:
+    opacity 200ms var(--ease-out),
+    width 240ms var(--ease-out),
+    height 240ms var(--ease-out);
+}
+
+.ring {
+  --size: 30px;
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border: 1px solid color-mix(in srgb, var(--accent-fill) 62%, transparent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  transition:
+    opacity 200ms var(--ease-out),
+    width 280ms var(--ease-out),
+    height 280ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    background-color 220ms var(--ease-out);
+}
+
+/* Interactive: the ring opens up and the dot steps out of the way. */
+.ring[data-mode="action"],
+.ring[data-mode="open"] {
+  --size: 46px;
+  border-color: var(--accent-fill);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.dot[data-mode="action"],
+.dot[data-mode="open"] {
+  width: 3px;
+  height: 3px;
+  opacity: 0.55;
+}
+
+/* The project deck: a wider ring with the drag axis drawn inside it. */
+.ring[data-mode="swipe"] {
+  --size: 58px;
+  border-color: var(--accent-fill);
+}
+
+.dot[data-mode="swipe"] {
+  opacity: 0;
+}
+
+/* The 3D stage: precision, not emphasis. */
+.ring[data-mode="cross"] {
+  --size: 20px;
+  border-color: color-mix(in srgb, var(--accent-fill) 45%, transparent);
+  background: transparent;
+}
+
+.ring[data-press="true"] {
+  --size: 24px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.axis {
+  width: 16px;
+  height: 1px;
+  background: var(--accent-fill);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition:
+    opacity 240ms var(--ease-out),
+    transform 320ms var(--ease-out);
+}
+
+.ring[data-mode="swipe"] .axis {
+  opacity: 0.75;
+  transform: none;
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .ring,
+  .dot {
+    display: none;
+  }
+}

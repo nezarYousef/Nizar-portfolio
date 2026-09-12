@@ -1,13 +1,10 @@
 .heading {
   --p: 0;
-  margin-bottom: clamp(40px, 5vw, 72px);
+  margin-bottom: clamp(28px, 3.2vw, 52px);
 }
 
 .ink {
-  max-width: 24ch;
-  font-size: var(--t-display);
-  line-height: 1.02;
-  letter-spacing: -0.034em;
+  max-width: 20ch;
 }
 
 .word {

@@ -44,7 +44,7 @@ function splitName(name) {
   return [words.slice(0, -1).join(" "), words[words.length - 1]];
 }
 
-export default function Hero({ copy, theme, dir }) {
+export default function Hero({ copy, theme, dir, enable3d = true }) {
   const sectionRef = useRef(null);
   const progressRef = useRef(0);
   const pointerRef = useRef({ x: 0, y: 0 });
@@ -70,8 +70,11 @@ export default function Hero({ copy, theme, dir }) {
   });
 
   useEffect(() => {
+    // Held back while the intro plays: three.js initialisation would starve
+    // the intro's animations of main-thread time.
+    if (!enable3d) return;
     setSceneState(supportsWebGL() ? "webgl" : "fallback");
-  }, []);
+  }, [enable3d]);
 
   // Only render the 3D loop while the hero is on screen.
   useEffect(() => {
@@ -108,7 +111,11 @@ export default function Hero({ copy, theme, dir }) {
       aria-labelledby="hero-title"
     >
       <div className={styles.stage}>
-        <div className={styles.visual} data-ready={sceneReady || sceneState === "fallback"}>
+        <div
+          className={styles.visual}
+          data-cursor="cross"
+          data-ready={sceneReady || sceneState === "fallback"}
+        >
           {sceneState === "webgl" ? (
             <SceneBoundary fallback={<HeroFallback />}>
               <Suspense fallback={null}>

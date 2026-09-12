@@ -4,12 +4,25 @@
    ─────────────────────────────────────────────────────────────── */
 
 @font-face {
-  font-family: "Archivo";
-  src: url("/fonts/archivo-var.woff2") format("woff2");
-  font-weight: 400 900;
-  font-stretch: 100% 115%;
+  font-family: "Manrope";
+  src: url("/fonts/manrope-var.woff2") format("woff2-variations");
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-var-ext.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
@@ -91,21 +104,29 @@
   --edge: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
   /* Type */
-  --font-text: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  --font-text: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     Arial, sans-serif;
-  --font-display: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  --font-display: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas,
     "Liberation Mono", monospace;
-  --display-stretch: 112%;
+  --display-stretch: normal;
 
-  --t-hero: clamp(3rem, 1rem + 4.7vw, 5.9rem);
-  --t-title: clamp(1.9rem, 1.3rem + 1.75vw, 2.85rem);
-  --t-display: clamp(2rem, 1.25rem + 3vw, 4rem);
-  --t-lead: clamp(1.18rem, 1.02rem + 0.55vw, 1.42rem);
+  /* One large voice (the hero), one statement voice, one section voice, then
+     body and metadata. Nothing else competes. */
+  --t-hero: clamp(2.6rem, 1.1rem + 4.1vw, 5rem);
+  --t-display: clamp(1.85rem, 1.3rem + 1.8vw, 2.9rem);
+  --t-title: clamp(1.6rem, 1.25rem + 1.05vw, 2.15rem);
+  --t-lead: clamp(1.1rem, 1.01rem + 0.42vw, 1.3rem);
   --t-body: 1.0625rem;
   --t-small: 0.9375rem;
-  --t-label: 0.78rem;
+  --t-label: 0.75rem;
+
+  /* Weights (Manrope tops out at 800) */
+  --w-body: 400;
+  --w-meta: 500;
+  --w-strong: 600;
+  --w-head: 800;
 
   /* Space (4px base) */
   --s-1: 4px;
@@ -118,7 +139,7 @@
   --s-8: 64px;
   --s-9: 96px;
   --s-10: 128px;
-  --section-pad: clamp(80px, 5vw + 44px, 140px);
+  --section-pad: clamp(72px, 3.4vw + 48px, 112px);
   --gutter: clamp(20px, 4vw, 48px);
   --max: 1200px;
   --header-h: 72px;
@@ -172,16 +193,20 @@ html[data-theme="dark"] {
 }
 
 html[lang="ar"] {
-  --font-text: "Plex Arabic", "Archivo", Tahoma, Arial, sans-serif;
-  --font-display: "Plex Arabic", "Archivo", Tahoma, Arial, sans-serif;
-  --display-stretch: 100%;
+  --font-text: "Plex Arabic", "Manrope", Tahoma, Arial, sans-serif;
+  --font-display: "Plex Arabic", "Manrope", Tahoma, Arial, sans-serif;
+  --display-stretch: normal;
 }
 
+/* The ground colour lives on <html>, never on <body>: the blueprint grid and
+   the drifting code fragments sit at z-index -1, and an opaque body
+   background would paint straight over both. */
 html {
   scroll-padding-top: calc(var(--header-h) + 16px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  background: var(--bg);
+  background-color: var(--bg);
+  transition: background-color 320ms var(--ease-out);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -194,7 +219,7 @@ body {
   margin: 0;
   min-height: 100vh;
   overflow-x: clip;
-  background-color: var(--bg);
+  background-color: transparent;
   color: var(--text);
   font-family: var(--font-text);
   font-size: var(--t-body);
@@ -203,7 +228,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 320ms var(--ease-out), color 320ms var(--ease-out);
+  transition: color 320ms var(--ease-out);
 }
 
 html[data-theme="dark"] body {
@@ -283,8 +308,43 @@ html {
   scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent;
 }
 
-body.is-locked {
+body.is-locked,
+html.is-booting,
+html.is-booting body {
   overflow: hidden;
+}
+
+/*
+ * First-frame intro ground. Same columns and ground colour as the intro's own
+ * panels, so when components/Preloader.jsx mounts on top there is no seam and
+ * no flash of the page underneath.
+ */
+#boot-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  pointer-events: none;
+}
+
+#boot-cover span {
+  background: var(--bg);
+  border-inline-end: 1px solid var(--line);
+}
+
+html:not([data-intro="1"]) #boot-cover {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  #boot-cover {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #boot-cover span:nth-child(n + 3) {
+    display: none;
+  }
 }
 
 /* ─── Shared primitives ─────────────────────────────────────── */
@@ -297,6 +357,55 @@ body.is-locked {
 .section {
   position: relative;
   padding-block: var(--section-pad);
+}
+
+/*
+ * A section that reads as a deliberate screen: at least one viewport tall with
+ * its content optically centred. `align-content: center` only centres while
+ * there is spare room, so a section whose content is taller than the viewport
+ * simply grows instead of clipping. svh (not vh) keeps mobile honest while the
+ * browser chrome collapses.
+ */
+.screen {
+  display: grid;
+  /* An auto grid column sizes to its content, which lets a max-content child
+     (the horizontal card rail) widen the page. Pin the column to the
+     container instead. */
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  min-height: 100svh;
+  padding-block: max(var(--section-pad), calc(var(--header-h) + var(--s-6)));
+}
+
+@supports not (height: 100svh) {
+  .screen {
+    min-height: 100vh;
+  }
+}
+
+/* Short viewports (landscape phones, small laptops) would otherwise force a
+   screen taller than its content is worth. */
+@media (max-height: 620px) {
+  .screen {
+    min-height: 0;
+  }
+}
+
+/* Custom circular cursor (components/Cursor.jsx) hides the native pointer. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+/* Alternating ground: a quiet band under a section gives the page rhythm.
+   Two bands in a row read as one chapter, so the seam between them is dropped. */
+.band {
+  background: color-mix(in srgb, var(--bg-2) 72%, var(--bg));
+  border-block: 1px solid var(--line);
+}
+
+.band + .band {
+  border-block-start: 0;
 }
 
 .sr-only {
@@ -334,12 +443,13 @@ body.is-locked {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin: 0 0 var(--s-5);
+  margin: 0 0 var(--s-4);
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .kicker b {
@@ -355,12 +465,27 @@ body.is-locked {
 }
 
 .title {
-  max-width: 26ch;
+  max-width: 22ch;
   font-size: var(--t-title);
-  font-weight: 850;
-  font-stretch: var(--display-stretch);
-  line-height: 1.04;
+  font-weight: var(--w-head);
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+
+/* The two statement moments on the page (About, Contact) get the larger voice. */
+.statement {
+  max-width: 18ch;
+  font-size: var(--t-display);
+  font-weight: var(--w-head);
+  line-height: 1.06;
   letter-spacing: -0.028em;
+}
+
+html[lang="ar"] .statement {
+  max-width: 20ch;
+  line-height: 1.28;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 html[lang="ar"] .title {
@@ -481,4 +606,39 @@ html[lang="ar"] .title {
 .no-js [data-reveal] {
   opacity: 1;
   transform: none;
+}
+
+/* ─── Technology tags ───────────────────────────────────────── */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.tag-label {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

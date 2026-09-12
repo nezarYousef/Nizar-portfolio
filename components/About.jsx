@@ -15,35 +15,46 @@ export default function About({ copy, stats, imageAlt, language }) {
   const figureRef = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
 
-  // Portrait parallax: the photo travels slower than its frame.
+  /* The mounted portrait drifts against its column. The crop itself never
+     moves: the source photo has very little room above the head, so any
+     parallax inside the frame would clip it. */
   useScrollProgress(figureRef, { mode: "through", disabled: reducedMotion, resetTo: 0.5 });
   useReveal(sectionRef, [language]);
 
   const [lead, ...rest] = copy.paragraphs;
 
   return (
-    <section className="section" id="about" ref={sectionRef} aria-labelledby="about-title">
+    <section className="section screen" id="about" ref={sectionRef} aria-labelledby="about-title">
       <div className="container">
-        <SectionHeading index="01" eyebrow={copy.eyebrow} title={copy.title} id="about-title" ink />
+        <SectionHeading
+          index="01"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          id="about-title"
+          ink
+          statement
+          className={styles.heading}
+        />
 
         <div className={styles.grid}>
           <figure className={styles.figure} data-reveal="">
-            <div className={styles.frame} ref={figureRef}>
-              <div className={styles.photo}>
+            <div className={styles.mount} ref={figureRef}>
+              <div className={styles.frame}>
                 <BlurImage
                   src={profileImage}
                   alt={imageAlt}
                   fill
-                  sizes="(max-width: 900px) 88vw, 420px"
+                  sizes="(max-width: 900px) 70vw, 380px"
                   className={styles.image}
                 />
               </div>
-            </div>
-            <figcaption className={styles.caption}>
               <span className={styles.badge}>
                 <span className={styles.badgeDot} aria-hidden="true" />
                 {copy.badge}
               </span>
+            </div>
+
+            <figcaption className={styles.caption}>
               <strong>{copy.cardTitle}</strong>
               <span>{copy.cardMeta}</span>
             </figcaption>
@@ -54,30 +65,35 @@ export default function About({ copy, stats, imageAlt, language }) {
               {lead}
             </p>
             {rest.map((paragraph, i) => (
-              <p className={styles.paragraph} key={paragraph} data-reveal="" style={{ "--delay": `${(i + 1) * 60}ms` }}>
+              <p
+                className={styles.paragraph}
+                key={paragraph}
+                data-reveal=""
+                style={{ "--delay": `${(i + 1) * 60}ms` }}
+              >
                 {paragraph}
               </p>
             ))}
 
-            <dl className={styles.facts} data-reveal="">
-              {stats.map((stat) => (
-                <div className={styles.fact} key={stat.label}>
-                  <dt>{stat.label}</dt>
-                  <dd>{stat.value}</dd>
-                </div>
-              ))}
-            </dl>
-
             <ul className={styles.highlights}>
               {copy.highlights.map((item, i) => (
                 <li key={item} data-reveal="" style={{ "--delay": `${i * 50}ms` }}>
-                  <Check size={17} aria-hidden="true" />
+                  <Check size={16} aria-hidden="true" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
+
+        <dl className={styles.facts} data-reveal="">
+          {stats.map((stat) => (
+            <div className={styles.fact} key={stat.label}>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

@@ -30,6 +30,16 @@ export default function ProjectCard({ project, index, total, labels, isActive, p
         </h3>
         {project.description ? <p className={styles.description}>{project.description}</p> : null}
 
+        {project.tags?.length ? (
+          <ul className={`tags ${styles.tags}`}>
+            {project.tags.slice(0, 4).map((tag) => (
+              <li className="tag" key={tag}>
+                {tag}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
         {link ? (
           <a
             className={styles.action}

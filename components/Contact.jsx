@@ -19,15 +19,20 @@ export default function Contact({ copy, language }) {
   ];
 
   return (
-    <section className={`section ${styles.contact}`} id="contact" ref={sectionRef} aria-labelledby="contact-title">
+    <section className={`section screen ${styles.contact}`} id="contact" ref={sectionRef} aria-labelledby="contact-title">
       <div className="container">
         <p className="kicker" data-reveal="">
-          <b>07</b>
+          <b>06</b>
           <span>{copy.eyebrow}</span>
         </p>
 
-        <h2 className={styles.statement} id="contact-title" data-reveal="">
-          {copy.title}
+        <h2 className={`statement ${styles.statement}`} id="contact-title" data-reveal-lines="">
+          <span className="sr-only">{copy.title}</span>
+          {copy.title.split(/\s+/).map((word, i) => (
+            <span className={styles.word} key={`${word}-${i}`} style={{ "--i": i }} aria-hidden="true">
+              <span>{word}</span>
+            </span>
+          ))}
         </h2>
 
         <div className={styles.grid}>

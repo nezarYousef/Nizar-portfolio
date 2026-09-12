@@ -166,10 +166,22 @@ export const portfolioCopy = {
       { id: "skills", label: "Skills" },
       { id: "projects", label: "Projects" },
       { id: "experience", label: "Experience" },
-      { id: "other-experience", label: "Other Experience" },
       { id: "education", label: "Education" },
       { id: "contact", label: "Contact" }
     ],
+    intro: {
+      lines: [
+        { label: "$ ./boot-nizar-portfolio", value: "" },
+        { label: "mount interface", value: "react / next.js" },
+        { label: "load intelligence", value: "ml / python / pycaret" },
+        { label: "link systems", value: "java / oop / c" },
+        { label: "compile projects", value: "9 ready" }
+      ],
+      greeting: "Hello, welcome to my portfolio",
+      signature: "Nizar Yousef Alqerem / Computer Engineer",
+      skip: "Skip intro",
+      label: "Intro sequence"
+    },
     controls: {
       language: "AR",
       languageLabel: "Switch to Arabic",
@@ -217,61 +229,63 @@ export const portfolioCopy = {
       eyebrow: "Technical Stack",
       title: "A stack that covers systems, web interfaces, AI, and applied software projects.",
        categories: [
-         {
-           title: "Programming Languages",
-           items: [
-             { name: "Python", level: 90 },
-             { name: "Java", level: 83 },
-             { name: "C", level: 96 },
-             { name: "JavaScript", level: 81 }
-           ]
-         },
-         {
-           title: "Web Engineering",
-           items: [
-             { name: "HTML/CSS", level: 77 },
-             { name: "React.js", level: 90 },
-             { name: "Next.js", level: 75 },
-             { name: "Responsive UI", level: 88 },
-             { name: "API", level: 73 }
-           ]
-         },
-         {
-           title: "AI & Machine Learning",
-           items: [
-             { name: "ML", level: 75 },
-             { name: "AI", level: 90 },
-             { name: "PyCaret", level: 82 },
-             { name: "Data Preprocessing", level: 90 }
-           ]
-         },
-         {
-           title: "Computer Vision",
-           items: [
-             { name: "Computer Vision", level: 80 },
-             { name: "CNN", level: 76 },
-             { name: "Image Processing", level: 70 },
-             { name: "Deep Learning", level: 74 }
-           ]
-         },
-         {
-           title: "Software Engineering",
-           items: [
-             { name: "OOP", level: 90 },
-             { name: "System Design", level: 96 },
-             { name: "Clean Code", level: 81 }
-           ]
-         },
-         {
-           title: "Tools & Workflow",
-           items: [
-             { name: "Git/GitHub", level: 77 },
-             { name: "Linux/UNIX", level: 80 },
-             { name: "REST API", level: 80 },
-             { name: "Digital Tools", level: 88 }
-           ]
-         }
-       ],
+        {
+          key: "web",
+          title: "Web Engineering",
+          blurb: "Component-driven interfaces, routing, and API integration.",
+          items: [
+            "React.js",
+            "Next.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind",
+            "HTML/CSS",
+            "REST APIs",
+            "Responsive UI"
+          ]
+        },
+        {
+          key: "ai",
+          title: "AI & Machine Learning",
+          blurb: "Model training, evaluation, and retrieval-based tooling in Python.",
+          items: [
+            "Python",
+            "Machine Learning",
+            "PyCaret",
+            "LightGBM",
+            "RAG",
+            "Data Preprocessing",
+            "AI"
+          ]
+        },
+        {
+          key: "vision",
+          title: "Computer Vision",
+          blurb: "Image processing and convolutional models served behind small APIs.",
+          items: ["CNN", "OpenCV", "Image Processing", "Deep Learning", "Flask"]
+        },
+        {
+          key: "systems",
+          title: "Software Engineering",
+          blurb: "Object-oriented design, data structures, and the systems layer underneath.",
+          items: [
+            "Java",
+            "C",
+            "OOP",
+            "Data Structures",
+            "PostgreSQL",
+            "APIs",
+            "System Design",
+            "Clean Code"
+          ]
+        },
+        {
+          key: "tools",
+          title: "Tools & Workflow",
+          blurb: "Version control, containers, and the platforms these projects ship on.",
+          items: ["Git", "GitHub", "Docker", "Vercel", "Render", "Firebase", "Linux/UNIX"]
+        }
+      ],
       coreStack
     },
     projects: {
@@ -286,25 +300,9 @@ export const portfolioCopy = {
       next: "Next project",
       position: "Project {n} of {total}",
       deckLabel: "Project deck",
+      featuredLabel: "Flagship project",
+      moreLabel: "More work",
       list: withMeta([
-        {
-          id: "restaurant",
-          title: "Smart Restaurant Management",
-          description:
-            "A digital restaurant workflow system with role-based interfaces for customers, chefs, waiters, and administrators, designed around real-time order tracking and clean UI engineering."
-        },
-        {
-          id: "expenses",
-          title: "Expense Tracker App",
-          description:
-            "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
-        },
-        {
-          id: "tasks",
-          title: "Task Management App",
-          description:
-            "A productivity application for creating, organizing, and tracking daily tasks with a clear user flow and responsive interface."
-        },
         {
           id: "grade",
           title: "EduFusion AI",
@@ -319,10 +317,33 @@ export const portfolioCopy = {
           ]
         },
         {
+          id: "vision",
+          title: "AidSign - Computer Vision Project",
+          description:
+            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
+          highlights: [
+            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
+            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
+            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
+          ]
+        },
+        {
+          id: "restaurant",
+          title: "Smart Restaurant Management",
+          description:
+            "A digital restaurant workflow system with role-based interfaces for customers, chefs, waiters, and administrators, designed around real-time order tracking and clean UI engineering."
+        },
+        {
           id: "shell",
           title: "Custom Unix Shell",
           description:
             "A C-based Linux shell built from scratch with internal commands, I/O redirection, batch files, background processes, environment variables, and error handling."
+        },
+        {
+          id: "advancedTasks",
+          title: "Advanced Task Management App",
+          description:
+            "A modern task management experience focused on clean UI architecture, advanced task organization, and maintainable React component structure."
         },
         {
           id: "school",
@@ -337,32 +358,29 @@ export const portfolioCopy = {
             "AI and API-based tools that simplify learning, improve access to information, and support understanding complex concepts through intelligent assistance."
         },
         {
-          id: "vision",
-          title: "AidSign - Computer Vision Project",
+          id: "tasks",
+          title: "Task Management App",
           description:
-            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
-          highlights: [
-            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
-            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
-            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
-          ]
+            "A productivity application for creating, organizing, and tracking daily tasks with a clear user flow and responsive interface."
         },
         {
-          id: "advancedTasks",
-          title: "Advanced Task Management App",
+          id: "expenses",
+          title: "Expense Tracker App",
           description:
-            "A modern task management experience focused on clean UI architecture, advanced task organization, and maintainable React component structure."
+            "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
         }
       ])
     },
     experience: {
       eyebrow: "Experience",
       title: "Practical training in frontend engineering with a broader computer engineering foundation.",
+      techLabel: "Tech",
       items: [
         {
           title: "Frontend Development Internship",
           company: "Masar Institute",
           date: "2026",
+          tech: ["HTML/CSS", "JavaScript", "React.js", "Next.js", "API"],
           points: [
             "Built responsive web interfaces using HTML, CSS, JavaScript, React.js, and Next.js",
             "Applied UI/UX principles to create clearer and more usable software interfaces",
@@ -380,6 +398,7 @@ export const portfolioCopy = {
           title: "Skill Stack Paths Program",
           company: "Gaza Sky Geeks",
           date: "March 2026 - July 2026",
+          tech: ["Computer Vision", "Neural Networks", "Image Processing"],
           points: [
             "Computer Vision and Neural Networks",
             "Learned image formation fundamentals and core visual data concepts",
@@ -499,10 +518,22 @@ export const portfolioCopy = {
       { id: "skills", label: "المهارات" },
       { id: "projects", label: "المشاريع" },
       { id: "experience", label: "الخبرة" },
-      { id: "other-experience", label: "خبرات أخرى" },
       { id: "education", label: "التعليم" },
       { id: "contact", label: "التواصل" }
     ],
+    intro: {
+      lines: [
+        { label: "$ ./boot-nizar-portfolio", value: "" },
+        { label: "تهيئة الواجهة", value: "react / next.js" },
+        { label: "تحميل الذكاء", value: "ml / python / pycaret" },
+        { label: "ربط الأنظمة", value: "java / oop / c" },
+        { label: "تجهيز المشاريع", value: "9 جاهزة" }
+      ],
+      greeting: "مرحباً، أهلاً بك في معرض أعمالي",
+      signature: "نزار يوسف القرَم / مهندس حاسوب",
+      skip: "تخطي المقدمة",
+      label: "مقدمة الموقع"
+    },
     controls: {
       language: "EN",
       languageLabel: "التبديل إلى الإنجليزية",
@@ -551,58 +582,60 @@ export const portfolioCopy = {
       title: "حزمة تقنية تغطي الأنظمة والويب والذكاء الاصطناعي والمشاريع البرمجية التطبيقية.",
       categories: [
         {
-          title: "لغات البرمجة",
-          items: [
-            { name: "Python", level: 90 },
-            { name: "Java", level: 83 },
-            { name: "C", level: 96 },
-            { name: "JavaScript", level: 81 }
-          ]
-        },
-        {
+          key: "web",
           title: "هندسة الويب",
+          blurb: "واجهات مبنية على المكوّنات، وتوجيه الصفحات، وربط الواجهات البرمجية.",
           items: [
-            { name: "HTML/CSS", level: 77 },
-            { name: "React.js", level: 90 },
-            { name: "Next.js", level: 75 },
-            { name: "واجهات متجاوبة", level: 88 },
-            { name: "API", level: 73 }
+            "React.js",
+            "Next.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind",
+            "HTML/CSS",
+            "REST APIs",
+            "Responsive UI"
           ]
         },
         {
-          title: "الذكاء الاصطناعي وتعلم الآلة",
+          key: "ai",
+          title: "الذكاء الاصطناعي وتعلّم الآلة",
+          blurb: "تدريب النماذج وتقييمها وأدوات الاسترجاع باستخدام Python.",
           items: [
-            { name: "ML", level: 75 },
-            { name: "AI", level: 90 },
-            { name: "PyCaret", level: 82 },
-            { name: "Data Preprocessing", level: 90 }
+            "Python",
+            "Machine Learning",
+            "PyCaret",
+            "LightGBM",
+            "RAG",
+            "Data Preprocessing",
+            "AI"
           ]
         },
         {
+          key: "vision",
           title: "الرؤية الحاسوبية",
-          items: [
-            { name: "Computer Vision", level: 80 },
-            { name: "CNN", level: 76 },
-            { name: "Image Processing", level: 70 },
-            { name: "Deep Learning", level: 74 }
-          ]
+          blurb: "معالجة الصور والشبكات الالتفافية خلف واجهات برمجية صغيرة.",
+          items: ["CNN", "OpenCV", "Image Processing", "Deep Learning", "Flask"]
         },
         {
+          key: "systems",
           title: "هندسة البرمجيات",
+          blurb: "التصميم كائني التوجّه وهياكل البيانات وطبقة الأنظمة تحتها.",
           items: [
-            { name: "OOP", level: 90 },
-            { name: "System Design", level: 96 },
-            { name: "Clean Code", level: 81 }
+            "Java",
+            "C",
+            "OOP",
+            "Data Structures",
+            "PostgreSQL",
+            "APIs",
+            "System Design",
+            "Clean Code"
           ]
         },
         {
+          key: "tools",
           title: "الأدوات وسير العمل",
-          items: [
-            { name: "Git/GitHub", level: 77 },
-            { name: "Linux/UNIX", level: 80 },
-            { name: "REST API", level: 80 },
-            { name: "Digital Tools", level: 88 }
-          ]
+          blurb: "إدارة الإصدارات والحاويات والمنصّات التي تُنشر عليها هذه المشاريع.",
+          items: ["Git", "GitHub", "Docker", "Vercel", "Render", "Firebase", "Linux/UNIX"]
         }
       ],
       coreStack
@@ -619,25 +652,9 @@ export const portfolioCopy = {
       next: "المشروع التالي",
       position: "المشروع {n} من {total}",
       deckLabel: "مجموعة المشاريع",
+      featuredLabel: "المشروع الرئيسي",
+      moreLabel: "أعمال أخرى",
       list: withMeta([
-        {
-          id: "restaurant",
-          title: "نظام إدارة مطعم ذكي",
-          description:
-            "نظام رقمي لإدارة سير عمل المطعم بواجهات حسب الدور للعملاء والطهاة والنوادل والمديرين، مع تتبع الطلبات لحظياً وهندسة واجهة واضحة."
-        },
-        {
-          id: "expenses",
-          title: "تطبيق تتبع المصاريف",
-          description:
-            "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
-        },
-        {
-          id: "tasks",
-          title: "تطبيق إدارة المهام",
-          description:
-            "تطبيق إنتاجية لإنشاء المهام وتنظيمها وتتبعها من خلال تجربة استخدام واضحة وواجهة متجاوبة."
-        },
         {
           id: "grade",
           title: "EduFusion AI",
@@ -652,10 +669,33 @@ export const portfolioCopy = {
           ]
         },
         {
+          id: "vision",
+          title: "AidSign - مشروع رؤية حاسوبية",
+          description:
+            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
+          highlights: [
+            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
+            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
+            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
+          ]
+        },
+        {
+          id: "restaurant",
+          title: "نظام إدارة مطعم ذكي",
+          description:
+            "نظام رقمي لإدارة سير عمل المطعم بواجهات حسب الدور للعملاء والطهاة والنوادل والمديرين، مع تتبع الطلبات لحظياً وهندسة واجهة واضحة."
+        },
+        {
           id: "shell",
           title: "صدفة Unix مخصصة",
           description:
             "صدفة Linux مبنية بلغة C من الصفر وتدعم الأوامر الداخلية وإعادة توجيه الإدخال والإخراج وملفات الدفعات والعمليات الخلفية ومتغيرات البيئة ومعالجة الأخطاء."
+        },
+        {
+          id: "advancedTasks",
+          title: "تطبيق متقدم لإدارة المهام",
+          description:
+            "تجربة حديثة لإدارة المهام تركز على بنية واجهة نظيفة، وتنظيم متقدم للمهام، وهيكلة مكونات React قابلة للصيانة."
         },
         {
           id: "school",
@@ -670,32 +710,29 @@ export const portfolioCopy = {
             "أدوات تعتمد على AI و API لتسهيل التعلم وتحسين الوصول للمعلومة ودعم فهم المفاهيم المعقدة بمساعدة ذكية."
         },
         {
-          id: "vision",
-          title: "AidSign - مشروع رؤية حاسوبية",
+          id: "tasks",
+          title: "تطبيق إدارة المهام",
           description:
-            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
-          highlights: [
-            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
-            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
-            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
-          ]
+            "تطبيق إنتاجية لإنشاء المهام وتنظيمها وتتبعها من خلال تجربة استخدام واضحة وواجهة متجاوبة."
         },
         {
-          id: "advancedTasks",
-          title: "تطبيق متقدم لإدارة المهام",
+          id: "expenses",
+          title: "تطبيق تتبع المصاريف",
           description:
-            "تجربة حديثة لإدارة المهام تركز على بنية واجهة نظيفة، وتنظيم متقدم للمهام، وهيكلة مكونات React قابلة للصيانة."
+            "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
         }
       ])
     },
     experience: {
       eyebrow: "الخبرة",
       title: "تدريب عملي في هندسة الواجهات مع أساس أوسع في هندسة الحاسوب.",
+      techLabel: "التقنيات",
       items: [
         {
           title: "تدريب تطوير واجهات أمامية",
           company: "معهد مسار",
           date: "2026",
+          tech: ["HTML/CSS", "JavaScript", "React.js", "Next.js", "API"],
           points: [
             "بناء واجهات ويب متجاوبة باستخدام HTML و CSS و JavaScript و React.js و Next.js",
             "تطبيق مبادئ UI/UX لإنشاء واجهات برمجية أوضح وأسهل استخداماً",
@@ -713,6 +750,7 @@ export const portfolioCopy = {
           title: "برنامج Skill Stack Paths",
           company: "Gaza Sky Geeks",
           date: "مارس 2026 - يوليو 2026",
+          tech: ["Computer Vision", "Neural Networks", "Image Processing"],
           points: [
             "الرؤية الحاسوبية والشبكات العصبية",
             "دراسة أساسيات تكوين الصور ومفاهيم البيانات البصرية",
