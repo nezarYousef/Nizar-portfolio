@@ -1,0 +1,211 @@
+From f0309b5cbd1cd1d9f3e8ce5eb1e47a0f7b780a25 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 12 Sep 2026 14:26:18 +0000
+Subject: [PATCH 2/2] Keep the field rail drifting: yield by position, not by
+ input events
+
+The rail was standing still in practice, for three reasons that all looked like
+"the loop does not work":
+
+- It paused on hover. On a desktop the pointer rests over the middle of the
+  page, which is exactly where the rail is, so the drift never started.
+- A plain vertical page scroll passing over the rail fired `wheel` on it and
+  was read as the visitor moving the rail, suppressing the drift for another
+  1.6s each time.
+- Clicking or dragging the rail focused it, and the focus hold then stopped the
+  drift for good.
+
+Yielding is now decided by the rail's own position: if `scrollLeft` moved since
+the drift last wrote it, something other than the drift moved it, so stand off
+for 2.2s. That reacts to a real drag, trackpad swipe or arrow key and ignores
+vertical page scrolling entirely. The focus hold is `:focus-visible` only, so a
+keyboard visit holds it and a click does not. Hover no longer holds it at all.
+
+Verified in Chromium: the rail keeps drifting with the pointer parked in the
+middle of it and after a vertical page scroll over it, stops on a horizontal
+wheel, and resumes once the stand-off expires. Loop still seamless (mean pixel
+difference 0 at x and x + loop) at 1440 LTR, 1440 RTL and 390, and reduced
+motion still stops it and restores snapping.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01DGAMbZrjXGBxF1EBJZjnoU
+---
+ components/OtherExperience.jsx | 78 ++++++++++++++++++++--------------
+ docs/REDESIGN.md               | 15 ++++++-
+ 2 files changed, 60 insertions(+), 33 deletions(-)
+
+diff --git a/components/OtherExperience.jsx b/components/OtherExperience.jsx
+index ae543c5..4e9aa0a 100644
+--- a/components/OtherExperience.jsx
++++ b/components/OtherExperience.jsx
+@@ -8,7 +8,7 @@ import { useReveal } from "@/lib/useReveal";
+ import styles from "./OtherExperience.module.css";
+ 
+ const SPEED = 42; // px per second
+-const RESUME_MS = 1600; // quiet period after the visitor moves the rail themselves
++const RESUME_MS = 2200; // quiet period after the visitor moves the rail themselves
+ 
+ /*
+  * Field work reads as breadth rather than hierarchy, so it travels sideways on
+@@ -17,9 +17,14 @@ const RESUME_MS = 1600; // quiet period after the visitor moves the rail themsel
+  * The list is rendered several times over and the drift steps back by exactly
+  * one set when it reaches the end, so the loop is invisible. The drift is a
+  * nudge to the container's own `scrollLeft`, which means a swipe, a trackpad
+- * flick or the arrow keys still work and compose with it. It pauses on hover,
+- * on focus, for a moment after any manual nudge, while off screen, while the
+- * tab is hidden, and entirely under `prefers-reduced-motion`.
++ * flick or the arrow keys still work and compose with it.
++ *
++ * It yields for a couple of seconds whenever the rail moves by anything other
++ * than the drift itself, holds while something inside it has keyboard focus,
++ * and stops while off screen, while the tab is hidden, and entirely under
++ * `prefers-reduced-motion`. It deliberately does not pause on hover: on a
++ * desktop the pointer rests over the middle of the page, so hovering would
++ * mean the rail never moved at all.
+  */
+ export default function OtherExperience({ copy, dir, language }) {
+   const sectionRef = useRef(null);
+@@ -68,12 +73,12 @@ export default function OtherExperience({ copy, dir, language }) {
+     if (!viewport || !track || reducedMotion) return undefined;
+ 
+     const sign = rtl ? -1 : 1;
+-    const hoverable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+     let frame = 0;
+     let last = 0;
+-    let holds = 0;
+     let resumeAt = 0;
+     let onScreen = true;
++    let written = null;
++    let focusHold = false;
+ 
+     const step = (now) => {
+       frame = requestAnimationFrame(step);
+@@ -81,46 +86,64 @@ export default function OtherExperience({ copy, dir, language }) {
+       // 10fps device still drifts at the intended speed.
+       const delta = last ? Math.min(0.1, (now - last) / 1000) : 0;
+       last = now;
+-      if (!onScreen || document.hidden) return;
++      if (!onScreen || document.hidden) {
++        written = null;
++        return;
++      }
+ 
+       const loop = loopRef.current;
+       if (loop <= 0) return;
+ 
+       // Start from what the browser actually has, so the visitor's own
+       // scrolling is never fought, only continued.
+-      let position = viewport.scrollLeft;
+-      const drifting = holds === 0 && now >= resumeAt;
++      const actual = viewport.scrollLeft;
++
++      /*
++       * Yielding is decided by the rail's own position, not by input events.
++       * If it moved since we last wrote it, something other than us moved it:
++       * a drag, a trackpad swipe, the arrow keys. Watching events instead
++       * would catch a plain vertical page scroll passing over the rail, which
++       * is not the visitor asking the rail for anything.
++       */
++      if (written !== null && Math.abs(actual - written) > 2) {
++        resumeAt = now + RESUME_MS;
++      }
++
++      let position = actual;
++      const drifting = !focusHold && now >= resumeAt;
+       if (drifting) position += sign * SPEED * delta;
+ 
+       if (position >= loop) position -= loop;
+       else if (position <= -loop) position += loop;
+ 
+-      if (drifting || Math.abs(position - viewport.scrollLeft) > 0.5) {
++      if (drifting || Math.abs(position - actual) > 0.5) {
+         viewport.scrollLeft = position;
++        // Read back: the browser rounds and clamps.
++        written = viewport.scrollLeft;
++      } else {
++        written = actual;
+       }
+     };
+     frame = requestAnimationFrame(step);
+ 
++    /*
++     * A keyboard visit holds it outright: someone tabbing into the rail is
++     * reading it. It has to be `:focus-visible` rather than plain focus,
++     * because clicking or dragging the rail focuses it too, and that would
++     * otherwise stop the drift for good. Hovering does not hold it at all, or
++     * the drift would never start on a desktop, where the pointer rests over
++     * the middle of the page.
++     */
+     const hold = () => {
+-      holds += 1;
++      if (viewport.matches(":focus-visible")) focusHold = true;
+     };
+     const release = () => {
+-      holds = Math.max(0, holds - 1);
+-    };
+-    const nudge = () => {
+-      resumeAt = performance.now() + RESUME_MS;
++      focusHold = false;
+     };
+ 
+-    if (hoverable) {
+-      viewport.addEventListener("pointerenter", hold);
+-      viewport.addEventListener("pointerleave", release);
+-    }
+     viewport.addEventListener("focusin", hold);
+     viewport.addEventListener("focusout", release);
+-    viewport.addEventListener("wheel", nudge, { passive: true });
+-    viewport.addEventListener("touchstart", nudge, { passive: true });
+-    viewport.addEventListener("pointerdown", nudge);
+-    viewport.addEventListener("keydown", nudge);
++    viewport.addEventListener("keyup", hold);
+ 
+     const observer = new IntersectionObserver(
+       ([entry]) => {
+@@ -134,16 +157,9 @@ export default function OtherExperience({ copy, dir, language }) {
+     return () => {
+       cancelAnimationFrame(frame);
+       observer.disconnect();
+-      if (hoverable) {
+-        viewport.removeEventListener("pointerenter", hold);
+-        viewport.removeEventListener("pointerleave", release);
+-      }
+       viewport.removeEventListener("focusin", hold);
+       viewport.removeEventListener("focusout", release);
+-      viewport.removeEventListener("wheel", nudge);
+-      viewport.removeEventListener("touchstart", nudge);
+-      viewport.removeEventListener("pointerdown", nudge);
+-      viewport.removeEventListener("keydown", nudge);
++      viewport.removeEventListener("keyup", hold);
+     };
+   }, [count, reducedMotion, rtl, sets]);
+ 
+diff --git a/docs/REDESIGN.md b/docs/REDESIGN.md
+index 691930a..4b8d615 100644
+--- a/docs/REDESIGN.md
++++ b/docs/REDESIGN.md
+@@ -306,8 +306,19 @@ wrap a fraction out of phase, accumulating.
+ 
+ The drift is a nudge to the container's own `scrollLeft` (42px/s, frame-rate
+ independent, capped at a 10fps step), so a swipe, a trackpad flick or the arrow
+-keys still work and compose with it. It holds on hover, on focus, for 1.6s after
+-any manual nudge, while off screen, while the tab is hidden, and entirely under
++keys still work and compose with it.
++
++Yielding is decided by the rail's own position rather than by input events: if
++`scrollLeft` moved since the drift last wrote it, something else moved it, and
++the drift stands off for 2.2s. Watching events instead is what the first cut did,
++and it was wrong twice over. A plain vertical page scroll passing over the rail
++fired `wheel` on it and suppressed the drift, and pausing on hover meant the
++drift never started at all on a desktop, where the pointer rests over the middle
++of the page. Clicking the rail also focused it, and a focus hold then stopped it
++for good, so the hold is now `:focus-visible` only: a keyboard visit holds it, a
++click does not.
++
++It still stops while off screen, while the tab is hidden, and entirely under
+ `prefers-reduced-motion`, which also restores snapping and the scrollbar.
+ 
+ Proved seamless by rendering the rail at `x` and at `x + loop` and comparing
+-- 
+2.43.0
+

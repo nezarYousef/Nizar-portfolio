@@ -1,5 +1,4 @@
 .section {
-  --p: 0;
   --edge: max(var(--gutter), calc((100vw - var(--max)) / 2));
 }
 
@@ -7,16 +6,35 @@
   margin-bottom: clamp(24px, 3vw, 44px);
 }
 
+.stage {
+  display: grid;
+  gap: 0;
+}
+
 .viewport {
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--edge);
   scrollbar-width: thin;
 }
 
 .viewport:focus-visible {
   outline-offset: -2px;
+}
+
+/* While the rail drifts on its own, a scrollbar that never stops moving reads
+   as a fault, and snapping fights a continuous scroll. */
+.section[data-drifting="true"] .viewport {
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+
+.section[data-drifting="true"] .viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.section:not([data-drifting="true"]) .viewport {
+  scroll-snap-type: x mandatory;
 }
 
 .track {
@@ -31,6 +49,7 @@
 
 .card {
   display: flex;
+  flex: none;
   flex-direction: column;
   width: clamp(268px, 26vw, 356px);
   overflow: hidden;
@@ -38,6 +57,9 @@
   border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow-1);
+}
+
+.section:not([data-drifting="true"]) .card {
   scroll-snap-align: start;
 }
 
@@ -97,59 +119,6 @@ html[lang="ar"] .title {
 
 .points li::marker {
   color: var(--accent);
-}
-
-/* ─── Pinned pan (tall desktop screens) ─────────────── */
-
-.section[data-pinned="true"] {
-  height: calc(100svh + var(--travel));
-  padding-block: 0;
-}
-
-.section[data-pinned="true"] .stage {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100svh;
-  padding-top: var(--header-h);
-  overflow: hidden;
-}
-
-.section[data-pinned="true"] .viewport {
-  overflow: visible;
-  scroll-snap-type: none;
-}
-
-.section[data-pinned="true"] .track {
-  transform: translate3d(calc(var(--p) * var(--travel) * var(--dir)), 0, 0);
-  will-change: transform;
-}
-
-.section[data-pinned="true"] .card {
-  box-shadow: var(--shadow-2);
-}
-
-/* Pan progress: the one cue that the rail has an end. */
-.meter {
-  position: relative;
-  height: 2px;
-  margin-top: clamp(8px, 2vh, 20px);
-  overflow: hidden;
-  background: var(--line);
-}
-
-.meter > span {
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: scaleX(clamp(0.06, var(--p), 1));
-  transform-origin: left center;
-}
-
-html[dir="rtl"] .meter > span {
-  transform-origin: right center;
 }
 
 @media (max-width: 680px) {

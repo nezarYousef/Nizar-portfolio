@@ -243,3 +243,84 @@ npm install
 npm run build
 npm run dev
 ```
+
+---
+
+# Round four: three targeted changes
+
+Only the loader's timing, the Experience act and the Other Experience rail were
+touched. Seven files changed; every other section, token and layout is byte for
+byte what round three shipped.
+
+## Loader
+
+Timing only, no design change. Measured from navigation start:
+`NAV_MIN` 900ms → 1400ms, `MOUNT_MIN` 560ms → 900ms, `GREET_MS` 640ms → 950ms,
+`EXIT_MS` 700ms → 780ms, `MAX_HOLD` 2400ms → 3100ms. The module lines read out
+one per 250ms instead of 150ms, and the meter now lands on 100 just before the
+panels lift rather than halfway through the greeting. About 2.35s on screen,
+then a 0.78s exit.
+
+## Experience: a pinned road
+
+The section now pins for `n x 0.82` viewport-heights (3 stations, about 3.1
+screens) and everything inside is driven by one eased `--p`, in CSS. No React
+state, no IntersectionObserver, no per-frame JS in this act at all.
+
+- **The road holds still, the mileposts travel.** The rail's surface is a fixed
+  gradient (lit above the marker, plain below); the mileposts and their dates
+  ride a track that translates so milepost `i` is seated in the marker ring
+  when the road has travelled `i`. The first one is in the ring on the opening
+  frame.
+- **Stations travel through a window** the height of one stretch of road
+  (`--window`, 58svh capped at 470px; 62svh capped at 520px on narrow screens).
+  Each station has a long position ramp in, a dwell of about 0.68 of its slice,
+  and a long ramp out, translating by `±1.06 x --window` so it fully clears.
+- **The handover is travel, not a dissolve.** Opacity is deliberately
+  asymmetric: the arriving station is already opaque while it is still sliding
+  in, and the one it replaces recedes across its whole departure. Station
+  backgrounds are opaque, so the arriving card *covers* the one it replaces
+  instead of showing through it.
+- **Greet and hold**, per the pinned-act contract: the first station is in place
+  and opaque at `p = 0` (a pinned stage is on screen a viewport before its
+  progress leaves zero), and the last one holds so the act ends on a statement.
+- **Fallback.** Where a station cannot fit the window without clipping
+  (`(min-height: 820px) or ((min-width: 900px) and (min-height: 720px))` fails)
+  or under `prefers-reduced-motion`, the same markup becomes a static rail with
+  the stations stacked.
+
+Verified by walking the act at 23 positions on 1920x1080, 1440x900, 1280x800,
+1024x768/720, 390x844/820, in English and Arabic: no empty stage at any
+position, every station reaches full opacity, no station is clipped by its
+window, the window always fits the stage, and zero dead steps.
+
+## Other Experience: an automatic rail
+
+Same cards, same card design; the pinned pan is replaced by a continuous drift.
+
+The list is rendered `ceil(railWidth / loop) + 1` times and the drift steps back
+by exactly one set on reaching it, so the loop has no seam. The period is
+measured from `getBoundingClientRect` rather than `offsetLeft`, because card
+widths and gaps are clamped viewport units and a rounded period would leave the
+wrap a fraction out of phase, accumulating.
+
+The drift is a nudge to the container's own `scrollLeft` (42px/s, frame-rate
+independent, capped at a 10fps step), so a swipe, a trackpad flick or the arrow
+keys still work and compose with it.
+
+Yielding is decided by the rail's own position rather than by input events: if
+`scrollLeft` moved since the drift last wrote it, something else moved it, and
+the drift stands off for 2.2s. Watching events instead is what the first cut did,
+and it was wrong twice over. A plain vertical page scroll passing over the rail
+fired `wheel` on it and suppressed the drift, and pausing on hover meant the
+drift never started at all on a desktop, where the pointer rests over the middle
+of the page. Clicking the rail also focused it, and a focus hold then stopped it
+for good, so the hold is now `:focus-visible` only: a keyboard visit holds it, a
+click does not.
+
+It still stops while off screen, while the tab is hidden, and entirely under
+`prefers-reduced-motion`, which also restores snapping and the scrollbar.
+
+Proved seamless by rendering the rail at `x` and at `x + loop` and comparing
+pixels: identical (mean difference 0) once the few pixels of drift between the
+two screenshots are accounted for, at 1440 LTR, 1440 RTL and 390.

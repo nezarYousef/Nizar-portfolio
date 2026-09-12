@@ -1,15 +1,16 @@
 import BlurImage from "@/components/BlurImage";
 import styles from "./OtherExperience.module.css";
 
-/* One card on the horizontal rail. Same shape every time, so the eye can
-   compare them as they pass. */
-export default function FieldCard({ item, index }) {
+/* One card on the rail. Same shape every time, so the eye can compare them as
+   they pass. Copies past the first are decoration: the content is already in
+   the accessibility tree once. */
+export default function FieldCard({ item, clone = false }) {
   return (
-    <li className={styles.card} data-reveal="" style={{ "--delay": `${index * 70}ms` }}>
+    <li className={styles.card} aria-hidden={clone ? "true" : undefined}>
       <div className={styles.photo}>
         <BlurImage
           src={item.image}
-          alt={item.imageAlt}
+          alt={clone ? "" : item.imageAlt}
           fill
           sizes="(max-width: 680px) 82vw, 400px"
           loading="lazy"
