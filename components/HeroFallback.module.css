@@ -1,0 +1,41 @@
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  perspective: 1200px;
+}
+
+.card {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: 6px;
+  width: min(300px, 70vw);
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-2), var(--edge);
+  transform: translate3d(calc(var(--i) * 34px - 50px), calc(var(--i) * 58px - 90px), calc(var(--i) * -40px))
+    rotateY(-14deg) rotateX(6deg);
+}
+
+.card small {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.card strong {
+  color: var(--ink);
+  font-size: 1.05rem;
+  border-bottom: 3px solid var(--swatch);
+  padding-bottom: 6px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--swatch);
+}

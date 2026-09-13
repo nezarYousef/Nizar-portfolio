@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import About from "@/components/About";
+import AmbientCode from "@/components/AmbientCode";
 import Contact from "@/components/Contact";
-import CustomCursor from "@/components/CustomCursor";
+import Cursor from "@/components/Cursor";
+import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navigation from "@/components/Navigation";
+import Education from "@/components/Education";
+import ExperienceRoad from "@/components/ExperienceRoad";
 import OtherExperience from "@/components/OtherExperience";
-import ProjectModal from "@/components/ProjectModal";
+import Preloader from "@/components/Preloader";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
-import TimelineSection from "@/components/TimelineSection";
 import { portfolioCopy } from "@/data/portfolio";
+import { refreshScrollProgress } from "@/lib/scrollProgress";
+import { usePrefersReducedMotion } from "@/lib/useMedia";
 
 const LANGUAGE_KEY = "nizar-portfolio-language";
 const THEME_KEY = "nizar-portfolio-theme";
+const INTRO_KEY = "nizar-portfolio-intro";
 
 const readPreference = (key) => {
   try {
@@ -37,149 +43,140 @@ export default function PortfolioApp() {
   const [theme, setTheme] = useState("light");
   const [settingsReady, setSettingsReady] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-  const [activeProjectId, setActiveProjectId] = useState(null);
+  const [intro, setIntro] = useState(false);
+  const [scene3d, setScene3d] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   const copy = portfolioCopy[language];
-  const activeProject = copy.projects.list.find(
-    (project) => project.id === activeProjectId
-  );
+  const sectionIds = useMemo(() => copy.nav.map((item) => item.id), [copy.nav]);
 
-  const sectionIds = useMemo(
-    () => ["hero", ...copy.nav.map((item) => item.id)],
-    [copy.nav]
-  );
-
-  const changeLanguage = (nextLanguage) => {
-    setLanguage(nextLanguage);
-    writePreference(LANGUAGE_KEY, nextLanguage);
-  };
-
-  const changeTheme = (nextTheme) => {
-    setTheme(nextTheme);
-    writePreference(THEME_KEY, nextTheme);
-  };
-
+  // The inline boot script in app/layout.jsx has already applied the saved
+  // (or OS) theme and language to <html>; adopt them without a flash.
   useEffect(() => {
+    const root = document.documentElement;
     const savedLanguage = readPreference(LANGUAGE_KEY);
-    const savedTheme = readPreference(THEME_KEY);
-
-    if (savedLanguage === "en" || savedLanguage === "ar") {
-      setLanguage(savedLanguage);
-    }
-
-    if (savedTheme === "dark" || savedTheme === "light") {
-      setTheme(savedTheme);
-    }
-
+    if (savedLanguage === "en" || savedLanguage === "ar") setLanguage(savedLanguage);
+    setTheme(root.dataset.theme === "dark" ? "dark" : "light");
     setSettingsReady(true);
+
+    // Whether the intro plays was already decided before first paint by the
+    // boot script in app/layout.jsx, which also put the cover on screen.
+    if (root.dataset.intro === "1") {
+      setIntro(true);
+      window.scrollTo(0, 0);
+    } else {
+      setScene3d(true);
+    }
   }, []);
 
   useEffect(() => {
-    document.documentElement.lang = copy.lang;
-    document.documentElement.dir = copy.dir;
-    document.documentElement.dataset.theme = theme;
+    document.body.classList.toggle("is-locked", intro);
+    return () => document.body.classList.remove("is-locked");
+  }, [intro]);
 
-    if (settingsReady) {
-      writePreference(LANGUAGE_KEY, language);
-      writePreference(THEME_KEY, theme);
+  const revealScene = useCallback(() => setScene3d(true), []);
+
+  const endIntro = useCallback(() => {
+    setIntro(false);
+    const root = document.documentElement;
+    root.dataset.intro = "0";
+    root.classList.remove("is-booting");
+    try {
+      window.sessionStorage.setItem(INTRO_KEY, "1");
+    } catch {
+      // Non-fatal: the intro simply plays again next time.
     }
-  }, [copy.dir, copy.lang, language, settingsReady, theme]);
+    refreshScrollProgress();
+    document.querySelector("header a")?.focus({ preventScroll: true });
+  }, []);
 
   useEffect(() => {
-    const animatedElements = document.querySelectorAll("[data-animate]");
+    if (!settingsReady) return;
+    const root = document.documentElement;
+    root.lang = copy.lang;
+    root.dir = copy.dir;
+    root.dataset.theme = theme;
+    // Layout can shift when direction or fonts change; re-measure scroll acts.
+    refreshScrollProgress();
+  }, [copy.dir, copy.lang, settingsReady, theme]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
-    );
+  const changeLanguage = (next) => {
+    setLanguage(next);
+    writePreference(LANGUAGE_KEY, next);
+  };
 
-    animatedElements.forEach((element) => observer.observe(element));
+  const changeTheme = (next) => {
+    setTheme(next);
+    writePreference(THEME_KEY, next);
+  };
 
-    return () => observer.disconnect();
-  }, [language]);
-
+  // Active nav item: the last section whose top has passed a line near the top.
   useEffect(() => {
-    const updateActiveSection = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.35;
       let current = "hero";
-
       sectionIds.forEach((id) => {
         const element = document.getElementById(id);
-        if (element && element.getBoundingClientRect().top <= 150) {
-          current = id;
-        }
+        if (element && element.getBoundingClientRect().top <= line) current = id;
       });
-
       setActiveSection(current);
     };
-
-    updateActiveSection();
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    window.addEventListener("resize", updateActiveSection);
-
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener("scroll", updateActiveSection);
-      window.removeEventListener("resize", updateActiveSection);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, [sectionIds]);
 
   return (
-    <div className="site-shell">
-      <CustomCursor />
-      <div className="ambient-background" aria-hidden="true">
-        <span className="ambient-band ambient-band-one" />
-        <span className="ambient-band ambient-band-two" />
-        <span className="ambient-scanline" />
-      </div>
+    <>
+      <AmbientCode theme={theme} enabled={!reducedMotion && scene3d} />
+      <Cursor />
 
-      <Navigation
-        activeSection={activeSection}
-        copy={copy}
-        language={language}
-        theme={theme}
-        onLanguageChange={changeLanguage}
-        onThemeChange={changeTheme}
-      />
+      {intro ? (
+        <Preloader copy={copy.intro} onDone={endIntro} onReveal={revealScene} />
+      ) : null}
 
-      <main>
-        <Hero copy={copy.hero} />
-        <About copy={copy.about} />
-        <Skills copy={copy.skills} />
-        <Projects
-          copy={copy.projects}
+      <a className="skip-link" href="#main">
+        {copy.controls.skipLabel}
+      </a>
+
+      <div className="app" inert={intro ? true : undefined}>
+        <Navigation
+          activeSection={activeSection}
+          copy={copy}
           language={language}
-          onOpenProject={(projectId) => setActiveProjectId(projectId)}
+          theme={theme}
+          onLanguageChange={changeLanguage}
+          onThemeChange={changeTheme}
         />
-        <TimelineSection
-          copy={copy.experience}
-          iconType="experience"
-          id="experience"
-        />
-        <OtherExperience copy={copy.otherExperience} />
-        <TimelineSection
-          copy={copy.education}
-          iconType="education"
-          id="education"
-        />
-        <Contact copy={copy.contact} />
-      </main>
 
-      <footer className="site-footer">
-        <p>&copy; {copy.footer}</p>
-      </footer>
+        <main id="main">
+          <Hero copy={copy.hero} theme={theme} dir={copy.dir} enable3d={scene3d} />
+          <About
+            copy={copy.about}
+            stats={copy.hero.stats}
+            imageAlt={copy.hero.imageAlt}
+            language={language}
+          />
+          <Skills copy={copy.skills} language={language} />
+          <Projects copy={copy.projects} dir={copy.dir} language={language} />
+          <ExperienceRoad copy={copy.experience} language={language} />
+          <OtherExperience copy={copy.otherExperience} dir={copy.dir} language={language} />
+          <Education copy={copy.education} language={language} />
+          <Contact copy={copy.contact} language={language} />
+        </main>
 
-      <ProjectModal
-        labels={copy.projects}
-        modalCopy={copy.modal}
-        project={activeProject}
-        onClose={() => setActiveProjectId(null)}
-      />
-    </div>
+        <Footer text={copy.footer} />
+      </div>
+    </>
   );
 }

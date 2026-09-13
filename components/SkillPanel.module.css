@@ -1,0 +1,125 @@
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(180px, 1fr) minmax(0, 1.35fr);
+  gap: clamp(12px, 1.6vw, 28px);
+  align-items: start;
+  /* Elastic height: on a tall screen the panels breathe into the space rather
+     than leaving a void underneath them. */
+  align-content: center;
+  min-height: clamp(84px, 9.4svh, 132px);
+  padding: clamp(18px, 1.9vw, 26px) clamp(16px, 1.9vw, 28px);
+  padding-inline-start: clamp(20px, 2.2vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--surface) 42%, transparent);
+  transition:
+    border-color 320ms var(--ease-out),
+    background-color 320ms var(--ease-out),
+    box-shadow 320ms var(--ease-out),
+    transform 320ms var(--ease-out);
+}
+
+/* Colour rail: the only place a module swatch appears at this size. */
+.rail {
+  position: absolute;
+  inset-block: 14px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-start-end-radius: 3px;
+  border-end-end-radius: 3px;
+  background: var(--swatch);
+  opacity: 0.35;
+  transform: scaleY(0.42);
+  transform-origin: center;
+  transition:
+    transform 420ms var(--ease-out),
+    opacity 320ms var(--ease-out);
+}
+
+.index {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+  transition: color 320ms var(--ease-out);
+}
+
+.name {
+  font-size: clamp(1.08rem, 0.98rem + 0.4vw, 1.32rem);
+  font-weight: var(--w-head);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+html[lang="ar"] .name {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.blurb {
+  margin-top: 6px;
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+.tags {
+  padding-top: 3px;
+}
+
+/* Active: the panel lifts out of the page rather than lighting up. */
+.panel[data-active="true"] {
+  border-color: color-mix(in srgb, var(--swatch) 38%, var(--line));
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.panel[data-active="true"] .rail {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.panel[data-active="true"] .index {
+  color: var(--swatch);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel:hover {
+    border-color: color-mix(in srgb, var(--swatch) 30%, var(--line-strong));
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@media (max-width: 900px) {
+  .panel {
+    grid-template-columns: 26px minmax(0, 1fr);
+    row-gap: 14px;
+  }
+
+  .tags {
+    grid-column: 2;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .blurb {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .rail,
+  .index {
+    transition: none;
+  }
+
+  .panel:hover {
+    transform: none;
+  }
+}

@@ -66,21 +66,26 @@ const aidSignGallery = [
 
 const projectMeta = {
   restaurant: {
+    cover: "/images/restaurant/1.png",
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
     gallery: gallery("restaurant", 19)
   },
   expenses: {
+    cover: "/images/expenses/1.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"],
     gallery: gallery("expenses", 2)
   },
   tasks: {
+    cover: "/images/tasks/cover.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"],
     gallery: gallery("tasks", 5)
   },
   grade: {
     tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
-    previewImage: "/images/edufusion/ba.png",
-    gallery: edufusionGallery
+    previewImage: "/images/edufusion/cover.png",
+    cover: "/images/edufusion/cover.png",
+    gallery: edufusionGallery,
+    demo: "https://edufusion-frontend-nizar9.vercel.app/"
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
@@ -98,22 +103,60 @@ const projectMeta = {
   },
   vision: {
     tags: ["Computer Vision", "Python", "AI", "OpenHands"],
-    previewImage: "/images/aid-sign/1.PNG",
-    previewFit: "contain",
+    previewImage: "/images/aid-sign/cover.png",
+    cover: "/images/aid-sign/cover.png",
+    demoVideo: "/videos/aidsign-demo.mp4",
     gallery: aidSignGallery
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
     previewImage: "/images/advanced-tasks/ba.png",
+    cover: "/images/advanced-tasks/ba.png",
+    coverPosition: "center 9%",
     gallery: advancedTasksGallery
+  },
+  trafficwar: {
+    tags: ["React.js", "Vite", "TanStack", "UI/UX Design"],
+    cover: "/images/trafficwar/cover.png",
+    coverPosition: "18% 50%",
+    gallery: [],
+    demo: "https://trafficwar.tech/"
+  },
+  chatApp: {
+    tags: [],
+    gallery: [],
+    github: "https://github.com/nezarYousef/chat_app.git"
   }
 };
 
+/*
+ * Project links: each project shows exactly one destination.
+ * `github` wins over `demo`; with neither, the card shows no link.
+ * Only real, published URLs belong here.
+ */
 const withMeta = (projects) =>
   projects.map((project) => ({
     ...projectMeta[project.id],
     ...project
   }));
+
+/*
+ * Modules shown as floating cards in the hero's 3D scene. They are the v1
+ * "portfolio.lab" cards plus the Vision Lab signal and the whoami terminal row.
+ */
+export const heroModules = [
+  { id: "web", label: "Interface Layer", value: "React / Next.js", swatch: "web" },
+  { id: "ai", label: "Intelligence", value: "ML / Python / PyCaret", swatch: "ai" },
+  { id: "systems", label: "Systems Core", value: "Java / OOP / Data Structures", swatch: "systems" },
+  { id: "data", label: "Data Flow", value: "APIs / Models", swatch: "data" },
+  { id: "vision", label: "Vision Lab", value: "CNN / Computer Vision", swatch: "vision" },
+  {
+    id: "terminal",
+    kind: "terminal",
+    command: "whoami",
+    output: "Computer Engineer - Palestine"
+  }
+];
 
 const contactLinks = {
   email: "mailto:nizaryousef01@gmail.com",
@@ -121,7 +164,7 @@ const contactLinks = {
   github: "https://github.com/nezarYousef",
   linkedin: "https://linkedin.com/in/nizar-alqerem-33829a3a1",
   whatsapp: "https://wa.me/972597781945",
-  instagram: "https://www.instagram.com/eng.nizar_/"
+  instagram: "https://www.instagram.com/nezar_yousef_/"
 };
 
 export const portfolioCopy = {
@@ -134,16 +177,29 @@ export const portfolioCopy = {
       { id: "skills", label: "Skills" },
       { id: "projects", label: "Projects" },
       { id: "experience", label: "Experience" },
-      { id: "other-experience", label: "Other Experience" },
       { id: "education", label: "Education" },
       { id: "contact", label: "Contact" }
     ],
+    intro: {
+      lines: [
+        { label: "$ ./boot-nizar-portfolio", value: "" },
+        { label: "mount interface", value: "react / next.js" },
+        { label: "load intelligence", value: "ml / python / pycaret" },
+        { label: "link systems", value: "java / oop / c" },
+        { label: "compile projects", value: "11 ready" }
+      ],
+      greeting: "Hello, welcome to my portfolio",
+      signature: "Nizar Yousef Alqerem / Computer Engineer",
+      skip: "Skip intro",
+      label: "Intro sequence"
+    },
     controls: {
       language: "AR",
       languageLabel: "Switch to Arabic",
       themeLabel: "Toggle light and dark mode",
       menuLabel: "Open navigation menu",
-      closeMenuLabel: "Close navigation menu"
+      closeMenuLabel: "Close navigation menu",
+      skipLabel: "Skip to content"
     },
     hero: {
       eyebrow: "Computer Engineer / Software, AI & Web",
@@ -157,7 +213,7 @@ export const portfolioCopy = {
       status: "Available for software, web, and AI opportunities",
       imageAlt: "Portrait of Nizar Yousef Alqerem",
       stats: [
-        { value: "9", label: "Engineering Projects" },
+        { value: "11", label: "Engineering Projects" },
         { value: "2026", label: "Computer Engineering Graduate" },
         { value: "AI + Web", label: "Core Technical Focus" }
       ]
@@ -177,67 +233,70 @@ export const portfolioCopy = {
         "OOP and desktop application experience"
       ],
       cardTitle: "Computer Engineering Profile",
-      cardMeta: "Software Systems / AI / Web Engineering"
+      cardMeta: "Software Systems / AI / Web Engineering",
+      badge: "Available for hire"
     },
     skills: {
       eyebrow: "Technical Stack",
       title: "A stack that covers systems, web interfaces, AI, and applied software projects.",
        categories: [
-         {
-           title: "Programming Lang",
-           items: [
-             { name: "Python", level: 90 },
-             { name: "Java", level: 83 },
-             { name: "C", level: 96 },
-             { name: "JavaScript", level: 81 }
-           ]
-         },
-         {
-           title: "Web Engineering",
-           items: [
-             { name: "HTML/CSS", level: 77 },
-             { name: "React.js", level: 90 },
-             { name: "Next.js", level: 75 },
-             { name: "Responsive UI", level: 88 },
-             { name: "API", level: 73 }
-           ]
-         },
-         {
-           title: "AI & Machine Learning",
-           items: [
-             { name: "ML", level: 75 },
-             { name: "AI", level: 90 },
-             { name: "PyCaret", level: 82 },
-             { name: "Data Preprocessing", level: 90 }
-           ]
-         },
-         {
-           title: "Computer Vision",
-           items: [
-             { name: "Computer Vision", level: 80 },
-             { name: "CNN", level: 76 },
-             { name: "Image Processing", level: 70 },
-             { name: "Deep Learning", level: 74 }
-           ]
-         },
-         {
-           title: "Software Engineering",
-           items: [
-             { name: "OOP", level: 90 },
-             { name: "System Design", level: 96 },
-             { name: "Clean Code", level: 81 }
-           ]
-         },
-         {
-           title: "Tools & Workflow",
-           items: [
-             { name: "Git/GitHub", level: 77 },
-             { name: "Linux/UNIX", level: 80 },
-             { name: "REST API", level: 80 },
-             { name: "Digital Tools", level: 88 }
-           ]
-         }
-       ],
+        {
+          key: "web",
+          title: "Web Engineering",
+          blurb: "Component-driven interfaces, routing, and API integration.",
+          items: [
+            "React.js",
+            "Next.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind",
+            "HTML/CSS",
+            "REST APIs",
+            "Responsive UI"
+          ]
+        },
+        {
+          key: "ai",
+          title: "AI & Machine Learning",
+          blurb: "Model training, evaluation, and retrieval-based tooling in Python.",
+          items: [
+            "Python",
+            "Machine Learning",
+            "PyCaret",
+            "LightGBM",
+            "RAG",
+            "Data Preprocessing",
+            "AI"
+          ]
+        },
+        {
+          key: "vision",
+          title: "Computer Vision",
+          blurb: "Image processing and convolutional models served behind small APIs.",
+          items: ["CNN", "OpenCV", "Image Processing", "Deep Learning", "Flask"]
+        },
+        {
+          key: "systems",
+          title: "Software Engineering",
+          blurb: "Object-oriented design, data structures, and the systems layer underneath.",
+          items: [
+            "Java",
+            "C",
+            "OOP",
+            "Data Structures",
+            "PostgreSQL",
+            "APIs",
+            "System Design",
+            "Clean Code"
+          ]
+        },
+        {
+          key: "tools",
+          title: "Tools & Workflow",
+          blurb: "Version control, containers, and the platforms these projects ship on.",
+          items: ["Git", "GitHub", "Docker", "Vercel", "Render", "Firebase", "Linux/UNIX"]
+        }
+      ],
       coreStack
     },
     projects: {
@@ -246,24 +305,22 @@ export const portfolioCopy = {
       viewGallery: "View project gallery",
       viewGithub: "View on GitHub",
       comingSoon: "Details coming soon",
+      viewDemo: "Open live demo",
+      watchDemo: "Watch demo",
+      closeDemo: "Close video",
+      inDevelopment: "In development",
+      previous: "Previous project",
+      next: "Next project",
+      position: "Project {n} of {total}",
+      deckLabel: "Project deck",
+      featuredLabel: "Flagship project",
+      moreLabel: "More work",
       list: withMeta([
         {
-          id: "restaurant",
-          title: "Smart Restaurant Management",
+          id: "trafficwar",
+          title: "TrafficWar",
           description:
-            "A digital restaurant workflow system with role-based interfaces for customers, chefs, waiters, and administrators, designed around real-time order tracking and clean UI engineering."
-        },
-        {
-          id: "expenses",
-          title: "Expense Tracker App",
-          description:
-            "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
-        },
-        {
-          id: "tasks",
-          title: "Task Management App",
-          description:
-            "A productivity application for creating, organizing, and tracking daily tasks with a clear user flow and responsive interface."
+            "A real-time traffic intelligence platform for observing, analyzing, and optimizing high-volume event data. Nizar was responsible for the frontend and product design."
         },
         {
           id: "grade",
@@ -279,10 +336,33 @@ export const portfolioCopy = {
           ]
         },
         {
+          id: "vision",
+          title: "AidSign - Computer Vision Project",
+          description:
+            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
+          highlights: [
+            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
+            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
+            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
+          ]
+        },
+        {
+          id: "restaurant",
+          title: "Smart Restaurant Management",
+          description:
+            "A digital restaurant workflow system with role-based interfaces for customers, chefs, waiters, and administrators, designed around real-time order tracking and clean UI engineering."
+        },
+        {
           id: "shell",
           title: "Custom Unix Shell",
           description:
             "A C-based Linux shell built from scratch with internal commands, I/O redirection, batch files, background processes, environment variables, and error handling."
+        },
+        {
+          id: "advancedTasks",
+          title: "Advanced Task Management App",
+          description:
+            "A modern task management experience focused on clean UI architecture, advanced task organization, and maintainable React component structure."
         },
         {
           id: "school",
@@ -297,32 +377,41 @@ export const portfolioCopy = {
             "AI and API-based tools that simplify learning, improve access to information, and support understanding complex concepts through intelligent assistance."
         },
         {
-          id: "vision",
-          title: "AidSign - Computer Vision Project",
+          id: "tasks",
+          title: "Task Management App",
           description:
-            "An educational communication aid that combines a reviewed ASL phrasebook with a clearly labelled, experimental sign-recognition demo.",
-          highlights: [
-            "Patient and doctor views keep the phrasebook, supported scope, and next steps clear for each role.",
-            "The phrasebook supports searchable, categorized signs with a dedicated video for each reviewed phrase.",
-            "Camera, upload, and technical sample flows are separated from verified content so the experimental recognition feature is not presented as a replacement for qualified interpretation."
-          ]
+            "A productivity application for creating, organizing, and tracking daily tasks with a clear user flow and responsive interface."
         },
         {
-          id: "advancedTasks",
-          title: "Advanced Task Management App",
+          id: "expenses",
+          title: "Expense Tracker App",
           description:
-            "A modern task management experience focused on clean UI architecture, advanced task organization, and maintainable React component structure."
+            "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
+        },
+        {
+          id: "chatApp",
+          title: "Chat App",
+          description:
+            "A chat application project on GitHub, currently early in development."
         }
       ])
     },
     experience: {
       eyebrow: "Experience",
-      title: "Practical training in frontend engineering with a broader computer engineering foundation.",
+      title: "Exploring, building, and growing through technology and hands-on experience.",
+      techLabel: "Tech",
       items: [
+        {
+          title: "Teaching Assistant",
+          company: "Islamic University of Gaza",
+          date: "Sep 2026 - Present",
+          points: ["Assisting with course instruction, labs, and student support"]
+        },
         {
           title: "Frontend Development Internship",
           company: "Masar Institute",
           date: "2026",
+          tech: ["HTML/CSS", "JavaScript", "React.js", "Next.js", "API"],
           points: [
             "Built responsive web interfaces using HTML, CSS, JavaScript, React.js, and Next.js",
             "Applied UI/UX principles to create clearer and more usable software interfaces",
@@ -340,6 +429,7 @@ export const portfolioCopy = {
           title: "Skill Stack Paths Program",
           company: "Gaza Sky Geeks",
           date: "March 2026 - July 2026",
+          tech: ["Computer Vision", "Neural Networks", "Image Processing"],
           points: [
             "Computer Vision and Neural Networks",
             "Learned image formation fundamentals and core visual data concepts",
@@ -415,6 +505,7 @@ export const portfolioCopy = {
           company: "Islamic University of Gaza",
           date: "2021 - 2026",
           points: [
+            "Cumulative GPA: 90.69",
             "Studied programming, algorithms, data structures, computer architecture, and software engineering fundamentals",
             "Built knowledge in operating systems, databases, APIs, and applied software development",
             "Worked on academic and practical projects in web development, machine learning, and system programming",
@@ -440,6 +531,7 @@ export const portfolioCopy = {
         "I'm interested in software engineering, frontend development, AI, machine learning, and computer vision opportunities. Feel free to reach out for collaborations, projects, or technical discussions.",
       emailLabel: "Email Me",
       phoneLabel: "Call Me",
+      badge: "Available for new opportunities",
       links: contactLinks
     },
     modal: {
@@ -458,16 +550,29 @@ export const portfolioCopy = {
       { id: "skills", label: "المهارات" },
       { id: "projects", label: "المشاريع" },
       { id: "experience", label: "الخبرة" },
-      { id: "other-experience", label: "خبرات أخرى" },
       { id: "education", label: "التعليم" },
       { id: "contact", label: "التواصل" }
     ],
+    intro: {
+      lines: [
+        { label: "$ ./boot-nizar-portfolio", value: "" },
+        { label: "تهيئة الواجهة", value: "react / next.js" },
+        { label: "تحميل الذكاء", value: "ml / python / pycaret" },
+        { label: "ربط الأنظمة", value: "java / oop / c" },
+        { label: "تجهيز المشاريع", value: "11 جاهزة" }
+      ],
+      greeting: "مرحباً، أهلاً بك في معرض أعمالي",
+      signature: "نزار يوسف القرَم / مهندس حاسوب",
+      skip: "تخطي المقدمة",
+      label: "مقدمة الموقع"
+    },
     controls: {
       language: "EN",
       languageLabel: "التبديل إلى الإنجليزية",
       themeLabel: "تبديل الوضع الليلي والنهاري",
       menuLabel: "فتح قائمة التنقل",
-      closeMenuLabel: "إغلاق قائمة التنقل"
+      closeMenuLabel: "إغلاق قائمة التنقل",
+      skipLabel: "تخطَّ إلى المحتوى"
     },
     hero: {
       eyebrow: "مهندس حاسوب / برمجيات وذكاء اصطناعي وويب",
@@ -481,7 +586,7 @@ export const portfolioCopy = {
       status: "متاح لفرص البرمجيات والويب والذكاء الاصطناعي",
       imageAlt: "صورة شخصية لنزار يوسف القرَم",
       stats: [
-        { value: "9", label: "مشاريع هندسية" },
+        { value: "11", label: "مشاريع هندسية" },
         { value: "2026", label: "خريج هندسة حاسوب" },
         { value: "AI + Web", label: "تركيز تقني أساسي" }
       ]
@@ -501,65 +606,68 @@ export const portfolioCopy = {
         "خبرة في OOP وتطبيقات سطح المكتب"
       ],
       cardTitle: "ملف هندسة الحاسوب",
-      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب"
+      cardMeta: "أنظمة برمجية / ذكاء اصطناعي / هندسة ويب",
+      badge: "متاح للعمل"
     },
     skills: {
       eyebrow: "المهارات التقنية",
       title: "حزمة تقنية تغطي الأنظمة والويب والذكاء الاصطناعي والمشاريع البرمجية التطبيقية.",
       categories: [
         {
-          title: "لغات البرمجة",
-          items: [
-            { name: "Python", level: 90 },
-            { name: "Java", level: 83 },
-            { name: "C", level: 96 },
-            { name: "JavaScript", level: 81 }
-          ]
-        },
-        {
+          key: "web",
           title: "هندسة الويب",
+          blurb: "واجهات مبنية على المكوّنات، وتوجيه الصفحات، وربط الواجهات البرمجية.",
           items: [
-            { name: "HTML/CSS", level: 77 },
-            { name: "React.js", level: 90 },
-            { name: "Next.js", level: 75 },
-            { name: "واجهات متجاوبة", level: 88 },
-            { name: "API", level: 73 }
+            "React.js",
+            "Next.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind",
+            "HTML/CSS",
+            "REST APIs",
+            "Responsive UI"
           ]
         },
         {
-          title: "الذكاء الاصطناعي وتعلم الآلة",
+          key: "ai",
+          title: "الذكاء الاصطناعي وتعلّم الآلة",
+          blurb: "تدريب النماذج وتقييمها وأدوات الاسترجاع باستخدام Python.",
           items: [
-            { name: "ML", level: 75 },
-            { name: "AI", level: 90 },
-            { name: "PyCaret", level: 82 },
-            { name: "Data Preprocessing", level: 90 }
+            "Python",
+            "Machine Learning",
+            "PyCaret",
+            "LightGBM",
+            "RAG",
+            "Data Preprocessing",
+            "AI"
           ]
         },
         {
+          key: "vision",
           title: "الرؤية الحاسوبية",
-          items: [
-            { name: "Computer Vision", level: 80 },
-            { name: "CNN", level: 76 },
-            { name: "Image Processing", level: 70 },
-            { name: "Deep Learning", level: 74 }
-          ]
+          blurb: "معالجة الصور والشبكات الالتفافية خلف واجهات برمجية صغيرة.",
+          items: ["CNN", "OpenCV", "Image Processing", "Deep Learning", "Flask"]
         },
         {
+          key: "systems",
           title: "هندسة البرمجيات",
+          blurb: "التصميم كائني التوجّه وهياكل البيانات وطبقة الأنظمة تحتها.",
           items: [
-            { name: "OOP", level: 90 },
-            { name: "System Design", level: 96 },
-            { name: "Clean Code", level: 81 }
+            "Java",
+            "C",
+            "OOP",
+            "Data Structures",
+            "PostgreSQL",
+            "APIs",
+            "System Design",
+            "Clean Code"
           ]
         },
         {
+          key: "tools",
           title: "الأدوات وسير العمل",
-          items: [
-            { name: "Git/GitHub", level: 77 },
-            { name: "Linux/UNIX", level: 80 },
-            { name: "REST API", level: 80 },
-            { name: "Digital Tools", level: 88 }
-          ]
+          blurb: "إدارة الإصدارات والحاويات والمنصّات التي تُنشر عليها هذه المشاريع.",
+          items: ["Git", "GitHub", "Docker", "Vercel", "Render", "Firebase", "Linux/UNIX"]
         }
       ],
       coreStack
@@ -570,24 +678,22 @@ export const portfolioCopy = {
       viewGallery: "عرض صور المشروع",
       viewGithub: "عرض على GitHub",
       comingSoon: "التفاصيل قريباً",
+      viewDemo: "فتح العرض المباشر",
+      watchDemo: "مشاهدة العرض",
+      closeDemo: "إغلاق الفيديو",
+      inDevelopment: "قيد التطوير",
+      previous: "المشروع السابق",
+      next: "المشروع التالي",
+      position: "المشروع {n} من {total}",
+      deckLabel: "مجموعة المشاريع",
+      featuredLabel: "المشروع الرئيسي",
+      moreLabel: "أعمال أخرى",
       list: withMeta([
         {
-          id: "restaurant",
-          title: "نظام إدارة مطعم ذكي",
+          id: "trafficwar",
+          title: "TrafficWar - منصة استخبارات المرور في الوقت الفعلي",
           description:
-            "نظام رقمي لإدارة سير عمل المطعم بواجهات حسب الدور للعملاء والطهاة والنوادل والمديرين، مع تتبع الطلبات لحظياً وهندسة واجهة واضحة."
-        },
-        {
-          id: "expenses",
-          title: "تطبيق تتبع المصاريف",
-          description:
-            "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
-        },
-        {
-          id: "tasks",
-          title: "تطبيق إدارة المهام",
-          description:
-            "تطبيق إنتاجية لإنشاء المهام وتنظيمها وتتبعها من خلال تجربة استخدام واضحة وواجهة متجاوبة."
+            "منصة لرصد وتحليل وتحسين بيانات الأحداث عالية الحجم في الوقت الفعلي، تولى فيها نزار مسؤولية الواجهة الأمامية والتصميم."
         },
         {
           id: "grade",
@@ -603,10 +709,33 @@ export const portfolioCopy = {
           ]
         },
         {
+          id: "vision",
+          title: "AidSign - مشروع رؤية حاسوبية",
+          description:
+            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
+          highlights: [
+            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
+            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
+            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
+          ]
+        },
+        {
+          id: "restaurant",
+          title: "نظام إدارة مطعم ذكي",
+          description:
+            "نظام رقمي لإدارة سير عمل المطعم بواجهات حسب الدور للعملاء والطهاة والنوادل والمديرين، مع تتبع الطلبات لحظياً وهندسة واجهة واضحة."
+        },
+        {
           id: "shell",
           title: "صدفة Unix مخصصة",
           description:
             "صدفة Linux مبنية بلغة C من الصفر وتدعم الأوامر الداخلية وإعادة توجيه الإدخال والإخراج وملفات الدفعات والعمليات الخلفية ومتغيرات البيئة ومعالجة الأخطاء."
+        },
+        {
+          id: "advancedTasks",
+          title: "تطبيق متقدم لإدارة المهام",
+          description:
+            "تجربة حديثة لإدارة المهام تركز على بنية واجهة نظيفة، وتنظيم متقدم للمهام، وهيكلة مكونات React قابلة للصيانة."
         },
         {
           id: "school",
@@ -621,32 +750,41 @@ export const portfolioCopy = {
             "أدوات تعتمد على AI و API لتسهيل التعلم وتحسين الوصول للمعلومة ودعم فهم المفاهيم المعقدة بمساعدة ذكية."
         },
         {
-          id: "vision",
-          title: "AidSign - مشروع رؤية حاسوبية",
+          id: "tasks",
+          title: "تطبيق إدارة المهام",
           description:
-            "مساعد تواصل تعليمي يجمع بين قاموس عبارات ASL مُراجع وتجربة تجريبية واضحة للتعرّف على الإشارات.",
-          highlights: [
-            "تقدّم واجهتا المريض والطبيب قاموس العبارات والنطاق المدعوم والخطوات التالية بما يناسب كل دور.",
-            "يدعم القاموس البحث والتصنيف مع فيديو مخصص لكل عبارة مُراجعة.",
-            "تفصل مسارات الكاميرا والرفع والعينة التقنية عن المحتوى المُتحقق منه، ولا تعرض ميزة التعرّف التجريبية كبديل عن المترجم المؤهل."
-          ]
+            "تطبيق إنتاجية لإنشاء المهام وتنظيمها وتتبعها من خلال تجربة استخدام واضحة وواجهة متجاوبة."
         },
         {
-          id: "advancedTasks",
-          title: "تطبيق متقدم لإدارة المهام",
+          id: "expenses",
+          title: "تطبيق تتبع المصاريف",
           description:
-            "تجربة حديثة لإدارة المهام تركز على بنية واجهة نظيفة، وتنظيم متقدم للمهام، وهيكلة مكونات React قابلة للصيانة."
+            "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
+        },
+        {
+          id: "chatApp",
+          title: "تطبيق دردشة",
+          description:
+            "مشروع تطبيق دردشة على GitHub، لا يزال في مراحله الأولى من التطوير."
         }
       ])
     },
     experience: {
       eyebrow: "الخبرة",
-      title: "تدريب عملي في هندسة الواجهات مع أساس أوسع في هندسة الحاسوب.",
+      title: "استكشاف وبناء ونمو من خلال التقنية والخبرة العملية.",
+      techLabel: "التقنيات",
       items: [
+        {
+          title: "مساعد تدريس",
+          company: "الجامعة الإسلامية بغزة",
+          date: "سبتمبر 2026 - حتى الآن",
+          points: ["دعم التدريس والمختبرات ومتابعة الطلاب"]
+        },
         {
           title: "تدريب تطوير واجهات أمامية",
           company: "معهد مسار",
           date: "2026",
+          tech: ["HTML/CSS", "JavaScript", "React.js", "Next.js", "API"],
           points: [
             "بناء واجهات ويب متجاوبة باستخدام HTML و CSS و JavaScript و React.js و Next.js",
             "تطبيق مبادئ UI/UX لإنشاء واجهات برمجية أوضح وأسهل استخداماً",
@@ -664,6 +802,7 @@ export const portfolioCopy = {
           title: "برنامج Skill Stack Paths",
           company: "Gaza Sky Geeks",
           date: "مارس 2026 - يوليو 2026",
+          tech: ["Computer Vision", "Neural Networks", "Image Processing"],
           points: [
             "الرؤية الحاسوبية والشبكات العصبية",
             "دراسة أساسيات تكوين الصور ومفاهيم البيانات البصرية",
@@ -739,6 +878,7 @@ export const portfolioCopy = {
           company: "الجامعة الإسلامية بغزة",
           date: "2021 - 2026",
           points: [
+            "المعدل التراكمي: 90.69",
             "دراسة البرمجة والخوارزميات وهياكل البيانات ومعمارية الحاسوب وأساسيات هندسة البرمجيات",
             "اكتساب معرفة في أنظمة التشغيل وقواعد البيانات وواجهات API وتطوير البرمجيات التطبيقية",
             "العمل على مشاريع أكاديمية وعملية في تطوير الويب وتعلم الآلة وبرمجة الأنظمة",
@@ -764,6 +904,7 @@ export const portfolioCopy = {
         "أهتم بفرص هندسة البرمجيات وتطوير الواجهات والذكاء الاصطناعي وتعلم الآلة والرؤية الحاسوبية. يسعدني تواصلك للتعاون أو المشاريع أو النقاشات التقنية.",
       emailLabel: "راسلني",
       phoneLabel: "اتصل بي",
+      badge: "متاح لفرص جديدة",
       links: contactLinks
     },
     modal: {

@@ -1,0 +1,25 @@
+.footer {
+  border-top: 1px solid var(--line);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-block: var(--s-6);
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.brand {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  direction: ltr;
+}
+
+.brand span {
+  color: var(--accent-text);
+}

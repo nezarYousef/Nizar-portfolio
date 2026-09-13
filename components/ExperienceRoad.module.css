@@ -1,0 +1,389 @@
+.section {
+  --p: 0;
+  --n: 3; /* station count, set inline */
+  --per: 0.82; /* viewport-heights of travel per station */
+  --u: calc(var(--p) * (var(--n) - 0.5)); /* position along the road, in stations */
+  --gap: clamp(104px, 15svh, 168px); /* milepost spacing */
+  --lane: 18px; /* width of the road lane inside the rail column */
+  --window: clamp(318px, 58svh, 470px); /* the stretch of road you can see */
+}
+
+/* ─── Pinned act ─────────────────────────────────────── */
+
+.section[data-pinned="true"] {
+  height: calc(100svh + var(--n) * var(--per) * 100svh);
+  padding-block: 0;
+}
+
+.section[data-pinned="true"] .stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  align-content: center;
+  gap: clamp(16px, 2.8svh, 38px);
+  height: 100svh;
+  padding-top: var(--header-h);
+  overflow: hidden;
+}
+
+.head {
+  margin-bottom: 0;
+}
+
+.road {
+  display: grid;
+  grid-template-columns: clamp(150px, 13vw, 200px) minmax(0, 1fr);
+  gap: clamp(16px, 2.2vw, 36px);
+}
+
+/* ─── The road ───────────────────────────────────────── */
+
+.rail {
+  position: relative;
+  height: var(--window);
+  overflow: hidden;
+  /* The surface fades out at both ends, so mileposts arrive from off-road. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 17%, #000 83%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 17%, #000 83%, transparent 100%);
+}
+
+/* Lit behind you, plain ahead. */
+.rail::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--lane) / 2 - 1px);
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--accent) 0,
+    var(--accent) 44%,
+    color-mix(in srgb, var(--accent) 45%, var(--line-strong)) 50%,
+    var(--line-strong) 58%,
+    var(--line-strong) 100%
+  );
+  content: "";
+}
+
+/* The fixed point the road runs through. */
+.marker {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  inset-inline-start: calc(var(--lane) / 2 - 13px);
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  border: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+/*
+ * Milepost i sits exactly in the marker when the road has travelled i, which
+ * puts the first one in the ring on the opening frame and each later one in it
+ * partway through that station's dwell.
+ */
+.track {
+  --travel: clamp(0, var(--u), calc(var(--n) - 0.25));
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  transform: translate3d(0, calc(var(--travel) * var(--gap) * -1), 0);
+  will-change: transform;
+}
+
+.stop {
+  --t: calc(var(--u) - var(--i));
+  /* Approaching, then lit from the marker onward. */
+  --near: clamp(0, calc((var(--t) + 0.55) / 0.5), 1);
+  --passed: clamp(0, calc((var(--t) + 0.2) / 0.35), 1);
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--i) * var(--gap));
+  height: 0;
+}
+
+.stop i {
+  position: absolute;
+  inset-inline-start: calc(var(--lane) / 2 - 6px);
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  opacity: calc(0.35 + var(--near) * 0.65);
+  transform: translateY(-50%) scale(calc(0.82 + var(--near) * 0.18));
+}
+
+.stop i::after {
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+  opacity: var(--passed);
+}
+
+.stop em {
+  position: absolute;
+  inset-inline-start: calc(var(--lane) + 8px);
+  max-width: calc(100% - var(--lane) - 10px);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  opacity: calc(0.2 + var(--near) * 0.8);
+  transform: translateY(-50%);
+}
+
+/* ─── Stations ───────────────────────────────────────── */
+
+/*
+ * The stations travel through a window the height of one stretch of road. The
+ * arriving one is opaque and slides up over the one it replaces, which keeps
+ * leaving until it is clipped away: a handover you can read, rather than two
+ * paragraphs dissolving through each other.
+ */
+.stations {
+  position: relative;
+  height: var(--window);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+
+.station {
+  --t: calc(var(--u) - var(--i));
+  /* Position: a long ramp in, a dwell, a long ramp out. */
+  --in: clamp(0, calc((var(--t) + 0.52) / 0.42), 1);
+  --out: clamp(0, calc((var(--t) - 0.58) / 0.42), 1);
+  /*
+   * Opacity is asymmetric on purpose: the arriving station is already crisp
+   * while it is still sliding in, and the one it replaces recedes across its
+   * whole departure. So a handover reads as the new card asserting itself over
+   * a fading one, never as two paragraphs of equal weight.
+   */
+  --fin: clamp(0, calc((var(--t) + 0.52) / 0.26), 1);
+  --fout: clamp(0, calc((var(--t) - 0.58) / 0.4), 1);
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  max-width: 62ch;
+  padding: clamp(16px, 1.9vw, 24px) clamp(18px, 2.2vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  /* Opaque on purpose: the arriving station covers the one it replaces. */
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  opacity: calc(var(--fin) * (1 - var(--fout)));
+  transform: translate3d(
+    0,
+    calc(-50% + (1 - var(--in)) * var(--window) * 1.06 - var(--out) * var(--window) * 1.06),
+    0
+  );
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/*
+ * A pinned stage is fully on screen a viewport before its own progress leaves
+ * zero, so the first station greets: in place and opaque at p = 0.
+ */
+.station[data-first="true"] {
+  --in: 1;
+  --fin: 1;
+}
+
+/* And the last one holds, so the act ends on a statement. */
+.station[data-last="true"] {
+  --out: 0;
+  --fout: 0;
+}
+
+/* ─── Station content ────────────────────────────────── */
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.step {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.step i {
+  font-style: normal;
+  opacity: 0.5;
+}
+
+.date {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.role {
+  font-size: clamp(1.15rem, 1rem + 0.55vw, 1.45rem);
+  font-weight: var(--w-head);
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+}
+
+html[lang="ar"] .role {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.org {
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: var(--w-strong);
+}
+
+.points {
+  display: grid;
+  gap: 7px;
+  margin-top: var(--s-4);
+  padding-inline-start: 1.1em;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+.points li {
+  --bp: clamp(0, calc(var(--fin) * 1.55 - var(--j) * 0.13), 1);
+  opacity: calc(0.45 + var(--bp) * 0.55);
+  transform: translate3d(0, calc((1 - var(--bp)) * 6px), 0);
+}
+
+.points li::marker {
+  color: var(--accent);
+}
+
+.stack {
+  display: grid;
+  gap: 8px;
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+/* ─── Static fallback (short viewports, reduced motion) ─ */
+
+.section[data-pinned="false"] .road {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.section[data-pinned="false"] .rail {
+  display: none;
+}
+
+.section[data-pinned="false"] .stations {
+  display: grid;
+  gap: clamp(24px, 3.6vw, 44px);
+  height: auto;
+  overflow: visible;
+  padding-inline-start: 34px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.section[data-pinned="false"] .stations::before {
+  position: absolute;
+  inset-block: 14px;
+  inset-inline-start: 5px;
+  width: 1px;
+  background: var(--line-strong);
+  content: "";
+}
+
+.section[data-pinned="false"] .station {
+  position: relative;
+  top: 0;
+  max-width: none;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  will-change: auto;
+}
+
+.section[data-pinned="false"] .station::before {
+  position: absolute;
+  top: 22px;
+  inset-inline-start: -34px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  content: "";
+}
+
+.section[data-pinned="false"] .points li {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─── Narrow ─────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  /* Narrow screens spend less height on the heading, so the road can see
+     further down it. */
+  .section {
+    --window: clamp(318px, 62svh, 520px);
+    --gap: clamp(88px, 13svh, 132px);
+  }
+
+  .road {
+    grid-template-columns: calc(var(--lane) + 6px) minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .stop em {
+    display: none;
+  }
+
+  .station {
+    max-width: none;
+    padding: 14px 16px;
+  }
+
+  .meta {
+    margin-bottom: 4px;
+  }
+
+  .role {
+    font-size: 1.08rem;
+  }
+
+  .points {
+    gap: 5px;
+    margin-top: 12px;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .stack {
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+}

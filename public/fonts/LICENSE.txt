@@ -1,0 +1,8 @@
+Fonts in this folder are subset web builds of open-source typefaces, all licensed
+under the SIL Open Font License 1.1 (https://openfontlicense.org):
+
+- Archivo (archivo-var.woff2): Copyright The Archivo Project Authors (Omnibus-Type)
+- JetBrains Mono (jetbrains-mono-var.woff2): Copyright The JetBrains Mono Project Authors
+- IBM Plex Sans Arabic (plex-arabic-*.woff2): Copyright IBM Corp.
+
+Source: https://github.com/google/fonts (ofl/archivo, ofl/jetbrainsmono, ofl/ibmplexsansarabic)

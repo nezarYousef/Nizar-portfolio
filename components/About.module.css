@@ -1,0 +1,289 @@
+/* The heading travels a little faster than the section it belongs to, so the
+   hand-off from the hero has depth rather than being one flat block. Sized
+   down from the page's "statement" voice so About reads as an introduction,
+   not a headline, and the section keeps its footprint close to one screen. */
+.heading {
+  margin-bottom: clamp(14px, 1.8vw, 26px);
+  transform: translate3d(0, calc((0.5 - clamp(0, var(--p), 1)) * 2vh), 0);
+}
+
+/*
+ * About only needs headroom under the fixed header, not the same footer air
+ * every other "screen" section keeps below it: with the big statement
+ * heading gone, trimming the bottom half of the pad is what lets the whole
+ * section land inside one viewport instead of quietly running past it.
+ */
+:global(.screen).screenTight {
+  padding-block: calc(var(--header-h) + var(--s-6)) var(--section-pad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading {
+    transform: none;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4.4fr) minmax(0, 7.6fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+}
+
+/* ─── Portrait ─────────────────────────────────────── */
+
+.figure {
+  position: sticky;
+  top: calc(var(--header-h) + 32px);
+  margin: 0;
+}
+
+/*
+ * Mounted rather than cropped to the edge: the photo sits inside a bordered
+ * mount with its own air, which is where the breathing room above the head
+ * comes from. The source has only a few dozen pixels above the hairline, so
+ * the frame gives it the rest instead of zooming or inventing pixels.
+ *
+ * The mount floats: a deeper, more diffuse shadow lifts it off the page, and
+ * a slow independent `translate` bob (composited alongside the scroll-driven
+ * `transform` parallax, not fighting it) keeps it gently airborne at rest.
+ */
+.mount {
+  --p: 0.5;
+  position: relative;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+  transform: translate3d(0, calc((0.5 - clamp(0, var(--p), 1)) * 14px), 0);
+  animation: about-float 7s ease-in-out infinite;
+}
+
+@keyframes about-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+/* Blueprint offset: one repeated line, the same idea as the page grid. */
+.mount::before {
+  position: absolute;
+  z-index: -1;
+  inset: 16px -16px -16px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  content: "";
+  opacity: 0.7;
+}
+
+html[dir="rtl"] .mount::before {
+  inset: 16px 16px -16px -16px;
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: calc(var(--r-lg) - 6px);
+  background: var(--surface-2);
+}
+
+/*
+ * Top-aligned: cover crops from the bottom of the frame, never off the top of
+ * the head. No scale, so the framing is identical at every scroll position.
+ */
+.image {
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+.badge {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: var(--shadow-1);
+  transform: translateY(50%);
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.caption {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  margin-top: clamp(18px, 2.2vw, 30px);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.caption strong {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: var(--w-strong);
+}
+
+.caption span {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+/* ─── Text ─────────────────────────────────────────── */
+
+.body {
+  display: grid;
+  gap: var(--s-5);
+  max-width: 60ch;
+}
+
+.lead {
+  color: var(--ink);
+  font-size: var(--t-lead);
+  font-weight: var(--w-meta);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+}
+
+.paragraph {
+  color: var(--text);
+  font-size: var(--t-small);
+  line-height: 1.68;
+}
+
+.highlights {
+  display: grid;
+  margin-top: var(--s-2);
+  list-style: none;
+}
+
+.highlights li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: var(--t-small);
+}
+
+.highlights li:last-child {
+  border-bottom: 0;
+}
+
+.highlights svg {
+  margin-top: 4px;
+  color: var(--accent-text);
+}
+
+/* ─── Facts strip ──────────────────────────────────── */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: clamp(20px, 2.6vw, 40px) 0 0;
+  border-block: 1px solid var(--line);
+}
+
+.fact {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: var(--s-5) var(--s-4) var(--s-5) 0;
+}
+
+.fact + .fact {
+  padding-inline-start: var(--s-5);
+  border-inline-start: 1px solid var(--line);
+}
+
+.fact dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 1.95rem);
+  font-weight: var(--w-head);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fact dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: clamp(40px, 7vw, 56px);
+  }
+
+  .figure {
+    position: relative;
+    top: 0;
+    width: min(100%, 360px);
+  }
+
+  .mount {
+    transform: none;
+  }
+
+  .body {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .mount::before {
+    display: none;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+  }
+
+  .fact,
+  .fact + .fact {
+    flex-direction: row-reverse;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: var(--s-4) 0;
+    border-inline-start: 0;
+  }
+
+  .fact + .fact {
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mount {
+    animation: none;
+    translate: none;
+  }
+}

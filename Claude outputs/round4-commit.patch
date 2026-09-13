@@ -1,0 +1,1271 @@
+From 0cd50139c6cfcae6c74755bfe8ce656da9467bc3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 12 Sep 2026 12:58:09 +0000
+Subject: [PATCH] Experience as a pinned road, auto-drifting field rail, longer
+ intro
+
+Three targeted changes; every other section, token and layout is unchanged.
+
+Loader: timings only, no design change. Measured from navigation start,
+NAV_MIN 900 -> 1400ms, MOUNT_MIN 560 -> 900ms, GREET_MS 640 -> 950ms,
+EXIT_MS 700 -> 780ms, MAX_HOLD 2400 -> 3100ms. Module lines read out one per
+250ms and the meter lands on 100 just before the panels lift, so the sequence
+holds for about 2.35s instead of 1.5s.
+
+Experience: the act now pins for n x 0.82 viewport-heights and every part of it
+is driven by one eased --p in CSS, with no React state and no per-frame JS. The
+road surface holds still while the mileposts travel so each one seats in the
+marker ring at its station; the stations themselves travel through a window one
+stretch of road tall, translating clear of it. The handover is travel rather
+than a dissolve: opacity is asymmetric and station backgrounds are opaque, so an
+arriving card covers the one it replaces instead of showing through it. The
+first station greets in place at p = 0 and the last one holds. Where a station
+cannot fit the window, or under prefers-reduced-motion, the same markup falls
+back to a static rail.
+
+Other experience: same cards, but the rail now drifts continuously and wraps
+without a seam. The list repeats ceil(railWidth / loop) + 1 times and the drift
+steps back exactly one set, with the period measured from getBoundingClientRect
+so a rounded value cannot leave the wrap out of phase. The drift nudges the
+container's own scrollLeft, so swipe, trackpad and arrow keys still work; it
+holds on hover, on focus, for 1.6s after a manual nudge, off screen, on a hidden
+tab, and entirely under prefers-reduced-motion.
+
+Verified in Chromium at 1920x1080, 1440x900, 1280x800, 1024x768, 1024x720,
+390x844 and 390x820, light and dark, English and Arabic, plus reduced motion:
+the road has no empty stage at any of 23 scroll positions, every station reaches
+full opacity without being clipped, zero dead steps, and the rail renders
+identically at x and x + loop (mean pixel difference 0).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01DGAMbZrjXGBxF1EBJZjnoU
+---
+ components/ExperienceEntry.jsx        |  74 ++---
+ components/ExperienceRoad.jsx         | 120 ++++----
+ components/ExperienceRoad.module.css  | 386 +++++++++++++++++---------
+ components/FieldCard.jsx              |  11 +-
+ components/OtherExperience.jsx        | 178 +++++++++---
+ components/OtherExperience.module.css |  79 ++----
+ components/Preloader.jsx              |  21 +-
+ docs/REDESIGN.md                      |  70 +++++
+ 8 files changed, 611 insertions(+), 328 deletions(-)
+
+diff --git a/components/ExperienceEntry.jsx b/components/ExperienceEntry.jsx
+index 8279ad2..6bebf27 100644
+--- a/components/ExperienceEntry.jsx
++++ b/components/ExperienceEntry.jsx
+@@ -1,49 +1,51 @@
+ import styles from "./ExperienceRoad.module.css";
+ 
+ /*
+- * One stop on the road. Role first, then who and when, then what was done,
+- * then the stack. Scannable in a few seconds; nothing here is a paragraph.
++ * One station on the road. Role first, then who and when, then what was done,
++ * then the stack. Its arrival and departure are driven by `--i` against the
++ * road's progress, in CSS.
+  */
+-export default function ExperienceEntry({ item, index, total, active, techLabel }) {
++export default function ExperienceEntry({ item, index, total, first, last, techLabel }) {
+   const number = String(index + 1).padStart(2, "0");
+ 
+   return (
+-    <li className={styles.entry} data-active={active ? "true" : undefined} data-reveal="">
+-      <span className={styles.node} aria-hidden="true">
+-        <i />
+-      </span>
++    <li
++      className={styles.station}
++      style={{ "--i": index }}
++      data-first={first ? "true" : undefined}
++      data-last={last ? "true" : undefined}
++    >
++      <p className={styles.meta}>
++        <span className={styles.step} aria-hidden="true">
++          {number}
++          <i>{`/${String(total).padStart(2, "0")}`}</i>
++        </span>
++        <span className={styles.date}>{item.date}</span>
++      </p>
+ 
+-      <div className={styles.card}>
+-        <p className={styles.meta}>
+-          <span className={styles.step} aria-hidden="true">
+-            {number}
+-            <i>{`/${String(total).padStart(2, "0")}`}</i>
+-          </span>
+-          <span className={styles.date}>{item.date}</span>
+-        </p>
++      <h3 className={styles.role}>{item.title}</h3>
++      <p className={styles.org}>{item.company}</p>
+ 
+-        <h3 className={styles.role}>{item.title}</h3>
+-        <p className={styles.org}>{item.company}</p>
++      <ul className={styles.points}>
++        {item.points.map((point, j) => (
++          <li key={point} style={{ "--j": j }}>
++            {point}
++          </li>
++        ))}
++      </ul>
+ 
+-        <ul className={styles.points}>
+-          {item.points.map((point) => (
+-            <li key={point}>{point}</li>
+-          ))}
+-        </ul>
+-
+-        {item.tech?.length ? (
+-          <div className={styles.stack}>
+-            <span className="tag-label">{techLabel}</span>
+-            <ul className="tags">
+-              {item.tech.map((name) => (
+-                <li className="tag" key={name}>
+-                  {name}
+-                </li>
+-              ))}
+-            </ul>
+-          </div>
+-        ) : null}
+-      </div>
++      {item.tech?.length ? (
++        <div className={styles.stack}>
++          <span className="tag-label">{techLabel}</span>
++          <ul className="tags">
++            {item.tech.map((name) => (
++              <li className="tag" key={name}>
++                {name}
++              </li>
++            ))}
++          </ul>
++        </div>
++      ) : null}
+     </li>
+   );
+ }
+diff --git a/components/ExperienceRoad.jsx b/components/ExperienceRoad.jsx
+index 38df263..b751283 100644
+--- a/components/ExperienceRoad.jsx
++++ b/components/ExperienceRoad.jsx
+@@ -1,86 +1,104 @@
+ "use client";
+ 
+-import { useEffect, useRef, useState } from "react";
++import { useRef } from "react";
+ import ExperienceEntry from "@/components/ExperienceEntry";
+ import SectionHeading from "@/components/SectionHeading";
+ import { useScrollProgress } from "@/lib/scrollProgress";
+-import { usePrefersReducedMotion } from "@/lib/useMedia";
++import { useMediaQuery, usePrefersReducedMotion } from "@/lib/useMedia";
+ import { useReveal } from "@/lib/useReveal";
+ import styles from "./ExperienceRoad.module.css";
+ 
+ /*
+- * Experience as a road rather than a list. The heading and a stage marker hold
+- * their place while the page scrolls normally past them; the rail fills as you
+- * read, and the stop you are level with is the one in focus. The page never
+- * takes the scroll away from the visitor.
++ * Experience as a road you travel rather than a list you scroll.
++ *
++ * The stage pins for a few viewport-heights. Inside it the road surface holds
++ * still while the mileposts travel up past a fixed marker, and each station
++ * hands over to the next with a real transition: the outgoing one lifts and
++ * fades while the incoming one arrives from below, windows overlapping by about
++ * a fifth of a slice so the stage is never empty.
++ *
++ * One eased progress value (`--p`) drives all of it in CSS, so scrolling never
++ * re-renders React and there is no animation that the scroll is not driving.
++ * On a viewport too short to hold a station without clipping it, and under
++ * `prefers-reduced-motion`, the same markup falls back to a static rail with
++ * the stations stacked.
+  */
+ export default function ExperienceRoad({ copy, language }) {
+   const sectionRef = useRef(null);
+-  const roadRef = useRef(null);
+-  const [active, setActive] = useState(0);
+   const reducedMotion = usePrefersReducedMotion();
++  const roomToPin = useMediaQuery(
++    // Narrow columns wrap the longest station into a taller card, so a short
++    // phone needs more height than a short laptop before the road can be
++    // pinned without clipping it.
++    "((min-height: 820px) or ((min-width: 900px) and (min-height: 720px)))" +
++      " and (prefers-reduced-motion: no-preference)",
++    false
++  );
+   const items = copy.items;
++  const total = items.length;
++  const pinned = roomToPin && !reducedMotion;
+ 
+-  useScrollProgress(roadRef, { mode: "read", disabled: reducedMotion, resetTo: 1 });
++  useScrollProgress(sectionRef, {
++    mode: pinned ? "pin" : "read",
++    disabled: reducedMotion,
++    resetTo: pinned ? 0 : 1,
++    // A touch softer than the page default: this act is a drive, not a flick.
++    ease: 9
++  });
+   useReveal(sectionRef, [language]);
+ 
+-  useEffect(() => {
+-    const road = roadRef.current;
+-    if (!road || !("IntersectionObserver" in window)) return undefined;
+-    const stops = Array.from(road.children);
+-    const observer = new IntersectionObserver(
+-      (entries) => {
+-        entries.forEach((entry) => {
+-          if (entry.isIntersecting) setActive(stops.indexOf(entry.target));
+-        });
+-      },
+-      { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
+-    );
+-    stops.forEach((stop) => observer.observe(stop));
+-    return () => observer.disconnect();
+-  }, [items, language]);
+-
+-  const current = items[active] ?? items[0];
+-
+   return (
+     <section
+-      className="section screen band"
++      className={`section band ${pinned ? "" : "screen"} ${styles.section}`}
+       id="experience"
+       ref={sectionRef}
++      data-pinned={pinned}
++      style={{ "--n": total }}
+       aria-labelledby="experience-title"
+     >
+-      <div className={`container ${styles.layout}`}>
+-        <div className={styles.aside}>
++      <div className={styles.stage}>
++        <div className="container">
+           <SectionHeading
+             index="04"
+             eyebrow={copy.eyebrow}
+             title={copy.title}
+             id="experience-title"
++            className={styles.head}
+           />
++        </div>
+ 
+-          {/* Where you are on the road. Mirrors the rail, never replaces it. */}
+-          <div className={styles.marker} aria-hidden="true">
+-            <p className={styles.markerCount}>
+-              {String(active + 1).padStart(2, "0")}
+-              <span>{` / ${String(items.length).padStart(2, "0")}`}</span>
+-            </p>
+-            <p className={styles.markerRole}>{current.title}</p>
+-            <p className={styles.markerDate}>{current.date}</p>
++        <div className={`container ${styles.road}`}>
++          {/* The surface is continuous; the mileposts are what move. */}
++          <div className={styles.rail} aria-hidden="true">
++            <span className={styles.marker} />
++            <div className={styles.track}>
++              {items.map((item, index) => (
++                <span
++                  className={styles.stop}
++                  key={`${item.title}-${item.date}`}
++                  style={{ "--i": index }}
++                >
++                  <i />
++                  <em>{item.date}</em>
++                </span>
++              ))}
++            </div>
+           </div>
+-        </div>
+ 
+-        <ol className={styles.road} ref={roadRef}>
+-          {items.map((item, index) => (
+-            <ExperienceEntry
+-              key={`${item.title}-${item.date}`}
+-              item={item}
+-              index={index}
+-              total={items.length}
+-              active={index === active}
+-              techLabel={copy.techLabel}
+-            />
+-          ))}
+-        </ol>
++          <ol className={styles.stations}>
++            {items.map((item, index) => (
++              <ExperienceEntry
++                key={`${item.title}-${item.date}`}
++                item={item}
++                index={index}
++                total={total}
++                first={index === 0}
++                last={index === total - 1}
++                techLabel={copy.techLabel}
++              />
++            ))}
++          </ol>
++        </div>
+       </div>
+     </section>
+   );
+diff --git a/components/ExperienceRoad.module.css b/components/ExperienceRoad.module.css
+index ef6c9f8..33a9cfd 100644
+--- a/components/ExperienceRoad.module.css
++++ b/components/ExperienceRoad.module.css
+@@ -1,137 +1,213 @@
+-.layout {
+-  display: grid;
+-  grid-template-columns: minmax(0, 4.4fr) minmax(0, 7.6fr);
+-  gap: clamp(32px, 5vw, 88px);
+-  align-items: start;
+-}
+-
+-/* The heading holds its place while the road scrolls past it. */
+-.aside {
+-  position: sticky;
+-  top: calc(var(--header-h) + clamp(24px, 5vh, 56px));
++.section {
++  --p: 0;
++  --n: 3; /* station count, set inline */
++  --per: 0.82; /* viewport-heights of travel per station */
++  --u: calc(var(--p) * (var(--n) - 0.5)); /* position along the road, in stations */
++  --gap: clamp(104px, 15svh, 168px); /* milepost spacing */
++  --lane: 18px; /* width of the road lane inside the rail column */
++  --window: clamp(318px, 58svh, 470px); /* the stretch of road you can see */
+ }
+ 
+-/* ─── Stage marker ──────────────────────────────────── */
++/* ─── Pinned act ─────────────────────────────────────── */
+ 
+-.marker {
+-  display: grid;
+-  gap: 2px;
+-  padding-inline-start: 16px;
+-  border-inline-start: 2px solid var(--accent);
++.section[data-pinned="true"] {
++  height: calc(100svh + var(--n) * var(--per) * 100svh);
++  padding-block: 0;
+ }
+ 
+-.markerCount {
+-  color: var(--accent-text);
+-  font-family: var(--font-mono);
+-  font-size: 0.78rem;
+-  font-weight: 700;
+-  font-variant-numeric: tabular-nums;
+-  direction: ltr;
+-  unicode-bidi: isolate;
+-}
+-
+-.markerCount span {
+-  color: var(--muted);
+-  font-weight: 500;
++.section[data-pinned="true"] .stage {
++  position: sticky;
++  top: 0;
++  display: grid;
++  align-content: center;
++  gap: clamp(16px, 2.8svh, 38px);
++  height: 100svh;
++  padding-top: var(--header-h);
++  overflow: hidden;
+ }
+ 
+-.markerRole {
+-  color: var(--ink);
+-  font-size: 1rem;
+-  font-weight: var(--w-strong);
+-  line-height: 1.35;
++.head {
++  margin-bottom: 0;
+ }
+ 
+-.markerDate {
+-  color: var(--muted);
+-  font-family: var(--font-mono);
+-  font-size: 0.76rem;
++.road {
++  display: grid;
++  grid-template-columns: clamp(150px, 13vw, 200px) minmax(0, 1fr);
++  gap: clamp(16px, 2.2vw, 36px);
+ }
+ 
+-/* ─── The road ──────────────────────────────────────── */
++/* ─── The road ───────────────────────────────────────── */
+ 
+-.road {
+-  --p: 0;
+-  --rail-x: 7px;
++.rail {
+   position: relative;
+-  margin: 0;
+-  padding: 0;
+-  list-style: none;
++  height: var(--window);
++  overflow: hidden;
++  /* The surface fades out at both ends, so mileposts arrive from off-road. */
++  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 17%, #000 83%, transparent 100%);
++  mask-image: linear-gradient(180deg, transparent 0, #000 17%, #000 83%, transparent 100%);
+ }
+ 
+-/* Rail and its fill are pseudo-elements: an <ol> may only contain <li>. */
+-.road::before,
+-.road::after {
++/* Lit behind you, plain ahead. */
++.rail::before {
+   position: absolute;
+-  inset-block: 14px 18px;
+-  inset-inline-start: var(--rail-x);
++  inset-block: 0;
++  inset-inline-start: calc(var(--lane) / 2 - 1px);
++  width: 2px;
++  background: linear-gradient(
++    180deg,
++    var(--accent) 0,
++    var(--accent) 44%,
++    color-mix(in srgb, var(--accent) 45%, var(--line-strong)) 50%,
++    var(--line-strong) 58%,
++    var(--line-strong) 100%
++  );
+   content: "";
+ }
+ 
+-.road::before {
+-  width: 1px;
+-  background: var(--line-strong);
+-}
+-
+-.road::after {
+-  width: 2px;
+-  margin-inline-start: -0.5px;
+-  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, transparent));
+-  transform: scaleY(var(--p));
+-  transform-origin: top center;
++/* The fixed point the road runs through. */
++.marker {
++  position: absolute;
++  z-index: 2;
++  top: 50%;
++  inset-inline-start: calc(var(--lane) / 2 - 13px);
++  width: 26px;
++  height: 26px;
++  margin-top: -13px;
++  border: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
++  border-radius: 50%;
++  background: color-mix(in srgb, var(--accent) 9%, transparent);
+ }
+ 
+-.entry {
+-  position: relative;
+-  padding-block: 0 clamp(28px, 3.4vw, 48px);
+-  padding-inline-start: clamp(34px, 3.4vw, 52px);
++/*
++ * Milepost i sits exactly in the marker when the road has travelled i, which
++ * puts the first one in the ring on the opening frame and each later one in it
++ * partway through that station's dwell.
++ */
++.track {
++  --travel: clamp(0, var(--u), calc(var(--n) - 0.25));
++  position: absolute;
++  inset-inline: 0;
++  top: 50%;
++  transform: translate3d(0, calc(var(--travel) * var(--gap) * -1), 0);
++  will-change: transform;
+ }
+ 
+-.entry:last-child {
+-  padding-bottom: 0;
++.stop {
++  --t: calc(var(--u) - var(--i));
++  /* Approaching, then lit from the marker onward. */
++  --near: clamp(0, calc((var(--t) + 0.55) / 0.5), 1);
++  --passed: clamp(0, calc((var(--t) + 0.2) / 0.35), 1);
++  position: absolute;
++  inset-inline: 0;
++  top: calc(var(--i) * var(--gap));
++  height: 0;
+ }
+ 
+-/* Stop marker on the rail. */
+-.node {
++.stop i {
+   position: absolute;
+-  z-index: 1;
+-  top: 14px;
+-  inset-inline-start: 0;
+-  display: grid;
+-  place-items: center;
+-  width: 15px;
+-  height: 15px;
++  inset-inline-start: calc(var(--lane) / 2 - 6px);
++  width: 12px;
++  height: 12px;
++  border: 2px solid var(--accent);
+   border-radius: 50%;
+   background: var(--bg);
++  opacity: calc(0.35 + var(--near) * 0.65);
++  transform: translateY(-50%) scale(calc(0.82 + var(--near) * 0.18));
+ }
+ 
+-.node i {
+-  width: 9px;
+-  height: 9px;
+-  border: 2px solid var(--accent);
++.stop i::after {
++  position: absolute;
++  inset: 1px;
+   border-radius: 50%;
+-  background: var(--bg);
+-  transition:
+-    background-color 320ms var(--ease-out),
+-    box-shadow 320ms var(--ease-out),
+-    transform 320ms var(--ease-out);
++  background: var(--accent);
++  content: "";
++  opacity: var(--passed);
++}
++
++.stop em {
++  position: absolute;
++  inset-inline-start: calc(var(--lane) + 8px);
++  max-width: calc(100% - var(--lane) - 10px);
++  color: var(--muted);
++  font-family: var(--font-mono);
++  font-size: 0.66rem;
++  font-style: normal;
++  font-weight: 600;
++  line-height: 1.35;
++  font-variant-numeric: tabular-nums;
++  opacity: calc(0.2 + var(--near) * 0.8);
++  transform: translateY(-50%);
+ }
+ 
+-/* ─── Card ──────────────────────────────────────────── */
++/* ─── Stations ───────────────────────────────────────── */
++
++/*
++ * The stations travel through a window the height of one stretch of road. The
++ * arriving one is opaque and slides up over the one it replaces, which keeps
++ * leaving until it is clipped away: a handover you can read, rather than two
++ * paragraphs dissolving through each other.
++ */
++.stations {
++  position: relative;
++  height: var(--window);
++  margin: 0;
++  padding: 0;
++  overflow: hidden;
++  list-style: none;
++  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
++  mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%);
++}
+ 
+-.card {
+-  max-width: 60ch;
+-  padding: clamp(16px, 1.6vw, 22px) clamp(16px, 1.8vw, 26px);
+-  border: 1px solid transparent;
++.station {
++  --t: calc(var(--u) - var(--i));
++  /* Position: a long ramp in, a dwell, a long ramp out. */
++  --in: clamp(0, calc((var(--t) + 0.52) / 0.42), 1);
++  --out: clamp(0, calc((var(--t) - 0.58) / 0.42), 1);
++  /*
++   * Opacity is asymmetric on purpose: the arriving station is already crisp
++   * while it is still sliding in, and the one it replaces recedes across its
++   * whole departure. So a handover reads as the new card asserting itself over
++   * a fading one, never as two paragraphs of equal weight.
++   */
++  --fin: clamp(0, calc((var(--t) + 0.52) / 0.26), 1);
++  --fout: clamp(0, calc((var(--t) - 0.58) / 0.4), 1);
++  position: absolute;
++  inset-inline: 0;
++  top: 50%;
++  max-width: 62ch;
++  padding: clamp(16px, 1.9vw, 24px) clamp(18px, 2.2vw, 30px);
++  border: 1px solid var(--line);
+   border-radius: var(--r-lg);
+-  background: transparent;
+-  transition:
+-    border-color 380ms var(--ease-out),
+-    background-color 380ms var(--ease-out),
+-    box-shadow 380ms var(--ease-out),
+-    opacity 380ms var(--ease-out);
++  /* Opaque on purpose: the arriving station covers the one it replaces. */
++  background: var(--surface);
++  box-shadow: var(--shadow-1);
++  opacity: calc(var(--fin) * (1 - var(--fout)));
++  transform: translate3d(
++    0,
++    calc(-50% + (1 - var(--in)) * var(--window) * 1.06 - var(--out) * var(--window) * 1.06),
++    0
++  );
++  pointer-events: none;
++  will-change: transform, opacity;
+ }
+ 
++/*
++ * A pinned stage is fully on screen a viewport before its own progress leaves
++ * zero, so the first station greets: in place and opaque at p = 0.
++ */
++.station[data-first="true"] {
++  --in: 1;
++  --fin: 1;
++}
++
++/* And the last one holds, so the act ends on a statement. */
++.station[data-last="true"] {
++  --out: 0;
++  --fout: 0;
++}
++
++/* ─── Station content ────────────────────────────────── */
++
+ .meta {
+   display: flex;
+   flex-wrap: wrap;
+@@ -192,6 +268,12 @@ html[lang="ar"] .role {
+   line-height: 1.55;
+ }
+ 
++.points li {
++  --bp: clamp(0, calc(var(--fin) * 1.55 - var(--j) * 0.13), 1);
++  opacity: calc(0.45 + var(--bp) * 0.55);
++  transform: translate3d(0, calc((1 - var(--bp)) * 6px), 0);
++}
++
+ .points li::marker {
+   color: var(--accent);
+ }
+@@ -204,60 +286,104 @@ html[lang="ar"] .role {
+   border-top: 1px solid var(--line);
+ }
+ 
+-/* ─── Progression ───────────────────────────────────── */
++/* ─── Static fallback (short viewports, reduced motion) ─ */
+ 
+-/* Read but passed: still there, no longer competing. */
+-.entry:not([data-active="true"]) .card {
+-  opacity: 0.52;
++.section[data-pinned="false"] .road {
++  grid-template-columns: minmax(0, 1fr);
+ }
+ 
+-.entry[data-active="true"] .card {
+-  border-color: var(--line);
+-  background: color-mix(in srgb, var(--surface) 76%, transparent);
+-  box-shadow: var(--shadow-1);
++.section[data-pinned="false"] .rail {
++  display: none;
+ }
+ 
+-.entry[data-active="true"] .node i {
+-  background: var(--accent);
+-  box-shadow: 0 0 0 5px var(--accent-soft);
+-  transform: scale(1.12);
++.section[data-pinned="false"] .stations {
++  display: grid;
++  gap: clamp(24px, 3.6vw, 44px);
++  height: auto;
++  overflow: visible;
++  padding-inline-start: 34px;
++  -webkit-mask-image: none;
++  mask-image: none;
++}
++
++.section[data-pinned="false"] .stations::before {
++  position: absolute;
++  inset-block: 14px;
++  inset-inline-start: 5px;
++  width: 1px;
++  background: var(--line-strong);
++  content: "";
++}
++
++.section[data-pinned="false"] .station {
++  position: relative;
++  top: 0;
++  max-width: none;
++  opacity: 1;
++  pointer-events: auto;
++  transform: none;
++  will-change: auto;
++}
++
++.section[data-pinned="false"] .station::before {
++  position: absolute;
++  top: 22px;
++  inset-inline-start: -34px;
++  width: 12px;
++  height: 12px;
++  border: 2px solid var(--accent);
++  border-radius: 50%;
++  background: var(--bg);
++  content: "";
++}
++
++.section[data-pinned="false"] .points li {
++  opacity: 1;
++  transform: none;
+ }
+ 
+-@media (max-width: 900px) {
+-  .layout {
+-    grid-template-columns: 1fr;
+-    gap: var(--s-6);
++/* ─── Narrow ─────────────────────────────────────────── */
++
++@media (max-width: 860px) {
++  /* Narrow screens spend less height on the heading, so the road can see
++     further down it. */
++  .section {
++    --window: clamp(318px, 62svh, 520px);
++    --gap: clamp(88px, 13svh, 132px);
+   }
+ 
+-  .aside {
+-    position: relative;
+-    top: 0;
++  .road {
++    grid-template-columns: calc(var(--lane) + 6px) minmax(0, 1fr);
++    gap: 14px;
+   }
+ 
+-  .marker {
++  .stop em {
+     display: none;
+   }
+ 
+-  .card {
+-    padding-inline: clamp(12px, 3vw, 18px);
++  .station {
++    max-width: none;
++    padding: 14px 16px;
+   }
+ 
+-  .entry:not([data-active="true"]) .card {
+-    opacity: 0.72;
++  .meta {
++    margin-bottom: 4px;
+   }
+-}
+ 
+-@media (prefers-reduced-motion: reduce) {
+-  .road::after {
+-    transform: none;
++  .role {
++    font-size: 1.08rem;
+   }
+ 
+-  .card,
+-  .node i {
+-    transition: none;
++  .points {
++    gap: 5px;
++    margin-top: 12px;
++    font-size: 0.84rem;
++    line-height: 1.45;
+   }
+ 
+-  .entry:not([data-active="true"]) .card {
+-    opacity: 1;
++  .stack {
++    gap: 6px;
++    margin-top: 12px;
++    padding-top: 12px;
+   }
+ }
+diff --git a/components/FieldCard.jsx b/components/FieldCard.jsx
+index 46f1639..e08470f 100644
+--- a/components/FieldCard.jsx
++++ b/components/FieldCard.jsx
+@@ -1,15 +1,16 @@
+ import BlurImage from "@/components/BlurImage";
+ import styles from "./OtherExperience.module.css";
+ 
+-/* One card on the horizontal rail. Same shape every time, so the eye can
+-   compare them as they pass. */
+-export default function FieldCard({ item, index }) {
++/* One card on the rail. Same shape every time, so the eye can compare them as
++   they pass. Copies past the first are decoration: the content is already in
++   the accessibility tree once. */
++export default function FieldCard({ item, clone = false }) {
+   return (
+-    <li className={styles.card} data-reveal="" style={{ "--delay": `${index * 70}ms` }}>
++    <li className={styles.card} aria-hidden={clone ? "true" : undefined}>
+       <div className={styles.photo}>
+         <BlurImage
+           src={item.image}
+-          alt={item.imageAlt}
++          alt={clone ? "" : item.imageAlt}
+           fill
+           sizes="(max-width: 680px) 82vw, 400px"
+           loading="lazy"
+diff --git a/components/OtherExperience.jsx b/components/OtherExperience.jsx
+index e2e075d..ae543c5 100644
+--- a/components/OtherExperience.jsx
++++ b/components/OtherExperience.jsx
+@@ -3,52 +3,163 @@
+ import { useEffect, useRef, useState } from "react";
+ import FieldCard from "@/components/FieldCard";
+ import SectionHeading from "@/components/SectionHeading";
+-import { useScrollProgress } from "@/lib/scrollProgress";
+-import { useMediaQuery } from "@/lib/useMedia";
++import { usePrefersReducedMotion } from "@/lib/useMedia";
+ import { useReveal } from "@/lib/useReveal";
+ import styles from "./OtherExperience.module.css";
+ 
++const SPEED = 42; // px per second
++const RESUME_MS = 1600; // quiet period after the visitor moves the rail themselves
++
+ /*
+- * Field work reads as breadth rather than hierarchy, so it travels sideways:
+- * on tall desktop screens the rail is pinned and panned by vertical scroll; on
+- * touch and small screens it degrades to a native swipe rail with snapping.
+- * Either way the page keeps scrolling normally.
++ * Field work reads as breadth rather than hierarchy, so it travels sideways on
++ * its own: a rail that drifts continuously and wraps without a seam.
++ *
++ * The list is rendered several times over and the drift steps back by exactly
++ * one set when it reaches the end, so the loop is invisible. The drift is a
++ * nudge to the container's own `scrollLeft`, which means a swipe, a trackpad
++ * flick or the arrow keys still work and compose with it. It pauses on hover,
++ * on focus, for a moment after any manual nudge, while off screen, while the
++ * tab is hidden, and entirely under `prefers-reduced-motion`.
+  */
+ export default function OtherExperience({ copy, dir, language }) {
+   const sectionRef = useRef(null);
++  const viewportRef = useRef(null);
+   const trackRef = useRef(null);
+-  const [travel, setTravel] = useState(0);
+-  const canPan = useMediaQuery(
+-    "(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
+-    false
+-  );
++  const loopRef = useRef(0);
++  const [sets, setSets] = useState(2);
++  const reducedMotion = usePrefersReducedMotion();
++  const rtl = dir === "rtl";
++  const items = copy.items;
++  const count = items.length;
++
++  useReveal(sectionRef, [language]);
+ 
++  // One set is a full loop; we need enough of them that the tail of the rail
++  // never shows bare ground on a wide screen.
+   useEffect(() => {
+     const track = trackRef.current;
+-    if (!track) return undefined;
+-    const measure = () =>
+-      setTravel(Math.max(0, Math.round(track.scrollWidth - window.innerWidth)));
++    const viewport = viewportRef.current;
++    if (!track || !viewport) return undefined;
++
++    const measure = () => {
++      const first = track.children[0];
++      const next = track.children[count];
++      if (!first || !next) return;
++      // Subpixel: card widths and gaps are clamped viewport units, so the
++      // period is rarely a whole number. Rounding it would leave the wrap a
++      // fraction out of phase, and that error would accumulate.
++      const loop = Math.abs(
++        next.getBoundingClientRect().left - first.getBoundingClientRect().left
++      );
++      if (loop <= 0) return;
++      loopRef.current = loop;
++      setSets(Math.max(2, Math.ceil(viewport.clientWidth / loop) + 1));
++    };
++
+     measure();
+     const observer = new ResizeObserver(measure);
+-    observer.observe(track);
+-    window.addEventListener("resize", measure);
++    observer.observe(viewport);
++    return () => observer.disconnect();
++  }, [count, language]);
++
++  useEffect(() => {
++    const viewport = viewportRef.current;
++    const track = trackRef.current;
++    if (!viewport || !track || reducedMotion) return undefined;
++
++    const sign = rtl ? -1 : 1;
++    const hoverable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
++    let frame = 0;
++    let last = 0;
++    let holds = 0;
++    let resumeAt = 0;
++    let onScreen = true;
++
++    const step = (now) => {
++      frame = requestAnimationFrame(step);
++      // Capped so a stall never turns into a jump, but loose enough that a
++      // 10fps device still drifts at the intended speed.
++      const delta = last ? Math.min(0.1, (now - last) / 1000) : 0;
++      last = now;
++      if (!onScreen || document.hidden) return;
++
++      const loop = loopRef.current;
++      if (loop <= 0) return;
++
++      // Start from what the browser actually has, so the visitor's own
++      // scrolling is never fought, only continued.
++      let position = viewport.scrollLeft;
++      const drifting = holds === 0 && now >= resumeAt;
++      if (drifting) position += sign * SPEED * delta;
++
++      if (position >= loop) position -= loop;
++      else if (position <= -loop) position += loop;
++
++      if (drifting || Math.abs(position - viewport.scrollLeft) > 0.5) {
++        viewport.scrollLeft = position;
++      }
++    };
++    frame = requestAnimationFrame(step);
++
++    const hold = () => {
++      holds += 1;
++    };
++    const release = () => {
++      holds = Math.max(0, holds - 1);
++    };
++    const nudge = () => {
++      resumeAt = performance.now() + RESUME_MS;
++    };
++
++    if (hoverable) {
++      viewport.addEventListener("pointerenter", hold);
++      viewport.addEventListener("pointerleave", release);
++    }
++    viewport.addEventListener("focusin", hold);
++    viewport.addEventListener("focusout", release);
++    viewport.addEventListener("wheel", nudge, { passive: true });
++    viewport.addEventListener("touchstart", nudge, { passive: true });
++    viewport.addEventListener("pointerdown", nudge);
++    viewport.addEventListener("keydown", nudge);
++
++    const observer = new IntersectionObserver(
++      ([entry]) => {
++        onScreen = entry.isIntersecting;
++        last = 0;
++      },
++      { rootMargin: "140px 0px" }
++    );
++    observer.observe(viewport);
++
+     return () => {
++      cancelAnimationFrame(frame);
+       observer.disconnect();
+-      window.removeEventListener("resize", measure);
++      if (hoverable) {
++        viewport.removeEventListener("pointerenter", hold);
++        viewport.removeEventListener("pointerleave", release);
++      }
++      viewport.removeEventListener("focusin", hold);
++      viewport.removeEventListener("focusout", release);
++      viewport.removeEventListener("wheel", nudge);
++      viewport.removeEventListener("touchstart", nudge);
++      viewport.removeEventListener("pointerdown", nudge);
++      viewport.removeEventListener("keydown", nudge);
+     };
+-  }, [canPan, language]);
++  }, [count, reducedMotion, rtl, sets]);
+ 
+-  const pinned = canPan && travel > 40;
+-  useScrollProgress(sectionRef, { mode: "pin", disabled: !pinned, resetTo: 0 });
+-  useReveal(sectionRef, [language]);
++  // Copies after the first are decoration: the content is already announced.
++  const rail = Array.from({ length: sets }, (_, set) =>
++    items.map((item) => (
++      <FieldCard item={item} key={`${set}-${item.title}`} clone={set > 0} />
++    ))
++  ).flat();
+ 
+   return (
+     <section
+-      className={`section band ${pinned ? "" : "screen"} ${styles.section}`}
++      className={`section screen band ${styles.section}`}
+       id="other-experience"
+       ref={sectionRef}
+-      data-pinned={pinned}
+-      style={{ "--travel": `${travel}px`, "--dir": dir === "rtl" ? 1 : -1 }}
++      data-drifting={reducedMotion ? undefined : "true"}
+       aria-labelledby="other-experience-title"
+     >
+       <div className={styles.stage}>
+@@ -61,26 +172,11 @@ export default function OtherExperience({ copy, dir, language }) {
+           />
+         </div>
+ 
+-        <div
+-          className={styles.viewport}
+-          tabIndex={pinned ? undefined : 0}
+-          role={pinned ? undefined : "group"}
+-          aria-label={copy.eyebrow}
+-        >
++        <div className={styles.viewport} ref={viewportRef} tabIndex={0} role="group" aria-label={copy.eyebrow}>
+           <ol className={styles.track} ref={trackRef}>
+-            {copy.items.map((item, i) => (
+-              <FieldCard item={item} index={i} key={item.title} />
+-            ))}
++            {rail}
+           </ol>
+         </div>
+-
+-        {pinned ? (
+-          <div className="container">
+-            <div className={styles.meter} aria-hidden="true">
+-              <span />
+-            </div>
+-          </div>
+-        ) : null}
+       </div>
+     </section>
+   );
+diff --git a/components/OtherExperience.module.css b/components/OtherExperience.module.css
+index 949f258..1671e52 100644
+--- a/components/OtherExperience.module.css
++++ b/components/OtherExperience.module.css
+@@ -1,5 +1,4 @@
+ .section {
+-  --p: 0;
+   --edge: max(var(--gutter), calc((100vw - var(--max)) / 2));
+ }
+ 
+@@ -7,10 +6,14 @@
+   margin-bottom: clamp(24px, 3vw, 44px);
+ }
+ 
++.stage {
++  display: grid;
++  gap: 0;
++}
++
+ .viewport {
+   overflow-x: auto;
+   overscroll-behavior-x: contain;
+-  scroll-snap-type: x mandatory;
+   scroll-padding-inline: var(--edge);
+   scrollbar-width: thin;
+ }
+@@ -19,6 +22,21 @@
+   outline-offset: -2px;
+ }
+ 
++/* While the rail drifts on its own, a scrollbar that never stops moving reads
++   as a fault, and snapping fights a continuous scroll. */
++.section[data-drifting="true"] .viewport {
++  scroll-snap-type: none;
++  scrollbar-width: none;
++}
++
++.section[data-drifting="true"] .viewport::-webkit-scrollbar {
++  display: none;
++}
++
++.section:not([data-drifting="true"]) .viewport {
++  scroll-snap-type: x mandatory;
++}
++
+ .track {
+   display: flex;
+   gap: clamp(14px, 1.6vw, 22px);
+@@ -31,6 +49,7 @@
+ 
+ .card {
+   display: flex;
++  flex: none;
+   flex-direction: column;
+   width: clamp(268px, 26vw, 356px);
+   overflow: hidden;
+@@ -38,6 +57,9 @@
+   border-radius: var(--r-lg);
+   background: var(--surface);
+   box-shadow: var(--shadow-1);
++}
++
++.section:not([data-drifting="true"]) .card {
+   scroll-snap-align: start;
+ }
+ 
+@@ -99,59 +121,6 @@ html[lang="ar"] .title {
+   color: var(--accent);
+ }
+ 
+-/* ─── Pinned pan (tall desktop screens) ─────────────── */
+-
+-.section[data-pinned="true"] {
+-  height: calc(100svh + var(--travel));
+-  padding-block: 0;
+-}
+-
+-.section[data-pinned="true"] .stage {
+-  position: sticky;
+-  top: 0;
+-  display: flex;
+-  flex-direction: column;
+-  justify-content: center;
+-  height: 100svh;
+-  padding-top: var(--header-h);
+-  overflow: hidden;
+-}
+-
+-.section[data-pinned="true"] .viewport {
+-  overflow: visible;
+-  scroll-snap-type: none;
+-}
+-
+-.section[data-pinned="true"] .track {
+-  transform: translate3d(calc(var(--p) * var(--travel) * var(--dir)), 0, 0);
+-  will-change: transform;
+-}
+-
+-.section[data-pinned="true"] .card {
+-  box-shadow: var(--shadow-2);
+-}
+-
+-/* Pan progress: the one cue that the rail has an end. */
+-.meter {
+-  position: relative;
+-  height: 2px;
+-  margin-top: clamp(8px, 2vh, 20px);
+-  overflow: hidden;
+-  background: var(--line);
+-}
+-
+-.meter > span {
+-  position: absolute;
+-  inset: 0;
+-  background: var(--accent);
+-  transform: scaleX(clamp(0.06, var(--p), 1));
+-  transform-origin: left center;
+-}
+-
+-html[dir="rtl"] .meter > span {
+-  transform-origin: right center;
+-}
+-
+ @media (max-width: 680px) {
+   .card {
+     width: min(82vw, 340px);
+diff --git a/components/Preloader.jsx b/components/Preloader.jsx
+index 95bd6d1..8f4395a 100644
+--- a/components/Preloader.jsx
++++ b/components/Preloader.jsx
+@@ -19,15 +19,16 @@ import styles from "./Preloader.module.css";
+ 
+ /*
+  * Timings are measured from navigation start, not from React mount, so the
+- * intro occupies a predictable slice of the visitor's first second and a half
+- * however long the bundle took. MOUNT_MIN is the floor that stops it flashing
+- * past if we mounted late.
++ * intro occupies a predictable slice of the visitor's first two and a half
++ * seconds however long the bundle took: roughly 1.4s reading out the modules,
++ * a second on the greeting, then the panels lift. MOUNT_MIN is the floor that
++ * stops it flashing past if we mounted late.
+  */
+-const NAV_MIN = 900; // greeting starts no earlier than this after navigation
+-const MOUNT_MIN = 560; // and no sooner than this after the intro is on screen
+-const GREET_MS = 640; // greeting held
+-const EXIT_MS = 700; // panels lift
+-const MAX_HOLD = 2400; // never wait longer than this for readiness
++const NAV_MIN = 1400; // greeting starts no earlier than this after navigation
++const MOUNT_MIN = 900; // and no sooner than this after the intro is on screen
++const GREET_MS = 950; // greeting held
++const EXIT_MS = 780; // panels lift
++const MAX_HOLD = 3100; // never wait longer than this for readiness
+ 
+ function whenReady() {
+   const fonts = document.fonts?.ready ?? Promise.resolve();
+@@ -108,7 +109,7 @@ export default function Preloader({ copy, onDone, onReveal }) {
+       // performance.now() is already navigation-relative, which is what the
+       // meter and the module lines should follow.
+       const elapsed = performance.now();
+-      const t = Math.min(1, elapsed / (NAV_MIN + GREET_MS * 0.5));
++      const t = Math.min(1, elapsed / (NAV_MIN + GREET_MS * 0.8));
+       const eased = 1 - Math.pow(1 - t, 2);
+       // Never show 100% while the page is still arriving.
+       const shown = readyRef.current ? eased : Math.min(eased, 0.93);
+@@ -117,7 +118,7 @@ export default function Preloader({ copy, onDone, onReveal }) {
+       }
+       if (meterRef.current) meterRef.current.style.transform = `scaleX(${shown})`;
+       if (linesRef.current) {
+-        const revealed = Math.min(copy.lines.length, Math.floor(elapsed / 150) + 1);
++        const revealed = Math.min(copy.lines.length, Math.floor(elapsed / 250) + 1);
+         linesRef.current.style.setProperty("--step", String(revealed));
+       }
+       frame = requestAnimationFrame(step);
+diff --git a/docs/REDESIGN.md b/docs/REDESIGN.md
+index 39b80e8..691930a 100644
+--- a/docs/REDESIGN.md
++++ b/docs/REDESIGN.md
+@@ -243,3 +243,73 @@ npm install
+ npm run build
+ npm run dev
+ ```
++
++---
++
++# Round four: three targeted changes
++
++Only the loader's timing, the Experience act and the Other Experience rail were
++touched. Seven files changed; every other section, token and layout is byte for
++byte what round three shipped.
++
++## Loader
++
++Timing only, no design change. Measured from navigation start:
++`NAV_MIN` 900ms → 1400ms, `MOUNT_MIN` 560ms → 900ms, `GREET_MS` 640ms → 950ms,
++`EXIT_MS` 700ms → 780ms, `MAX_HOLD` 2400ms → 3100ms. The module lines read out
++one per 250ms instead of 150ms, and the meter now lands on 100 just before the
++panels lift rather than halfway through the greeting. About 2.35s on screen,
++then a 0.78s exit.
++
++## Experience: a pinned road
++
++The section now pins for `n x 0.82` viewport-heights (3 stations, about 3.1
++screens) and everything inside is driven by one eased `--p`, in CSS. No React
++state, no IntersectionObserver, no per-frame JS in this act at all.
++
++- **The road holds still, the mileposts travel.** The rail's surface is a fixed
++  gradient (lit above the marker, plain below); the mileposts and their dates
++  ride a track that translates so milepost `i` is seated in the marker ring
++  when the road has travelled `i`. The first one is in the ring on the opening
++  frame.
++- **Stations travel through a window** the height of one stretch of road
++  (`--window`, 58svh capped at 470px; 62svh capped at 520px on narrow screens).
++  Each station has a long position ramp in, a dwell of about 0.68 of its slice,
++  and a long ramp out, translating by `±1.06 x --window` so it fully clears.
++- **The handover is travel, not a dissolve.** Opacity is deliberately
++  asymmetric: the arriving station is already opaque while it is still sliding
++  in, and the one it replaces recedes across its whole departure. Station
++  backgrounds are opaque, so the arriving card *covers* the one it replaces
++  instead of showing through it.
++- **Greet and hold**, per the pinned-act contract: the first station is in place
++  and opaque at `p = 0` (a pinned stage is on screen a viewport before its
++  progress leaves zero), and the last one holds so the act ends on a statement.
++- **Fallback.** Where a station cannot fit the window without clipping
++  (`(min-height: 820px) or ((min-width: 900px) and (min-height: 720px))` fails)
++  or under `prefers-reduced-motion`, the same markup becomes a static rail with
++  the stations stacked.
++
++Verified by walking the act at 23 positions on 1920x1080, 1440x900, 1280x800,
++1024x768/720, 390x844/820, in English and Arabic: no empty stage at any
++position, every station reaches full opacity, no station is clipped by its
++window, the window always fits the stage, and zero dead steps.
++
++## Other Experience: an automatic rail
++
++Same cards, same card design; the pinned pan is replaced by a continuous drift.
++
++The list is rendered `ceil(railWidth / loop) + 1` times and the drift steps back
++by exactly one set on reaching it, so the loop has no seam. The period is
++measured from `getBoundingClientRect` rather than `offsetLeft`, because card
++widths and gaps are clamped viewport units and a rounded period would leave the
++wrap a fraction out of phase, accumulating.
++
++The drift is a nudge to the container's own `scrollLeft` (42px/s, frame-rate
++independent, capped at a 10fps step), so a swipe, a trackpad flick or the arrow
++keys still work and compose with it. It holds on hover, on focus, for 1.6s after
++any manual nudge, while off screen, while the tab is hidden, and entirely under
++`prefers-reduced-motion`, which also restores snapping and the scrollbar.
++
++Proved seamless by rendering the rail at `x` and at `x + loop` and comparing
++pixels: identical (mean difference 0) once the few pixels of drift between the
++two screenshots are accounted for, at 1440 LTR, 1440 RTL and 390.
+-- 
+2.43.0
+

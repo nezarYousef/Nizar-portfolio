@@ -1,0 +1,132 @@
+.section {
+  --edge: max(var(--gutter), calc((100vw - var(--max)) / 2));
+}
+
+.heading {
+  margin-bottom: clamp(24px, 3vw, 44px);
+}
+
+.stage {
+  display: grid;
+  gap: 0;
+}
+
+.viewport {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: thin;
+}
+
+.viewport:focus-visible {
+  outline-offset: -2px;
+}
+
+/* While the rail drifts on its own, a scrollbar that never stops moving reads
+   as a fault, and snapping fights a continuous scroll. */
+.section[data-drifting="true"] .viewport {
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+
+.section[data-drifting="true"] .viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.section:not([data-drifting="true"]) .viewport {
+  scroll-snap-type: x mandatory;
+}
+
+.track {
+  display: flex;
+  gap: clamp(14px, 1.6vw, 22px);
+  align-items: stretch;
+  width: max-content;
+  margin: 0;
+  padding: 4px var(--edge) 24px;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: clamp(268px, 26vw, 356px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.section:not([data-drifting="true"]) .card {
+  scroll-snap-align: start;
+}
+
+.photo {
+  position: relative;
+  flex: none;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.body {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 18px 20px 22px;
+}
+
+.date {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: var(--w-head);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+
+html[lang="ar"] .title {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.org {
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: var(--w-strong);
+}
+
+.points {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding-inline-start: 1.05em;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.points li::marker {
+  color: var(--accent);
+}
+
+@media (max-width: 680px) {
+  .card {
+    width: min(82vw, 340px);
+  }
+
+  .photo {
+    aspect-ratio: 16 / 9;
+  }
+}

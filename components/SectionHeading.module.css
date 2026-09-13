@@ -1,0 +1,19 @@
+.heading {
+  --p: 0;
+  margin-bottom: clamp(28px, 3.2vw, 52px);
+}
+
+.ink {
+  max-width: 20ch;
+}
+
+.word {
+  opacity: clamp(0.16, calc(var(--p) * (var(--n) + 3) - var(--i)), 1);
+  transition: opacity 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word {
+    opacity: 1;
+  }
+}
