@@ -1,4 +1,8 @@
-import { ArrowUpRight, Github } from "lucide-react";
+"use client";
+
+import { ArrowUpRight, Github, Play } from "lucide-react";
+import { useState } from "react";
+import DemoVideoModal from "@/components/DemoVideoModal";
 import ProjectCover from "@/components/ProjectCover";
 import styles from "./ProjectStack.module.css";
 
@@ -13,6 +17,7 @@ export default function ProjectCard({ project, index, total, labels, isActive, p
   const link = projectLink(project, labels);
   const number = String(index + 1).padStart(2, "0");
   const count = String(total).padStart(2, "0");
+  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
     <article className={styles.card} aria-labelledby={`project-${project.id}`}>
@@ -53,7 +58,28 @@ export default function ProjectCard({ project, index, total, labels, isActive, p
             <ArrowUpRight size={16} aria-hidden="true" className={styles.actionArrow} />
           </a>
         ) : null}
+
+        {project.demoVideo ? (
+          <button
+            type="button"
+            className={styles.action}
+            onClick={() => setDemoOpen(true)}
+            tabIndex={isActive ? undefined : -1}
+          >
+            <Play size={16} aria-hidden="true" />
+            <span>{labels.watchDemo}</span>
+          </button>
+        ) : null}
       </div>
+
+      {demoOpen ? (
+        <DemoVideoModal
+          src={project.demoVideo}
+          title={`${project.title} — ${labels.watchDemo}`}
+          closeLabel={labels.closeDemo}
+          onClose={() => setDemoOpen(false)}
+        />
+      ) : null}
     </article>
   );
 }

@@ -20,14 +20,20 @@ export default function SectionHeading({
   id,
   ink = false,
   statement = false,
+  hideTitle = false,
   className = ""
 }) {
   const ref = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
 
-  useScrollProgress(ref, { mode: "enter", span: 0.75, disabled: !ink || reducedMotion, resetTo: 1 });
+  useScrollProgress(ref, {
+    mode: "enter",
+    span: 0.75,
+    disabled: !ink || hideTitle || reducedMotion,
+    resetTo: 1
+  });
 
-  const words = ink ? title.split(/\s+/) : null;
+  const words = ink && !hideTitle ? title.split(/\s+/) : null;
   const voice = statement ? "statement" : "title";
 
   return (
@@ -38,8 +44,17 @@ export default function SectionHeading({
           <span>{eyebrow}</span>
         </p>
       ) : null}
-      <h2 className={`${voice} ${ink ? styles.ink : ""}`} id={id}>
-        {ink ? (
+      {/*
+       * Some sections (About) carry the section's accessible name here
+       * without showing it as a second, competing headline: the kicker
+       * already reads as the heading, and the bio underneath speaks for
+       * itself. The <h2> stays in the DOM for landmark labelling and
+       * screen readers, just visually hidden.
+       */}
+      <h2 className={hideTitle ? "sr-only" : `${voice} ${ink ? styles.ink : ""}`} id={id}>
+        {hideTitle ? (
+          title
+        ) : ink ? (
           <>
             <span className="sr-only">{title}</span>
             <span aria-hidden="true" style={{ "--n": words.length }}>

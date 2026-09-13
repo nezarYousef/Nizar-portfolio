@@ -44,12 +44,17 @@ export const viewport = {
  *  - release the cover if the bundle never takes over, so a failed script load
  *    can never leave the page hidden and scroll-locked.
  */
-const bootScript = `(function(){var d=document.documentElement;try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}d.dataset.theme=t;var l=localStorage.getItem("nizar-portfolio-language");if(l==="ar"){d.lang="ar";d.dir="rtl";}}catch(e){}var play=true;try{if(sessionStorage.getItem("nizar-portfolio-intro")==="1")play=false;}catch(e){}try{if(location.hash.length>1)play=false;if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)play=false;}catch(e){}d.dataset.intro=play?"1":"0";if(play){d.classList.add("is-booting");setTimeout(function(){if(d.dataset.intro==="1"&&!document.querySelector('[role="dialog"]')){d.dataset.intro="0";d.classList.remove("is-booting");}},6000);}})();`;
+const bootScript = `(function(){var d=document.documentElement;try{var t=localStorage.getItem("nizar-portfolio-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}d.dataset.theme=t;var l=localStorage.getItem("nizar-portfolio-language");if(l==="ar"){d.lang="ar";d.dir="rtl";}}catch(e){}var play=true;try{if(sessionStorage.getItem("nizar-portfolio-intro")==="1")play=false;}catch(e){}try{if(location.hash.length>1)play=false;if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)play=false;}catch(e){}d.dataset.intro=play?"1":"0";if(play){d.classList.add("is-booting");setTimeout(function(){if(d.dataset.intro==="1"&&!document.querySelector('[role="dialog"]')){d.dataset.intro="0";d.classList.remove("is-booting");}},9000);}})();`;
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr" data-theme="light" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="preload"
           href="/fonts/manrope-var.woff2"

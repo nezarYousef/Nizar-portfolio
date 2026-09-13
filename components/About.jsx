@@ -24,15 +24,19 @@ export default function About({ copy, stats, imageAlt, language }) {
   const [lead, ...rest] = copy.paragraphs;
 
   return (
-    <section className="section screen" id="about" ref={sectionRef} aria-labelledby="about-title">
+    <section
+      className={`section screen ${styles.screenTight}`}
+      id="about"
+      ref={sectionRef}
+      aria-labelledby="about-title"
+    >
       <div className="container">
         <SectionHeading
           index="01"
           eyebrow={copy.eyebrow}
           title={copy.title}
           id="about-title"
-          ink
-          statement
+          hideTitle
           className={styles.heading}
         />
 

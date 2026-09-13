@@ -76,16 +76,16 @@ const projectMeta = {
     gallery: gallery("expenses", 2)
   },
   tasks: {
-    cover: "/images/tasks/1.png",
+    cover: "/images/tasks/cover.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"],
     gallery: gallery("tasks", 5)
   },
   grade: {
     tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
-    previewImage: "/images/edufusion/ba.png",
-    cover: "/images/edufusion/ba.png",
-    coverPosition: "center 18%",
-    gallery: edufusionGallery
+    previewImage: "/images/edufusion/cover.png",
+    cover: "/images/edufusion/cover.png",
+    gallery: edufusionGallery,
+    demo: "https://edufusion-frontend-nizar9.vercel.app/"
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
@@ -103,10 +103,9 @@ const projectMeta = {
   },
   vision: {
     tags: ["Computer Vision", "Python", "AI", "OpenHands"],
-    previewImage: "/images/aid-sign/1.PNG",
-    cover: "/images/aid-sign/1.PNG",
-    coverPosition: "center top",
-    previewFit: "contain",
+    previewImage: "/images/aid-sign/cover.png",
+    cover: "/images/aid-sign/cover.png",
+    demoVideo: "/videos/aidsign-demo.mp4",
     gallery: aidSignGallery
   },
   advancedTasks: {
@@ -115,6 +114,18 @@ const projectMeta = {
     cover: "/images/advanced-tasks/ba.png",
     coverPosition: "center 9%",
     gallery: advancedTasksGallery
+  },
+  trafficwar: {
+    tags: ["React.js", "Vite", "TanStack", "UI/UX Design"],
+    cover: "/images/trafficwar/cover.png",
+    coverPosition: "18% 50%",
+    gallery: [],
+    demo: "https://trafficwar.tech/"
+  },
+  chatApp: {
+    tags: [],
+    gallery: [],
+    github: "https://github.com/nezarYousef/chat_app.git"
   }
 };
 
@@ -153,7 +164,7 @@ const contactLinks = {
   github: "https://github.com/nezarYousef",
   linkedin: "https://linkedin.com/in/nizar-alqerem-33829a3a1",
   whatsapp: "https://wa.me/972597781945",
-  instagram: "https://www.instagram.com/eng.nizar_/"
+  instagram: "https://www.instagram.com/nezar_yousef_/"
 };
 
 export const portfolioCopy = {
@@ -175,7 +186,7 @@ export const portfolioCopy = {
         { label: "mount interface", value: "react / next.js" },
         { label: "load intelligence", value: "ml / python / pycaret" },
         { label: "link systems", value: "java / oop / c" },
-        { label: "compile projects", value: "9 ready" }
+        { label: "compile projects", value: "11 ready" }
       ],
       greeting: "Hello, welcome to my portfolio",
       signature: "Nizar Yousef Alqerem / Computer Engineer",
@@ -202,7 +213,7 @@ export const portfolioCopy = {
       status: "Available for software, web, and AI opportunities",
       imageAlt: "Portrait of Nizar Yousef Alqerem",
       stats: [
-        { value: "9", label: "Engineering Projects" },
+        { value: "11", label: "Engineering Projects" },
         { value: "2026", label: "Computer Engineering Graduate" },
         { value: "AI + Web", label: "Core Technical Focus" }
       ]
@@ -295,6 +306,8 @@ export const portfolioCopy = {
       viewGithub: "View on GitHub",
       comingSoon: "Details coming soon",
       viewDemo: "Open live demo",
+      watchDemo: "Watch demo",
+      closeDemo: "Close video",
       inDevelopment: "In development",
       previous: "Previous project",
       next: "Next project",
@@ -303,6 +316,12 @@ export const portfolioCopy = {
       featuredLabel: "Flagship project",
       moreLabel: "More work",
       list: withMeta([
+        {
+          id: "trafficwar",
+          title: "TrafficWar",
+          description:
+            "A real-time traffic intelligence platform for observing, analyzing, and optimizing high-volume event data. Nizar was responsible for the frontend and product design."
+        },
         {
           id: "grade",
           title: "EduFusion AI",
@@ -368,14 +387,26 @@ export const portfolioCopy = {
           title: "Expense Tracker App",
           description:
             "A personal finance interface for recording, categorizing, and monitoring spending, built with practical JavaScript and React UI patterns."
+        },
+        {
+          id: "chatApp",
+          title: "Chat App",
+          description:
+            "A chat application project on GitHub, currently early in development."
         }
       ])
     },
     experience: {
       eyebrow: "Experience",
-      title: "Practical training in frontend engineering with a broader computer engineering foundation.",
+      title: "Exploring, building, and growing through technology and hands-on experience.",
       techLabel: "Tech",
       items: [
+        {
+          title: "Teaching Assistant",
+          company: "Islamic University of Gaza",
+          date: "Sep 2026 - Present",
+          points: ["Assisting with course instruction, labs, and student support"]
+        },
         {
           title: "Frontend Development Internship",
           company: "Masar Institute",
@@ -474,6 +505,7 @@ export const portfolioCopy = {
           company: "Islamic University of Gaza",
           date: "2021 - 2026",
           points: [
+            "Cumulative GPA: 90.69",
             "Studied programming, algorithms, data structures, computer architecture, and software engineering fundamentals",
             "Built knowledge in operating systems, databases, APIs, and applied software development",
             "Worked on academic and practical projects in web development, machine learning, and system programming",
@@ -527,7 +559,7 @@ export const portfolioCopy = {
         { label: "تهيئة الواجهة", value: "react / next.js" },
         { label: "تحميل الذكاء", value: "ml / python / pycaret" },
         { label: "ربط الأنظمة", value: "java / oop / c" },
-        { label: "تجهيز المشاريع", value: "9 جاهزة" }
+        { label: "تجهيز المشاريع", value: "11 جاهزة" }
       ],
       greeting: "مرحباً، أهلاً بك في معرض أعمالي",
       signature: "نزار يوسف القرَم / مهندس حاسوب",
@@ -554,7 +586,7 @@ export const portfolioCopy = {
       status: "متاح لفرص البرمجيات والويب والذكاء الاصطناعي",
       imageAlt: "صورة شخصية لنزار يوسف القرَم",
       stats: [
-        { value: "9", label: "مشاريع هندسية" },
+        { value: "11", label: "مشاريع هندسية" },
         { value: "2026", label: "خريج هندسة حاسوب" },
         { value: "AI + Web", label: "تركيز تقني أساسي" }
       ]
@@ -647,6 +679,8 @@ export const portfolioCopy = {
       viewGithub: "عرض على GitHub",
       comingSoon: "التفاصيل قريباً",
       viewDemo: "فتح العرض المباشر",
+      watchDemo: "مشاهدة العرض",
+      closeDemo: "إغلاق الفيديو",
       inDevelopment: "قيد التطوير",
       previous: "المشروع السابق",
       next: "المشروع التالي",
@@ -655,6 +689,12 @@ export const portfolioCopy = {
       featuredLabel: "المشروع الرئيسي",
       moreLabel: "أعمال أخرى",
       list: withMeta([
+        {
+          id: "trafficwar",
+          title: "TrafficWar - منصة استخبارات المرور في الوقت الفعلي",
+          description:
+            "منصة لرصد وتحليل وتحسين بيانات الأحداث عالية الحجم في الوقت الفعلي، تولى فيها نزار مسؤولية الواجهة الأمامية والتصميم."
+        },
         {
           id: "grade",
           title: "EduFusion AI",
@@ -720,14 +760,26 @@ export const portfolioCopy = {
           title: "تطبيق تتبع المصاريف",
           description:
             "واجهة لإدارة المال الشخصي تساعد على تسجيل المصاريف وتصنيفها ومتابعتها باستخدام أنماط عملية في JavaScript و React."
+        },
+        {
+          id: "chatApp",
+          title: "تطبيق دردشة",
+          description:
+            "مشروع تطبيق دردشة على GitHub، لا يزال في مراحله الأولى من التطوير."
         }
       ])
     },
     experience: {
       eyebrow: "الخبرة",
-      title: "تدريب عملي في هندسة الواجهات مع أساس أوسع في هندسة الحاسوب.",
+      title: "استكشاف وبناء ونمو من خلال التقنية والخبرة العملية.",
       techLabel: "التقنيات",
       items: [
+        {
+          title: "مساعد تدريس",
+          company: "الجامعة الإسلامية بغزة",
+          date: "سبتمبر 2026 - حتى الآن",
+          points: ["دعم التدريس والمختبرات ومتابعة الطلاب"]
+        },
         {
           title: "تدريب تطوير واجهات أمامية",
           company: "معهد مسار",
@@ -826,6 +878,7 @@ export const portfolioCopy = {
           company: "الجامعة الإسلامية بغزة",
           date: "2021 - 2026",
           points: [
+            "المعدل التراكمي: 90.69",
             "دراسة البرمجة والخوارزميات وهياكل البيانات ومعمارية الحاسوب وأساسيات هندسة البرمجيات",
             "اكتساب معرفة في أنظمة التشغيل وقواعد البيانات وواجهات API وتطوير البرمجيات التطبيقية",
             "العمل على مشاريع أكاديمية وعملية في تطوير الويب وتعلم الآلة وبرمجة الأنظمة",

@@ -24,7 +24,7 @@
   background: var(--bg);
   border-inline-end: 1px solid var(--line);
   transform: translate3d(0, 0, 0);
-  transition: transform 780ms cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 900ms cubic-bezier(0.76, 0, 0.24, 1);
   transition-delay: calc(var(--i) * 60ms);
 }
 

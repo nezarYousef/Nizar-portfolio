@@ -1,3 +1,24 @@
+/* The default title voice wraps this longer sentence to four lines at the
+   section's normal measure; widen it so it sets in two. The Arabic sentence
+   is shorter, so it needs a narrower measure to still break into two. */
+.heading :global(.title) {
+  max-width: 46ch;
+}
+
+html[lang="ar"] .heading :global(.title) {
+  max-width: 28ch;
+}
+
+@media (max-width: 640px) {
+  .heading :global(.title) {
+    max-width: 24ch;
+  }
+
+  html[lang="ar"] .heading :global(.title) {
+    max-width: 20ch;
+  }
+}
+
 .records {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));

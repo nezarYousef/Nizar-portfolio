@@ -19,16 +19,16 @@ import styles from "./Preloader.module.css";
 
 /*
  * Timings are measured from navigation start, not from React mount, so the
- * intro occupies a predictable slice of the visitor's first two and a half
- * seconds however long the bundle took: roughly 1.4s reading out the modules,
- * a second on the greeting, then the panels lift. MOUNT_MIN is the floor that
- * stops it flashing past if we mounted late.
+ * intro occupies a predictable slice of the visitor's first few seconds
+ * however long the bundle took: roughly 2.2s reading out the modules, 1.4s on
+ * the greeting, then the panels lift. MOUNT_MIN is the floor that stops it
+ * flashing past if we mounted late.
  */
-const NAV_MIN = 1400; // greeting starts no earlier than this after navigation
-const MOUNT_MIN = 900; // and no sooner than this after the intro is on screen
-const GREET_MS = 950; // greeting held
-const EXIT_MS = 780; // panels lift
-const MAX_HOLD = 3100; // never wait longer than this for readiness
+const NAV_MIN = 2200; // greeting starts no earlier than this after navigation
+const MOUNT_MIN = 1300; // and no sooner than this after the intro is on screen
+const GREET_MS = 1400; // greeting held
+const EXIT_MS = 900; // panels lift
+const MAX_HOLD = 4600; // never wait longer than this for readiness
 
 function whenReady() {
   const fonts = document.fonts?.ready ?? Promise.resolve();
@@ -118,7 +118,7 @@ export default function Preloader({ copy, onDone, onReveal }) {
       }
       if (meterRef.current) meterRef.current.style.transform = `scaleX(${shown})`;
       if (linesRef.current) {
-        const revealed = Math.min(copy.lines.length, Math.floor(elapsed / 250) + 1);
+        const revealed = Math.min(copy.lines.length, Math.floor(elapsed / 400) + 1);
         linesRef.current.style.setProperty("--step", String(revealed));
       }
       frame = requestAnimationFrame(step);

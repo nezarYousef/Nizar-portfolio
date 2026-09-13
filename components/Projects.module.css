@@ -1,3 +1,15 @@
+/* The default title voice wraps this longer sentence to four lines at the
+   section's normal measure; widen it so it sets in two. */
+.heading :global(.title) {
+  max-width: 40ch;
+}
+
+@media (max-width: 640px) {
+  .heading :global(.title) {
+    max-width: 22ch;
+  }
+}
+
 .more {
   margin-top: clamp(48px, 6vw, 96px);
   padding-top: clamp(28px, 3vw, 44px);

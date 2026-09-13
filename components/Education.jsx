@@ -22,7 +22,13 @@ export default function Education({ copy, language }) {
       aria-labelledby="education-title"
     >
       <div className="container">
-        <SectionHeading index="05" eyebrow={copy.eyebrow} title={copy.title} id="education-title" />
+        <SectionHeading
+          index="05"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          id="education-title"
+          className={styles.heading}
+        />
 
         <ol className={styles.records}>
           {copy.items.map((item, i) => (

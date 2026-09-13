@@ -43,7 +43,7 @@ export default function AmbientCode({ theme = "light", enabled = true }) {
     let lastScroll = window.scrollY;
     let velocity = 0;
 
-    const count = () => (window.innerWidth < 700 ? 10 : window.innerWidth < 1200 ? 16 : 24);
+    const count = () => (window.innerWidth < 700 ? 14 : window.innerWidth < 1200 ? 22 : 34);
 
     // Fragments live in the margins, not over the reading column: the mask in
     // the stylesheet fades the middle out, and spawning follows it so nothing
@@ -63,7 +63,7 @@ export default function AmbientCode({ theme = "light", enabled = true }) {
       color: colors[Math.floor(Math.random() * colors.length)],
       life: seeded ? Math.random() : 0,
       span: 0.0012 + Math.random() * 0.0016,
-      alphaMax: (isDark ? 0.15 : 0.11) + Math.random() * 0.08
+      alphaMax: (isDark ? 0.2 : 0.16) + Math.random() * 0.1
     });
 
     const resize = () => {

@@ -20,7 +20,13 @@ export default function Projects({ copy, dir, language }) {
   return (
     <section className="section screen" id="projects" ref={sectionRef} aria-labelledby="projects-title">
       <div className="container">
-        <SectionHeading index="03" eyebrow={copy.eyebrow} title={copy.title} id="projects-title" />
+        <SectionHeading
+          index="03"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          id="projects-title"
+          className={styles.heading}
+        />
 
         <FeaturedProject project={featured} labels={copy} />
 
