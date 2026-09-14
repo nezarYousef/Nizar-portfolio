@@ -59,6 +59,8 @@ export default function ProjectCard({ project, index, total, labels, isActive, p
           </a>
         ) : null}
 
+        {project.soon ? <span className={styles.action}>{labels.soon ?? "Soon"}</span> : null}
+
         {project.demoVideo ? (
           <button
             type="button"
