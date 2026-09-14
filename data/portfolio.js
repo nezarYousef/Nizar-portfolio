@@ -66,12 +66,12 @@ const aidSignGallery = [
 
 const projectMeta = {
   restaurant: {
-    cover: "/images/restaurant/1.png",
+    cover: "/images/restaurant/cover.png",
     tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
     gallery: gallery("restaurant", 19)
   },
   expenses: {
-    cover: "/images/expenses/1.png",
+    cover: "/images/expenses/cover.png",
     tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"],
     gallery: gallery("expenses", 2)
   },
@@ -89,11 +89,13 @@ const projectMeta = {
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
+    cover: "/images/shell-cover.png",
     gallery: [],
     github: "https://github.com/nezarYousef/shell.git"
   },
   school: {
     tags: ["Java", "OOP", "Desktop App"],
+    cover: "/images/school-cover.png",
     gallery: [],
     github: "https://github.com/nezarYousef/school.git"
   },
@@ -111,7 +113,7 @@ const projectMeta = {
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
     previewImage: "/images/advanced-tasks/ba.png",
-    cover: "/images/advanced-tasks/ba.png",
+    cover: "/images/advanced-tasks/cover.png",
     coverPosition: "center 9%",
     gallery: advancedTasksGallery
   },
@@ -124,6 +126,7 @@ const projectMeta = {
   },
   chatApp: {
     tags: [],
+    cover: "/images/chat-app-cover.png",
     gallery: [],
     github: "https://github.com/nezarYousef/chat_app.git"
   }
@@ -306,6 +309,7 @@ export const portfolioCopy = {
       viewGithub: "View on GitHub",
       comingSoon: "Details coming soon",
       viewDemo: "Open live demo",
+      soon: "Soon",
       watchDemo: "Watch demo",
       closeDemo: "Close video",
       inDevelopment: "In development",
@@ -372,7 +376,8 @@ export const portfolioCopy = {
         },
         {
           id: "ai",
-          title: "AI Assistant Tools",
+          title: "IUG Intelligence Chat Bot",
+          soon: true,
           description:
             "AI and API-based tools that simplify learning, improve access to information, and support understanding complex concepts through intelligent assistance."
         },
@@ -679,6 +684,7 @@ export const portfolioCopy = {
       viewGithub: "عرض على GitHub",
       comingSoon: "التفاصيل قريباً",
       viewDemo: "فتح العرض المباشر",
+      soon: "Soon",
       watchDemo: "مشاهدة العرض",
       closeDemo: "إغلاق الفيديو",
       inDevelopment: "قيد التطوير",
@@ -745,7 +751,8 @@ export const portfolioCopy = {
         },
         {
           id: "ai",
-          title: "أدوات مساعد ذكي",
+          title: "IUG Intelligence Chat Bot",
+          soon: true,
           description:
             "أدوات تعتمد على AI و API لتسهيل التعلم وتحسين الوصول للمعلومة ودعم فهم المفاهيم المعقدة بمساعدة ذكية."
         },

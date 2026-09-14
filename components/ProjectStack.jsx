@@ -92,15 +92,15 @@ export default function ProjectStack({ projects, labels, dir, offset = 0 }) {
         onPointerCancel={() => (pointer.current = null)}
       >
         {projects.map((project, index) => {
-          const offset = (index - active + total) % total;
-          const pose = poseFor(offset, total);
-          const isActive = offset === 0;
+          const poseOffset = (index - active + total) % total;
+          const pose = poseFor(poseOffset, total);
+          const isActive = poseOffset === 0;
           return (
             <div
               key={project.id}
               className={styles.slot}
               data-pose={pose}
-              style={{ "--k": Math.min(offset, 3) }}
+              style={{ "--k": Math.min(poseOffset, 3) }}
               aria-hidden={isActive ? undefined : true}
               inert={isActive ? undefined : true}
             >

@@ -15,7 +15,17 @@ export default function Projects({ copy, dir, language }) {
   const sectionRef = useRef(null);
   useReveal(sectionRef, [language]);
 
-  const [featured, ...rest] = copy.list;
+  const preferredOrder = ["grade", "vision", "restaurant", "advancedTasks", "shell", "school"];
+  const featured = copy.list.find((project) => project.id === "trafficwar") ?? copy.list[0];
+  const rest = copy.list
+    .filter((project) => project.id !== featured.id)
+    .sort((a, b) => {
+      const aIndex = preferredOrder.indexOf(a.id);
+      const bIndex = preferredOrder.indexOf(b.id);
+      const aRank = aIndex === -1 ? preferredOrder.length : aIndex;
+      const bRank = bIndex === -1 ? preferredOrder.length : bIndex;
+      return aRank - bRank;
+    });
 
   return (
     <section className="section screen" id="projects" ref={sectionRef} aria-labelledby="projects-title">
