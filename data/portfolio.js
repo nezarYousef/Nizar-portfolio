@@ -100,7 +100,7 @@ const projectMeta = {
     github: "https://github.com/nezarYousef/school.git"
   },
   ai: {
-    tags: ["AI", "API", "Python", "Automation"],
+    tags: ["AI", "API", "Python", "RAG", "Database Integration"],
     gallery: []
   },
   vision: {
@@ -285,6 +285,8 @@ export const portfolioCopy = {
           items: [
             "Java",
             "C",
+            "PHP",
+            "SQL",
             "OOP",
             "Data Structures",
             "PostgreSQL",
@@ -379,7 +381,7 @@ export const portfolioCopy = {
           title: "IUG Intelligence Chat Bot",
           soon: true,
           description:
-            "AI and API-based tools that simplify learning, improve access to information, and support understanding complex concepts through intelligent assistance."
+            "An IUG intelligence chatbot using RAG, API integration, and database connectivity to support learning and academic guidance."
         },
         {
           id: "tasks",
@@ -660,6 +662,8 @@ export const portfolioCopy = {
           items: [
             "Java",
             "C",
+            "PHP",
+            "SQL",
             "OOP",
             "Data Structures",
             "PostgreSQL",
@@ -754,7 +758,7 @@ export const portfolioCopy = {
           title: "IUG Intelligence Chat Bot",
           soon: true,
           description:
-            "أدوات تعتمد على AI و API لتسهيل التعلم وتحسين الوصول للمعلومة ودعم فهم المفاهيم المعقدة بمساعدة ذكية."
+            "روبوت محادثة ذكي للجامعة الإسلامية يعتمد على RAG وربط API والتكامل مع قواعد البيانات لدعم التعلم والإرشاد الأكاديمي."
         },
         {
           id: "tasks",
