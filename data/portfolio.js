@@ -91,7 +91,7 @@ const projectMeta = {
     tags: ["PHP", "Laravel", "PostgreSQL", "SQL", "Blade", "Bootstrap"],
     cover: "/images/emergency-beneficiaries-cover.png",
     gallery: [],
-    demo: "https://emergency-orphan-family-beneficiary-git-main-nizar9.vercel.app/"
+    demo: "https://emergency-management-sys.vercel.app/"
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
