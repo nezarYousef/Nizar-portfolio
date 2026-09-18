@@ -15,7 +15,7 @@ export default function Projects({ copy, dir, language }) {
   const sectionRef = useRef(null);
   useReveal(sectionRef, [language]);
 
-  const preferredOrder = ["grade", "vision", "restaurant", "advancedTasks", "shell", "school"];
+  const preferredOrder = ["grade", "emergency", "vision", "restaurant", "advancedTasks", "shell", "school"];
   const featured = copy.list.find((project) => project.id === "trafficwar") ?? copy.list[0];
   const rest = copy.list
     .filter((project) => project.id !== featured.id)
