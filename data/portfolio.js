@@ -87,6 +87,12 @@ const projectMeta = {
     gallery: edufusionGallery,
     demo: "https://edufusion-frontend-nizar9.vercel.app/"
   },
+  emergency: {
+    tags: ["PHP", "Laravel", "PostgreSQL", "SQL", "Blade", "Bootstrap"],
+    cover: "/images/emergency-beneficiaries-cover.png",
+    gallery: [],
+    demo: "https://emergency-orphan-family-beneficiary-git-main-nizar9.vercel.app/"
+  },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
     cover: "/images/shell-cover.png",
@@ -189,7 +195,7 @@ export const portfolioCopy = {
         { label: "mount interface", value: "react / next.js" },
         { label: "load intelligence", value: "ml / python / pycaret" },
         { label: "link systems", value: "java / oop / c" },
-        { label: "compile projects", value: "11 ready" }
+        { label: "compile projects", value: "12 ready" }
       ],
       greeting: "Hello, welcome to my portfolio",
       signature: "Nizar Yousef Alqerem / Computer Engineer",
@@ -216,7 +222,7 @@ export const portfolioCopy = {
       status: "Available for software, web, and AI opportunities",
       imageAlt: "Portrait of Nizar Yousef Alqerem",
       stats: [
-        { value: "11", label: "Engineering Projects" },
+        { value: "12", label: "Engineering Projects" },
         { value: "2026", label: "Computer Engineering Graduate" },
         { value: "AI + Web", label: "Core Technical Focus" }
       ]
@@ -340,6 +346,12 @@ export const portfolioCopy = {
             "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
             "Smart chatbot for academic support, course guidance, and student questions."
           ]
+        },
+        {
+          id: "emergency",
+          title: "Emergency Beneficiary Management System",
+          description:
+            "A full-stack system for managing families, orphans, beneficiaries, guardians, and aid records, with role-based access, dashboard statistics, reports, CSV export, audit logging, and Arabic/English support."
         },
         {
           id: "vision",
@@ -566,7 +578,7 @@ export const portfolioCopy = {
         { label: "تهيئة الواجهة", value: "react / next.js" },
         { label: "تحميل الذكاء", value: "ml / python / pycaret" },
         { label: "ربط الأنظمة", value: "java / oop / c" },
-        { label: "تجهيز المشاريع", value: "11 جاهزة" }
+        { label: "تجهيز المشاريع", value: "12 جاهزة" }
       ],
       greeting: "مرحباً، أهلاً بك في معرض أعمالي",
       signature: "نزار يوسف القرَم / مهندس حاسوب",
@@ -593,7 +605,7 @@ export const portfolioCopy = {
       status: "متاح لفرص البرمجيات والويب والذكاء الاصطناعي",
       imageAlt: "صورة شخصية لنزار يوسف القرَم",
       stats: [
-        { value: "11", label: "مشاريع هندسية" },
+        { value: "12", label: "مشاريع هندسية" },
         { value: "2026", label: "خريج هندسة حاسوب" },
         { value: "AI + Web", label: "تركيز تقني أساسي" }
       ]
@@ -717,6 +729,12 @@ export const portfolioCopy = {
             "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
             "Smart chatbot for academic support, course guidance, and student questions."
           ]
+        },
+        {
+          id: "emergency",
+          title: "نظام إدارة المستفيدين في حالات الطوارئ",
+          description:
+            "نظام متكامل لإدارة العائلات والأيتام والمستفيدين والأوصياء وسجلات المساعدات، مع صلاحيات حسب الدور ولوحة إحصاءات وتقارير وتصدير CSV وسجل تدقيق ودعم العربية والإنجليزية."
         },
         {
           id: "vision",
