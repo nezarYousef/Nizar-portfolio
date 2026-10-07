@@ -6,15 +6,15 @@ import DemoVideoModal from "@/components/DemoVideoModal";
 import ProjectCover from "@/components/ProjectCover";
 import styles from "./ProjectStack.module.css";
 
-/* GitHub first, otherwise a live demo, otherwise nothing. Never two. */
-export function projectLink(project, labels) {
-  if (project.github) return { href: project.github, label: labels.viewGithub, kind: "github" };
-  if (project.demo) return { href: project.demo, label: labels.viewDemo, kind: "demo" };
-  return null;
+export function projectLinks(project, labels) {
+  const links = [];
+  if (project.demo) links.push({ href: project.demo, label: labels.viewDemo, kind: "demo" });
+  if (project.github) links.push({ href: project.github, label: labels.viewGithub, kind: "github" });
+  return links;
 }
 
 export default function ProjectCard({ project, index, total, labels, isActive, priority }) {
-  const link = projectLink(project, labels);
+  const links = projectLinks(project, labels);
   const number = String(index + 1).padStart(2, "0");
   const count = String(total).padStart(2, "0");
   const [demoOpen, setDemoOpen] = useState(false);
@@ -45,18 +45,23 @@ export default function ProjectCard({ project, index, total, labels, isActive, p
           </ul>
         ) : null}
 
-        {link ? (
-          <a
-            className={styles.action}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            tabIndex={isActive ? undefined : -1}
-          >
-            {link.kind === "github" ? <Github size={17} aria-hidden="true" /> : null}
-            <span>{link.label}</span>
-            <ArrowUpRight size={16} aria-hidden="true" className={styles.actionArrow} />
-          </a>
+        {links.length ? (
+          <div className={styles.actions}>
+            {links.map((link) => (
+              <a
+                key={link.kind}
+                className={styles.action}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={isActive ? undefined : -1}
+              >
+                {link.kind === "github" ? <Github size={17} aria-hidden="true" /> : null}
+                <span>{link.label}</span>
+                <ArrowUpRight size={16} aria-hidden="true" className={styles.actionArrow} />
+              </a>
+            ))}
+          </div>
         ) : null}
 
         {project.soon ? <span className={styles.action}>{labels.soon ?? "Soon"}</span> : null}
