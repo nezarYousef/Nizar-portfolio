@@ -38,8 +38,7 @@ const projectMeta = {
   candidexa: {
     tags: ["AI", "Interview Practice", "Personalized Feedback"],
     cover: "/images/candidexa/cover.png",
-    demo: "https://candidexa-nizar9.vercel.app/",
-    github: "https://github.com/nezarYousef/ai-interview-simulator.git"
+    demo: "https://candidexa-nizar9.vercel.app/"
   },
   emergency: {
     tags: ["PHP", "Laravel", "PostgreSQL", "SQL", "Blade", "Bootstrap"],
