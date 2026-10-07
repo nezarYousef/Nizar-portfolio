@@ -3,7 +3,7 @@
 import { ArrowUpRight, Github } from "lucide-react";
 import { useRef } from "react";
 import ProjectCover from "@/components/ProjectCover";
-import { projectLink } from "@/components/ProjectCard";
+import { projectLinks } from "@/components/ProjectCard";
 import { useScrollProgress } from "@/lib/scrollProgress";
 import { usePrefersReducedMotion } from "@/lib/useMedia";
 import styles from "./FeaturedProject.module.css";
@@ -16,7 +16,7 @@ import styles from "./FeaturedProject.module.css";
 export default function FeaturedProject({ project, labels }) {
   const frameRef = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
-  const link = projectLink(project, labels);
+  const links = projectLinks(project, labels);
 
   // The cover drifts a little inside its frame: depth, not parallax theatre.
   useScrollProgress(frameRef, { mode: "through", disabled: reducedMotion, resetTo: 0.5 });
@@ -51,12 +51,16 @@ export default function FeaturedProject({ project, labels }) {
           </ul>
         ) : null}
 
-        {link ? (
-          <a className={styles.action} href={link.href} target="_blank" rel="noopener noreferrer">
-            {link.kind === "github" ? <Github size={17} aria-hidden="true" /> : null}
-            <span>{link.label}</span>
-            <ArrowUpRight size={16} aria-hidden="true" className={styles.arrow} />
-          </a>
+        {links.length ? (
+          <div className={styles.actions}>
+            {links.map((link) => (
+              <a key={link.kind} className={styles.action} href={link.href} target="_blank" rel="noopener noreferrer">
+                {link.kind === "github" ? <Github size={17} aria-hidden="true" /> : null}
+                <span>{link.label}</span>
+                <ArrowUpRight size={16} aria-hidden="true" className={styles.arrow} />
+              </a>
+            ))}
+          </div>
         ) : null}
       </div>
     </article>

@@ -192,6 +192,12 @@ html[lang="ar"] .title {
   margin-top: calc(var(--s-2) * -1);
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
 .action {
   display: inline-flex;
   align-items: center;

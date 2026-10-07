@@ -17,130 +17,73 @@ const coreStack = [
   "OOP"
 ];
 
-const gallery = (folder, count) =>
-  Array.from({ length: count }, (_, index) => ({
-    src: `/images/${folder}/${index + 1}.png`,
-    alt: `${folder} project screenshot ${index + 1}`
-  }));
-
-const edufusionGallery = [
-  ...gallery("edufusion", 10),
-  {
-    src: "/images/edufusion/11.jpeg",
-    alt: "EduFusion AI LectureScribe screenshot"
-  }
-];
-
-const advancedTasksGallery = gallery("advanced-tasks", 4);
-
-const aidSignGallery = [
-  {
-    src: "/images/aid-sign/1.PNG",
-    alt: "AidSign landing page with patient and doctor views"
-  },
-  {
-    src: "/images/aid-sign/2.PNG",
-    alt: "AidSign patient and doctor experience cards"
-  },
-  {
-    src: "/images/aid-sign/3.PNG",
-    alt: "AidSign patient view with phrasebook and sign recognition actions"
-  },
-  {
-    src: "/images/aid-sign/4.0.PNG",
-    alt: "AidSign doctor view with communication scope and safety guidance"
-  },
-  {
-    src: "/images/aid-sign/4.PNG",
-    alt: "AidSign doctor phrasebook with searchable sign cards"
-  },
-  {
-    src: "/images/aid-sign/5.PNG",
-    alt: "AidSign sign recognition interface"
-  },
-  {
-    src: "/images/aid-sign/6.PNG",
-    alt: "AidSign recognition controls and experimental result state"
-  }
-];
-
 const projectMeta = {
   restaurant: {
     cover: "/images/restaurant/cover.png",
-    tags: ["React.js", "HTML/CSS", "API", "UI Systems"],
-    gallery: gallery("restaurant", 19)
+    tags: ["React.js", "HTML/CSS", "API", "UI Systems"]
   },
   expenses: {
     cover: "/images/expenses/cover.png",
-    tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"],
-    gallery: gallery("expenses", 2)
+    tags: ["React.js", "JavaScript", "HTML/CSS", "State Management"]
   },
   tasks: {
     cover: "/images/tasks/cover.png",
-    tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"],
-    gallery: gallery("tasks", 5)
+    tags: ["React.js", "JavaScript", "HTML/CSS", "Productivity"]
   },
   grade: {
     tags: ["Python", "Machine Learning", "FastAPI", "AI", "LLM", "Chatbot"],
-    previewImage: "/images/edufusion/cover.png",
     cover: "/images/edufusion/cover.png",
-    gallery: edufusionGallery,
     demo: "https://edufusion-frontend-nizar9.vercel.app/"
+  },
+  candidexa: {
+    tags: ["AI", "Interview Practice", "Personalized Feedback"],
+    cover: "/images/candidexa/cover.png",
+    demo: "https://candidexa-nizar9.vercel.app/",
+    github: "https://github.com/nezarYousef/ai-interview-simulator.git"
   },
   emergency: {
     tags: ["PHP", "Laravel", "PostgreSQL", "SQL", "Blade", "Bootstrap"],
     cover: "/images/emergency-beneficiaries-cover.png",
-    gallery: [],
     demo: "https://emergency-management-sys.vercel.app/"
   },
   shell: {
     tags: ["C", "Linux/UNIX", "OS", "Systems"],
     cover: "/images/shell-cover.png",
-    gallery: [],
     github: "https://github.com/nezarYousef/shell.git"
   },
   school: {
     tags: ["Java", "OOP", "Desktop App"],
     cover: "/images/school-cover.png",
-    gallery: [],
     github: "https://github.com/nezarYousef/school.git"
   },
   ai: {
-    tags: ["AI", "API", "Python", "RAG", "Database Integration"],
-    gallery: []
+    tags: ["AI", "API", "Python", "RAG", "Database Integration"]
   },
   vision: {
     tags: ["Computer Vision", "Python", "AI", "OpenHands"],
-    previewImage: "/images/aid-sign/cover.png",
     cover: "/images/aid-sign/cover.png",
-    demoVideo: "/videos/aidsign-demo.mp4",
-    gallery: aidSignGallery
+    demoVideo: "/videos/aidsign-demo.mp4"
   },
   advancedTasks: {
     tags: ["React.js", "Next.js", "HTML/CSS", "UI Engineering"],
-    previewImage: "/images/advanced-tasks/ba.png",
     cover: "/images/advanced-tasks/cover.png",
-    coverPosition: "center 9%",
-    gallery: advancedTasksGallery
+    coverPosition: "center 9%"
   },
   trafficwar: {
     tags: ["React.js", "Vite", "TanStack", "UI/UX Design"],
     cover: "/images/trafficwar/cover.png",
     coverPosition: "18% 50%",
-    gallery: [],
     demo: "https://trafficwar.tech/"
   },
   chatApp: {
     tags: [],
     cover: "/images/chat-app-cover.png",
-    gallery: [],
     github: "https://github.com/nezarYousef/chat_app.git"
   }
 };
 
 /*
- * Project links: each project shows exactly one destination.
- * `github` wins over `demo`; with neither, the card shows no link.
+ * Projects can link to both their live demo and source repository.
  * Only real, published URLs belong here.
  */
 const withMeta = (projects) =>
@@ -346,6 +289,12 @@ export const portfolioCopy = {
             "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
             "Smart chatbot for academic support, course guidance, and student questions."
           ]
+        },
+        {
+          id: "candidexa",
+          title: "Candidexa AI",
+          description:
+            "An AI interview practice platform with realistic interviews and personalized feedback to help candidates improve their answers and build confidence."
         },
         {
           id: "emergency",
@@ -729,6 +678,12 @@ export const portfolioCopy = {
             "QuizForge is an AI-powered exam question generator that takes lecture files and automatically produces high-quality exam questions, supporting Arabic, English, and mixed-language content. Built with a local LLM, it runs entirely on your machine with full privacy and no cloud API costs.",
             "Smart chatbot for academic support, course guidance, and student questions."
           ]
+        },
+        {
+          id: "candidexa",
+          title: "Candidexa AI",
+          description:
+            "منصة للتدرب على المقابلات باستخدام الذكاء الاصطناعي، تقدم مقابلات واقعية وملاحظات مخصصة لتحسين الإجابات وبناء الثقة."
         },
         {
           id: "emergency",

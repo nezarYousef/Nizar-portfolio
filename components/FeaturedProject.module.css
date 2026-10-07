@@ -48,6 +48,12 @@ html[lang="ar"] .title {
   line-height: 1.6;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
 .action {
   display: inline-flex;
   align-items: center;
