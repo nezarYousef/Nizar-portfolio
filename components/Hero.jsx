@@ -21,20 +21,12 @@ class SceneBoundary extends Component {
   }
 
   componentDidCatch(error) {
-    if (process.env.NODE_ENV !== "production") console.warn("Hero 3D disabled:", error);
+    console.warn("Hero 3D disabled:", error);
+    this.props.onUnavailable?.();
   }
 
   render() {
     return this.state.failed ? this.props.fallback : this.props.children;
-  }
-}
-
-function supportsWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
-  } catch {
-    return false;
   }
 }
 
@@ -48,6 +40,7 @@ export default function Hero({ copy, theme, dir, enable3d = true }) {
   const sectionRef = useRef(null);
   const progressRef = useRef(0);
   const pointerRef = useRef({ x: 0, y: 0 });
+  const copyRef = useRef(null);
 
   const canPin = useCanPin();
   const reducedMotion = usePrefersReducedMotion();
@@ -56,14 +49,18 @@ export default function Hero({ copy, theme, dir, enable3d = true }) {
   const [sceneState, setSceneState] = useState("pending"); // pending | webgl | fallback
   const [sceneReady, setSceneReady] = useState(false);
   const [active, setActive] = useState(true);
+  const pinned = canPin && sceneState !== "fallback";
 
   const onProgress = useCallback((p) => {
     progressRef.current = p;
-  }, []);
+    // Faded hero links must not keep intercepting clicks or keyboard focus.
+    if (copyRef.current) copyRef.current.inert = pinned && p >= 0.36;
+  }, [pinned]);
   const onSceneReady = useCallback(() => setSceneReady(true), []);
+  const onUnavailable = useCallback(() => setSceneState("fallback"), []);
 
   useScrollProgress(sectionRef, {
-    mode: canPin ? "pin" : "exit",
+    mode: pinned ? "pin" : "exit",
     onChange: onProgress,
     disabled: reducedMotion,
     resetTo: 0
@@ -73,19 +70,48 @@ export default function Hero({ copy, theme, dir, enable3d = true }) {
     // Held back while the intro plays: three.js initialisation would starve
     // the intro's animations of main-thread time.
     if (!enable3d) return;
-    setSceneState(supportsWebGL() ? "webgl" : "fallback");
+    try {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("webgl2", { failIfMajorPerformanceCaveat: true });
+      const supported = Boolean(context);
+      context?.getExtension("WEBGL_lose_context")?.loseContext();
+      setSceneState(supported ? "webgl" : "fallback");
+    } catch {
+      setSceneState("fallback");
+    }
   }, [enable3d]);
 
   // Only render the 3D loop while the hero is on screen.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return undefined;
-    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      setActive(!document.hidden && rect.bottom > -80 && rect.top < window.innerHeight + 80);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    const observer = new IntersectionObserver(schedule, {
       rootMargin: "80px 0px"
     });
     observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
+    // Recheck geometry after viewport/direction changes as well: a sticky
+    // element can retain a stale intersection entry across those changes.
+    measure();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    document.addEventListener("visibilitychange", schedule);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      document.removeEventListener("visibilitychange", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, [dir, canPin, compact]);
 
   // Gentle pointer parallax on devices with a precise pointer.
   useEffect(() => {
@@ -107,17 +133,17 @@ export default function Hero({ copy, theme, dir, enable3d = true }) {
       id="hero"
       ref={sectionRef}
       className={styles.hero}
-      data-pin={canPin ? "true" : "false"}
+      data-pin={pinned ? "true" : "false"}
       aria-labelledby="hero-title"
     >
       <div className={styles.stage}>
         <div
           className={styles.visual}
           data-cursor="cross"
-          data-ready={sceneReady || sceneState === "fallback"}
+          data-ready="true"
         >
           {sceneState === "webgl" ? (
-            <SceneBoundary fallback={<HeroFallback />}>
+            <SceneBoundary fallback={<HeroFallback />} onUnavailable={onUnavailable}>
               <Suspense fallback={null}>
                 <HeroScene
                   modules={heroModules}
@@ -129,14 +155,15 @@ export default function Hero({ copy, theme, dir, enable3d = true }) {
                   progressRef={progressRef}
                   pointerRef={pointerRef}
                   onReady={onSceneReady}
+                  onUnavailable={onUnavailable}
                 />
               </Suspense>
             </SceneBoundary>
           ) : null}
-          {sceneState === "fallback" ? <HeroFallback /> : null}
+          {!sceneReady || sceneState === "fallback" ? <HeroFallback /> : null}
         </div>
 
-        <div className={styles.copyLayer}>
+        <div className={styles.copyLayer} ref={copyRef}>
           <div className={`container ${styles.copyInner}`}>
             <div className={styles.copy}>
               <p className={styles.boot} dir="ltr">

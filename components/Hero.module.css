@@ -38,7 +38,7 @@
 
 .beatLayer {
   order: 3;
-  padding-bottom: var(--s-8);
+  padding-bottom: var(--s-5);
 }
 
 /* ─── Copy ───────────────────────────────────────────── */
@@ -214,25 +214,8 @@ html[lang="ar"] .beatTitle {
     order: 0;
     height: auto;
     margin: 0;
-    opacity: 0.88;
-    -webkit-mask-image:
-      linear-gradient(180deg, #000 0, #000 86%, transparent 100%),
-      linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.45) 22%, #000 40%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(180deg, #000 0, #000 86%, transparent 100%),
-      linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.45) 22%, #000 40%);
-    mask-composite: intersect;
-  }
-
-  /* Gradients only take physical directions, so RTL needs its own pair. */
-  html[dir="rtl"] .visual {
-    -webkit-mask-image:
-      linear-gradient(180deg, #000 0, #000 86%, transparent 100%),
-      linear-gradient(to left, transparent 0, rgba(0, 0, 0, 0.45) 22%, #000 40%);
-    mask-image:
-      linear-gradient(180deg, #000 0, #000 86%, transparent 100%),
-      linear-gradient(to left, transparent 0, rgba(0, 0, 0, 0.45) 22%, #000 40%);
+    opacity: 1;
+    mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%);
   }
 
   .copyLayer {
@@ -265,10 +248,10 @@ html[lang="ar"] .beatTitle {
   }
 }
 
-/* Pinned: a sticky stage and 100svh of scroll that explodes the system. */
+/* Pinned: one sticky stage for the laptop-to-architecture journey. */
 @media (min-width: 1024px) {
   .hero[data-pin="true"] {
-    height: 178svh;
+    height: 196svh;
   }
 
   .hero[data-pin="true"] .stage {
@@ -278,12 +261,12 @@ html[lang="ar"] .beatTitle {
 
   .hero[data-pin="true"] .copy {
     transform: translate3d(0, calc(var(--p) * -16vh), 0);
-    opacity: calc(1 - var(--p) * 2.2);
+    opacity: clamp(0, calc(1 - var(--p) * 2.8), 1);
     will-change: transform, opacity;
   }
 
   .hero[data-pin="true"] .visual[data-ready="true"] {
-    opacity: calc(0.88 + clamp(0, var(--p), 1) * 0.12);
+    opacity: 1;
   }
 
   .hero[data-pin="true"] .beatLayer {
@@ -291,13 +274,14 @@ html[lang="ar"] .beatTitle {
     inset: 0;
     z-index: 2;
     display: grid;
-    place-items: center;
+    align-items: start;
+    justify-items: center;
     width: auto;
     height: auto;
     overflow: visible;
     clip: auto;
     white-space: normal;
-    padding: var(--header-h) 0 0;
+    padding: 68svh 0 0;
     pointer-events: none;
   }
 
@@ -305,7 +289,7 @@ html[lang="ar"] .beatTitle {
     justify-items: center;
     text-align: center;
     position: relative;
-    opacity: calc((var(--p) - 0.46) * 3.4);
+    opacity: clamp(0, calc((var(--p) - 0.68) * 5), 1);
     transform: translate3d(0, calc((1 - var(--p)) * 56px), 0);
   }
 
@@ -320,11 +304,18 @@ html[lang="ar"] .beatTitle {
   }
 
   .hero[data-pin="true"] .beatTitle {
-    max-width: 19ch;
-    font-size: clamp(2rem, 1rem + 2.3vw, 3.2rem);
+    max-width: 34ch;
+    font-size: clamp(1.6rem, 1rem + 1.3vw, 2.4rem);
     font-weight: var(--w-head);
     line-height: 1.02;
     letter-spacing: -0.032em;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 880px) {
+  .hero[data-pin="true"] .beatTitle {
+    max-width: 44ch;
+    font-size: clamp(1.4rem, 2.2vw, 1.8rem);
   }
 }
 
@@ -341,12 +332,15 @@ html[lang="ar"] .beatTitle {
 @media (max-width: 420px) {
   .actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
   }
 
   .actions :global(.btn) {
-    padding: 0 12px;
+    min-width: 0;
+    gap: 6px;
+    padding: 0 8px;
+    font-size: 0.85rem;
   }
 }
 

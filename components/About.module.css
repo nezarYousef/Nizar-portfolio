@@ -17,6 +17,16 @@
   padding-block: calc(var(--header-h) + var(--s-6)) var(--section-pad);
 }
 
+/* Let the settled architecture and the original About content share the
+   handoff viewport, without putting the portrait or reading column on canvas. */
+@media (min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  :global(#hero[data-pin="true"]) + :global(.screen).screenTight {
+    position: relative;
+    z-index: 2;
+    margin-top: -27svh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .heading {
     transform: none;
@@ -255,6 +265,12 @@ html[dir="rtl"] .mount::before {
 
   .body {
     max-width: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  :global(.screen).screenTight {
+    padding-block-start: var(--s-7);
   }
 }
 
