@@ -2,40 +2,99 @@
   position: absolute;
   inset: 0;
   display: grid;
-  place-content: center;
-  perspective: 1200px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 12px;
+  max-width: 520px;
+  margin: auto;
+  padding: 20px;
+}
+
+.hardware {
+  position: relative;
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: center;
+  color: var(--accent-text);
+  margin-bottom: 8px;
+}
+
+.processor {
+  position: absolute;
+  top: 52px;
 }
 
 .card {
-  grid-area: 1 / 1;
   display: grid;
+  align-content: start;
   gap: 6px;
-  width: min(300px, 70vw);
-  padding: 20px 22px;
+  padding: 14px;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-2), var(--edge);
-  transform: translate3d(calc(var(--i) * 34px - 50px), calc(var(--i) * 58px - 90px), calc(var(--i) * -40px))
-    rotateY(-14deg) rotateX(6deg);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: var(--shadow-1), var(--edge);
 }
 
 .card small {
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.65rem;
 }
 
 .card strong {
   color: var(--ink);
-  font-size: 1.05rem;
-  border-bottom: 3px solid var(--swatch);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border-bottom: 2px solid var(--swatch, var(--accent));
   padding-bottom: 6px;
 }
 
 .swatch {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: var(--swatch);
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--swatch, var(--accent));
+}
+
+@media (min-width: 1024px) {
+  .fallback {
+    width: 48%;
+    margin-inline-start: 50%;
+  }
+}
+
+@media (max-width: 520px) {
+  .fallback {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .hardware {
+    height: 76px;
+    margin: 0;
+  }
+
+  .hardware > svg:first-child {
+    width: 100px;
+    height: 76px;
+  }
+
+  .processor {
+    top: 19px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .card {
+    gap: 3px;
+    padding: 8px 10px;
+  }
+
+  .card small {
+    font-size: 0.6rem;
+  }
+
+  .card strong {
+    font-size: 0.72rem;
+  }
 }

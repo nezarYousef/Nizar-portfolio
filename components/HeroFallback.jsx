@@ -1,4 +1,5 @@
 import { heroModules } from "@/data/portfolio";
+import { Cpu, LaptopMinimal } from "lucide-react";
 import styles from "./HeroFallback.module.css";
 
 /*
@@ -6,19 +7,21 @@ import styles from "./HeroFallback.module.css";
  * layered CSS composition so the hero never renders empty.
  */
 export default function HeroFallback() {
-  const modules = heroModules.filter((module) => module.kind !== "terminal").slice(0, 4);
-
   return (
     <div className={styles.fallback} aria-hidden="true">
-      {modules.map((module, index) => (
+      <div className={styles.hardware}>
+        <LaptopMinimal size={176} strokeWidth={0.8} />
+        <Cpu className={styles.processor} size={38} strokeWidth={1.2} />
+      </div>
+      {heroModules.map((module, index) => (
         <div
           className={styles.card}
           key={module.id}
-          style={{ "--i": index, "--swatch": `var(--mod-${module.swatch})` }}
+          style={{ "--i": index, "--swatch": `var(--mod-${module.swatch ?? "tools"})` }}
         >
           <span className={styles.swatch} />
-          <small>{module.label}</small>
-          <strong>{module.value}</strong>
+          <small>{module.label ?? module.command}</small>
+          <strong>{module.value ?? module.output}</strong>
         </div>
       ))}
     </div>

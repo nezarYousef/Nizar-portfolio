@@ -138,7 +138,7 @@ export default function PortfolioApp() {
 
   return (
     <>
-      <AmbientCode theme={theme} enabled={!reducedMotion && scene3d} />
+      <AmbientCode theme={theme} enabled={!reducedMotion && scene3d && activeSection !== "hero"} />
       <Cursor />
 
       {intro ? (
